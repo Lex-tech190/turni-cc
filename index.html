@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Gestione Turni CC</title>
+    <title>Gestione Turni CC Pro</title>
 
     <!-- PWA & iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -40,7 +40,7 @@
             color: #f1f5f9;
         }
 
-        /* Glassmorphism per pannelli principali */
+        /* Effetto Glassmorphism per i pannelli principali */
         aside, main, header {
             background: rgba(10, 15, 29, 0.75) !important;
             backdrop-filter: blur(16px) !important;
@@ -64,7 +64,7 @@
             transform: translateY(-1px);
         }
 
-        /* Inputs & Selects */
+        /* Stile per i campi di testo */
         input, select {
             background-color: rgba(5, 8, 17, 0.6) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -189,7 +189,7 @@
                     </div>
                 </div>
 
-                <!-- Dettaglio Delle 4 Tipologie di Straordinario -->
+                <!-- Dettaglio Straordinari Differenziato -->
                 <div class="space-y-1.5 text-xs font-semibold">
                     <div class="flex justify-between p-2 rounded-lg bg-blue-950/30 text-blue-300 border border-blue-500/20">
                         <span><i class="fa-solid fa-clock mr-1 text-blue-400"></i> Straord. Ordinario</span>
@@ -209,7 +209,7 @@
                     </div>
                 </div>
 
-                <!-- Contatori Licenze, Riposi e Malattia -->
+                <!-- Licenze, Riposi e Malattia -->
                 <div class="space-y-1.5 text-xs font-semibold pt-1">
                     <div class="flex justify-between p-2 rounded-lg bg-emerald-950/40 text-emerald-300 border border-emerald-500/20">
                         <span><i class="fa-solid fa-umbrella-beach mr-1 text-emerald-400"></i> Licenze / Smonti</span>
@@ -473,22 +473,16 @@
             });
         }
 
-        // Funzione per verificare se un orario rientra nella fascia notturna (22:00 - 06:00)
+        // Riconoscimento orario notturno (22:00 - 06:00)
         function checkIsNightShift(code) {
             const cleanCode = code.toUpperCase().trim();
-            
-            // Parole chiave notturne dirette
             if (cleanCode.includes('NOTT') || cleanCode.includes('NOTTE') || cleanCode === 'N') {
                 return true;
             }
-
-            // Ricerca fasce orarie che intercettano 22:00 - 06:00 (es. 22-06, 22/06, 19/01, 00/06, 23/07, ecc.)
             const timeMatch = cleanCode.match(/(\d{1,2})[\/\-\:\. ]+(\d{1,2})/);
             if (timeMatch) {
                 const startHour = parseInt(timeMatch[1], 10);
                 const endHour = parseInt(timeMatch[2], 10);
-
-                // Se l'orario di inizio è >= 22 oppure l'orario di fine è <= 6 (e diverso da 00)
                 if (startHour >= 22 || startHour < 6 || (endHour > 0 && endHour <= 6) || startHour > endHour) {
                     return true;
                 }
@@ -496,7 +490,7 @@
             return false;
         }
 
-        // Calcolo e suddivisione dei vari tipi di straordinario
+        // Calcolo e suddivisione straordinari
         function calculateStats() {
             let totalHours = 0;
             let totalOvertime = 0;
@@ -525,7 +519,6 @@
                     const dateObj = new Date(year, month, dayNum);
                     const isSunday = dateObj.getDay() === 0;
                     
-                    // Verifica Santo Patrono
                     const dayFormatted = String(dayNum).padStart(2, '0');
                     const monthFormatted = String(month + 1).padStart(2, '0');
                     const isPatron = patronValue.includes(`${dayFormatted}/${monthFormatted}`) || patronValue.includes(`${dayNum}`);
