@@ -1,1633 +1,588 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" class="h-full dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gestione Turni CC</title>
-    
-    <!-- PWA Metadata & iOS Support -->
+
+    <!-- PWA & iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Turni CC">
-    <meta name="theme-color" content="#1B263B">
+    <meta name="theme-color" content="#0a0f1d">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- html2pdf Library per Esportazione PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        arma: { navy: '#1B263B', red: '#C00000', gold: '#D4AF37', purple: '#4B0082', orange: '#ea580c' }
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <style>
-        html, body { 
-            background-color: #111827; 
-            color: #1f2937; 
-            margin: 0; 
-            padding: 0; 
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden; 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #050811 !important;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.2) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.1) 0px, transparent 50%) !important;
+            background-attachment: fixed;
+            color: #f1f5f9;
         }
 
-        .watermark-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.03' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 18 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.05' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: center; background-size: 80vh;
-            z-index: -1; pointer-events: none;
+        /* Glassmorphism per pannelli principali */
+        aside, main, header {
+            background: rgba(10, 15, 29, 0.75) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-        .input-box {
-            background: rgba(255, 255, 255, 0.95); color: #111827; border: 1px solid #d1d5db;
-            border-radius: 0.375rem; padding: 0.2rem 0.25rem; font-size: 0.75rem; outline: none; transition: all 0.2s;
-        }
-        .input-box:focus { border-color: #D4AF37; box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3); }
-        .input-box:disabled { background: #e5e7eb; cursor: not-allowed; opacity: 0.6; }
-        
-        .note-box {
-            background: #fffbeb; color: #78350f; border: 1px solid #fde68a;
-            border-radius: 0.375rem; padding: 0.25rem 0.5rem; font-size: 0.75rem; outline: none; transition: all 0.2s;
-        }
-        .note-box:focus { border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25); background: #ffffff; }
-        .note-box:disabled { background: #e5e7eb; cursor: not-allowed; opacity: 0.6; }
-
-        .day-card {
-            border-radius: 0.65rem;
-            margin: 0.25rem 0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        /* Glassmorphism per le card dei giorni */
+        #calendarList > div {
+            background: rgba(15, 23, 42, 0.6) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.25) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .row-festivo { background-color: #C00000; color: white; border-left: 6px solid #7f0000; }
-        .row-festivo input, .row-festivo select { color: #111827; } 
-        
-        .row-assenza { background-color: #4B0082; color: white; border-left: 6px solid #2a004a; }
-        .row-assenza input, .row-assenza select { color: #111827; } 
-        
-        .row-rrs { background-color: #ea580c; color: white; border-left: 6px solid #9a3412; }
-        .row-rrs input, .row-rrs select { color: #111827; }
-
-        .row-sse { background-color: #16a34a; color: white; border-left: 6px solid #0f6830; }
-        .row-sse input, .row-sse select { color: #111827; } 
-
-        .row-normale { background-color: #ffffff; color: #1f2937; border-left: 6px solid #1B263B; }
-        .row-normale:hover { background-color: #fafbfc; }
-
-        .lic-num-input {
-            width: 44px; text-align: center; border: 1px solid #d1d5db; border-radius: 0.25rem;
-            padding: 1px 2px; font-size: 0.75rem; font-weight: 700; color: #111827; background: #ffffff;
+        #calendarList > div:hover {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            transform: translateY(-1px);
         }
 
-        .lic-locked-input {
-            width: 44px; text-align: center; border: 1px solid #e5e7eb; border-radius: 0.25rem;
-            padding: 1px 2px; font-size: 0.75rem; font-weight: 700; color: #6b7280; background: #f3f4f6;
+        /* Inputs & Selects */
+        input, select {
+            background-color: rgba(5, 8, 17, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #f8fafc !important;
+            transition: all 0.2s ease;
         }
 
-        .app-locked { pointer-events: none; opacity: 0.4; user-select: none; filter: grayscale(80%); }
-        .days-blocked { pointer-events: none; opacity: 0.5; filter: grayscale(50%); }
-
-        input[type="time"]::-webkit-calendar-picker-indicator {
-            background: transparent;
-            bottom: 0;
-            color: transparent;
-            height: auto;
-            left: 0;
-            opacity: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: auto;
-            cursor: pointer;
-        }
-        input[type="time"] {
-            position: relative;
+        input:focus, select:focus {
+            border-color: rgba(217, 119, 6, 0.5) !important;
+            box-shadow: 0 0 12px rgba(217, 119, 6, 0.2) !important;
+            outline: none;
         }
 
-        /* Sidebar Fissa su Desktop */
-        @media (min-width: 1024px) {
-            .sticky-sidebar {
-                position: sticky;
-                top: 85px;
-                max-height: calc(100vh - 100px);
-                overflow-y: auto;
-            }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen pt-[100px] lg:pt-[75px] pb-16 lg:pb-4">
+<body class="h-full antialiased flex flex-col min-h-screen">
 
-    <div class="watermark-bg"></div>
-
-    <!-- Banner Iniziale Sincronizzazione -->
-    <div class="fixed top-0 left-0 right-0 z-40">
-        <div id="auth-banner" class="bg-arma-navy border-b-2 border-arma-gold p-2 text-white shadow-lg">
-            <div class="w-full px-3 flex flex-col sm:flex-row items-center justify-between gap-2">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-key text-arma-gold text-base"></i>
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 w-full pt-safe">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-900 to-amber-700/50 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-md">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
                     <div>
-                        <h3 class="font-bold text-xs sm:text-sm leading-tight">Profilo Personale Riservato</h3>
-                        <p class="text-[10px] text-slate-300">Inserisci il tuo Codice Unico per accedere</p>
+                        <h1 class="font-extrabold text-lg text-white tracking-tight leading-none">Gestione Turni</h1>
+                        <p class="text-xs text-amber-500/80 font-medium">Comando Stazione CC</p>
                     </div>
                 </div>
-                
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <input type="password" id="user-code-input" placeholder="Codice Personale..." class="input-box !py-1 !px-2.5 !text-xs font-mono font-bold w-full sm:w-48 text-center uppercase" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
-                        <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-arma-gold hover:bg-amber-600 text-arma-navy font-bold px-3 py-1 rounded text-xs transition shadow">Accedi</button>
+
+                <div class="flex items-center gap-3">
+                    <div id="syncStatus" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="syncText">Sincronizzato</span>
                     </div>
-                    <button type="button" id="btn-logout" onclick="doLogout(); return false;" class="hidden bg-arma-red hover:bg-red-700 text-white font-bold px-3 py-1 rounded text-xs transition shadow flex items-center gap-1">
-                        <i class="fa-solid fa-right-from-bracket"></i> ESCI
+
+                    <button id="exportPdfBtn" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-lg border border-amber-400/30 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span class="hidden sm:inline">Esporta PDF</span>
                     </button>
                 </div>
             </div>
         </div>
+    </header>
 
-        <div id="lock-warning" class="bg-amber-500 text-arma-navy font-bold text-center py-1 px-3 text-xs shadow-md flex items-center justify-center gap-2">
-            <i class="fa-solid fa-lock text-sm"></i>
-            <span id="lock-warning-text">ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto per accedere.</span>
-        </div>
-    </div>
+    <!-- Main Content Container -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
+        
+        <!-- Sidebar Panel -->
+        <aside class="w-full md:w-80 flex-shrink-0 flex flex-col gap-4 p-5 rounded-2xl">
+            
+            <!-- Codice Personale PIN -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">
+                    <i class="fa-solid fa-key mr-1.5"></i>Codice Personale (PIN)
+                </label>
+                <div class="flex gap-2">
+                    <input type="password" id="pinInput" placeholder="Inserisci PIN" 
+                        class="w-full px-3 py-2.5 rounded-xl text-sm font-semibold">
+                    <button id="loginBtn" class="px-4 py-2.5 bg-blue-900/80 hover:bg-blue-800 text-white font-bold text-xs rounded-xl border border-blue-500/30 transition shadow">
+                        Accedi
+                    </button>
+                </div>
+            </div>
 
-    <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 mt-1 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
-        <header class="bg-arma-navy text-white shadow-lg z-10 flex-shrink-0 w-full rounded-xl mb-2">
-            <div class="w-full px-3 py-2 flex justify-between items-center gap-2">
-                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    <i class="fa-solid fa-box-archive text-arma-gold text-2xl"></i>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] tracking-wider text-arma-gold/80 font-mono font-semibold uppercase leading-none">By_Lex190</span>
-                        <div class="flex items-center gap-1.5 mt-0.5">
-                            <h1 class="text-base sm:text-xl font-bold tracking-wider leading-none">TURNI</h1>
-                            <select id="year-select" class="bg-white text-arma-navy border border-gray-300 rounded px-1.5 py-0.5 text-xs sm:text-sm font-bold shadow-sm cursor-pointer" onchange="changeYear(this.value)">
-                                <option value="2027">2027</option>
-                                <option value="2028">2028</option>
-                                <option value="2029">2029</option>
-                                <option value="2030">2030</option>
-                            </select>
-                            
-                            <div class="flex items-center gap-1 bg-black/25 px-2 py-0.5 rounded border border-white/10 ml-1">
-                                <i class="fa-solid fa-user-shield text-arma-gold text-[10px]" title="Grado e Nominativo"></i>
-                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-semibold text-[11px] w-14 sm:w-16 placeholder-white/40 focus:bg-white focus:text-arma-navy rounded px-1 outline-none transition-colors" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
-                                <span class="text-white/30 text-xs font-light">|</span>
-                                <input type="text" id="user-nome-input" class="bg-transparent text-white font-semibold text-[11px] w-24 sm:w-32 placeholder-white/40 focus:bg-white focus:text-arma-navy rounded px-1 outline-none transition-colors" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
-                            </div>
-                        </div>
+            <!-- Dati Anagrafici -->
+            <div class="space-y-3 pt-2">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-1">
+                    <i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i>Dati Anagrafici
+                </h2>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Grado e Nome</label>
+                    <input type="text" id="userGrade" placeholder="Es. Brigadiere Alessandro Sironi" 
+                        class="w-full px-3 py-2 rounded-xl text-xs font-semibold">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Località / Sede</label>
+                    <input type="text" id="userLocation" placeholder="Es. Cantù" 
+                        class="w-full px-3 py-2 rounded-xl text-xs font-semibold">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Santo Patrono (Festività)</label>
+                    <input type="text" id="userPatron" placeholder="Es. 09 febbraio" 
+                        class="w-full px-3 py-2 rounded-xl text-xs font-semibold">
+                </div>
+
+                <button id="saveProfileBtn" class="w-full py-2.5 bg-amber-600/80 hover:bg-amber-600 text-white font-bold text-xs rounded-xl border border-amber-500/30 transition mt-2 shadow">
+                    Salva Dati Profilo
+                </button>
+            </div>
+
+            <!-- Riepilogo Mensile -->
+            <div class="flex-1 flex flex-col gap-3 pt-2">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400/90">
+                    <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i>Riepilogo Mensile
+                </h2>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                        <p class="text-[10px] text-slate-400 font-medium">Ore Ordinarie</p>
+                        <p id="statHours" class="text-xl font-black text-blue-400 mt-0.5">0h</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                        <p class="text-[10px] text-slate-400 font-medium">Tot. Straordinari</p>
+                        <p id="statOvertime" class="text-xl font-black text-amber-400 mt-0.5">0h</p>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-center flex-1 mx-2"></div>
+                <!-- Dettaglio Delle 4 Tipologie di Straordinario -->
+                <div class="space-y-1.5 text-xs font-semibold">
+                    <div class="flex justify-between p-2 rounded-lg bg-blue-950/30 text-blue-300 border border-blue-500/20">
+                        <span><i class="fa-solid fa-clock mr-1 text-blue-400"></i> Straord. Ordinario</span>
+                        <span id="statOvertimeOrd" class="font-bold">0h</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-indigo-950/30 text-indigo-300 border border-indigo-500/20">
+                        <span><i class="fa-solid fa-moon mr-1 text-indigo-400"></i> Straord. Notturno (22-06)</span>
+                        <span id="statOvertimeNot" class="font-bold">0h</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-amber-950/30 text-amber-300 border border-amber-500/20">
+                        <span><i class="fa-solid fa-sun mr-1 text-amber-400"></i> Straord. Festivo</span>
+                        <span id="statOvertimeFest" class="font-bold">0h</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-purple-950/30 text-purple-300 border border-purple-500/20">
+                        <span><i class="fa-solid fa-cloud-moon mr-1 text-purple-400"></i> Straord. Notturno Festivo</span>
+                        <span id="statOvertimeNotFest" class="font-bold">0h</span>
+                    </div>
+                </div>
 
-                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-arma-gold border border-arma-gold/40 px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all shadow-sm">
-                        <i class="fa-solid fa-church"></i>
-                        <span class="hidden lg:inline text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
-                    </button>
-
-                    <div id="auth-status" class="text-xs sm:text-sm font-medium flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10 shadow-inner">
-                        <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-                        <span class="hidden md:inline text-xs font-bold" id="status-user-text">Nessun Codice Inserito</span>
+                <!-- Contatori Licenze, Riposi e Malattia -->
+                <div class="space-y-1.5 text-xs font-semibold pt-1">
+                    <div class="flex justify-between p-2 rounded-lg bg-emerald-950/40 text-emerald-300 border border-emerald-500/20">
+                        <span><i class="fa-solid fa-umbrella-beach mr-1 text-emerald-400"></i> Licenze / Smonti</span>
+                        <span id="statLicence" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-amber-950/40 text-amber-300 border border-amber-500/20">
+                        <span><i class="fa-solid fa-bed mr-1 text-amber-400"></i> Riposi Fruiti</span>
+                        <span id="statRest" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between p-2 rounded-lg bg-rose-950/40 text-rose-300 border border-rose-500/20">
+                        <span><i class="fa-solid fa-notes-medical mr-1 text-rose-400"></i> Malattia / C.M.</span>
+                        <span id="statSick" class="font-bold">0</span>
                     </div>
                 </div>
             </div>
-        </header>
+        </aside>
 
-        <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start">
-            <!-- Sidebar Riepiloghi Sticky -->
-            <aside id="main-sidebar" class="w-full lg:w-[280px] lg:min-w-[260px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
-                <div class="bg-white rounded-xl shadow-md p-3.5 border-t-4 border-arma-navy flex-shrink-0">
-                    <div class="flex justify-between items-center mb-2.5">
-                        <h2 class="text-xs font-bold text-gray-800 uppercase tracking-wide"><i class="fa-regular fa-calendar-days mr-1.5 text-arma-navy"></i>Seleziona Mese</h2>
-                        <span id="aside-user-display" class="text-[9px] font-bold text-arma-navy bg-gray-100 px-1.5 py-0.5 rounded truncate max-w-[120px]">Militare</span>
-                    </div>
-                    <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
-                </div>
-
-                <div class="bg-gradient-to-br from-arma-navy to-blue-900 rounded-xl shadow-md p-3.5 text-white flex-shrink-0">
-                    <h2 class="text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1" id="summary-title">Riepilogo Mensile</h2>
-                    <div class="flex items-end justify-between mt-2">
-                        <div>
-                            <p class="text-2xl font-bold text-arma-gold" id="monthly-ot-display">00:00</p>
-                            <p class="text-[9px] text-gray-300 mt-0.5 uppercase">Straordinario Mensile</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-lg font-bold" id="monthly-std-display">00:00</p>
-                            <p class="text-[9px] text-gray-300 mt-0.5 uppercase">Ore Ordinarie</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="lic-alerts-container" class="flex flex-col gap-2 flex-shrink-0"></div>
-
-                <div class="bg-white rounded-xl shadow-md p-3 border-t-4 border-purple-800 flex flex-col flex-shrink-0">
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xs font-bold text-gray-800 uppercase tracking-wide flex items-center gap-1">
-                            <i class="fa-solid fa-umbrella-beach text-purple-800"></i> Riepilogo Licenze
-                        </h2>
-                        <span class="text-[9px] text-gray-400 font-mono" id="lic-year-badge">Anno 2027</span>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-[10px]">
-                            <thead>
-                                <tr class="text-gray-500 border-b text-[9px] uppercase tracking-wider">
-                                    <th class="text-left pb-1">Voce</th>
-                                    <th class="text-center pb-1 font-semibold">Spet</th>
-                                    <th class="text-center pb-1 font-semibold">Fruiti</th>
-                                    <th class="text-right pb-1 font-semibold">Res</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 text-gray-700" id="licenze-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md p-3 min-h-[160px] border-t-4 border-arma-gold flex flex-col flex-shrink-0">
-                    <h2 class="text-xs font-bold text-gray-800 mb-2"><i class="fa-solid fa-chart-column mr-1.5 text-arma-gold"></i>Andamento Annuale</h2>
-                    <div class="relative flex-1 w-full min-h-[110px]">
-                        <canvas id="yearlyChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md p-3 border-t-4 border-arma-red flex flex-col min-h-[120px]">
-                    <h2 class="text-xs font-bold text-gray-800 mb-2"><i class="fa-solid fa-bed mr-1.5 text-arma-red"></i>Riposi Non Fruiti</h2>
-                    <div id="unpaid-rests-container" class="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar flex-1"></div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md p-3 border-t-4 border-arma-navy flex flex-col flex-shrink-0">
-                    <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 cursor-pointer shadow transition-colors">
-                        <i class="fa-solid fa-file-pdf"></i> Stampa PDF Calendario Mese
+        <!-- Area Calendario / Turni -->
+        <main class="flex-1 p-5 rounded-2xl flex flex-col">
+            
+            <!-- Selezione Mese ed Anno -->
+            <div class="flex flex-wrap items-center justify-between pb-4 mb-4 border-b border-white/10 gap-3">
+                <div class="flex items-center gap-2">
+                    <button id="prevMonth" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-white/5 transition">
+                        <i class="fa-solid fa-chevron-left text-sm"></i>
+                    </button>
+                    <button id="nextMonth" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-white/5 transition">
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
                     </button>
                 </div>
-            </aside>
 
-            <!-- Sezione Tabella Giorni -->
-            <section id="days-section" class="flex-1 min-w-0 bg-white rounded-xl shadow-md flex flex-col border-t-4 border-arma-navy relative w-full mb-2">
-                <div class="bg-gray-50 px-3 py-2 border-b flex justify-between items-center z-10 flex-shrink-0 rounded-t-lg">
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-base font-bold text-gray-800 uppercase tracking-wide" id="table-month-title">Gennaio 2027</h2>
-                        <span id="patrono-active-pill" class="text-[10px] font-semibold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full cursor-pointer" onclick="openPatronoModal()">
-                            <i class="fa-solid fa-location-dot text-amber-600 mr-1"></i>Sede: Non Impostata
-                        </span>
-                        <span id="table-user-pill" class="hidden sm:inline text-[10px] font-bold bg-blue-100 text-arma-navy border border-blue-200 px-2 py-0.5 rounded-full">
-                            <i class="fa-solid fa-id-badge mr-1 text-arma-navy"></i><span id="table-user-name">Militare</span>
-                        </span>
-                    </div>
-                    <span class="text-[10px] font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full border border-green-200 shadow-sm flex items-center gap-1 animate-pulse">
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span> Sistema Sincronizzato
-                    </span>
+                <div class="flex items-center gap-2">
+                    <select id="monthSelect" class="px-3 py-1.5 rounded-xl font-bold text-sm">
+                        <option value="0">Gennaio</option>
+                        <option value="1">Febbraio</option>
+                        <option value="2">Marzo</option>
+                        <option value="3">Aprile</option>
+                        <option value="4">Maggio</option>
+                        <option value="5">Giugno</option>
+                        <option value="6">Luglio</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Settembre</option>
+                        <option value="9">Ottobre</option>
+                        <option value="10">Novembre</option>
+                        <option value="11">Dicembre</option>
+                    </select>
+
+                    <select id="yearSelect" class="px-3 py-1.5 rounded-xl font-bold text-sm">
+                    </select>
                 </div>
+            </div>
 
-                <div class="p-1.5 sm:p-2 bg-gray-100/60 rounded-b-lg" id="days-container"></div>
-            </section>
+            <!-- Griglia dei Giorni -->
+            <div id="calendarList" class="flex-1 overflow-y-auto space-y-2 pr-1">
+            </div>
         </main>
     </div>
 
-    <!-- Mobile Navigation Tab Bar -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-arma-navy border-t border-arma-gold/30 text-white flex justify-around items-center py-2 z-50 shadow-2xl">
-        <button type="button" onclick="switchMobileTab('days')" id="tab-btn-days" class="flex flex-col items-center gap-1 text-arma-gold font-bold text-[10px]">
-            <i class="fa-solid fa-calendar-days text-base"></i>
-            <span>Calendario</span>
-        </button>
-        <button type="button" onclick="switchMobileTab('sidebar')" id="tab-btn-sidebar" class="flex flex-col items-center gap-1 text-gray-400 font-semibold text-[10px]">
-            <i class="fa-solid fa-chart-pie text-base"></i>
-            <span>Riepiloghi</span>
-        </button>
-        <button type="button" onclick="generateMonthlyPdf()" class="flex flex-col items-center gap-1 text-red-400 font-semibold text-[10px]">
-            <i class="fa-solid fa-file-pdf text-base"></i>
-            <span>Scarica PDF</span>
-        </button>
-    </div>
-
-    <div id="patrono-modal" class="hidden fixed inset-x-0 top-12 z-[9999] bg-black/70 backdrop-blur-sm flex justify-center items-start p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border-t-4 border-arma-gold overflow-hidden my-2 mx-2 ring-1 ring-black/10">
-            <div class="bg-arma-navy text-white px-5 py-3 flex justify-between items-center">
-                <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
-                    <i class="fa-solid fa-church text-arma-gold"></i> Configura Sede e Santo Patrono
-                </h3>
-                <button type="button" onclick="closePatronoModal()" class="text-gray-300 hover:text-white text-lg leading-none">&times;</button>
-            </div>
-            <div class="p-5 flex flex-col gap-4 text-xs text-gray-700">
-                <p class="leading-relaxed">Personalizza il comune della tua sede di servizio.</p>
-                <div>
-                    <label class="block font-bold text-gray-800 mb-1">Città / Sede di Comando:</label>
-                    <input type="text" id="patrono-citta-input" class="w-full input-box !py-2 !text-xs font-semibold" placeholder="Es: Milano, Roma, Cantù...">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-gray-800 mb-1">Giorno Patrono:</label>
-                        <select id="patrono-giorno-select" class="w-full input-box !py-2 !text-xs font-bold text-center"></select>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-gray-800 mb-1">Mese Patrono:</label>
-                        <select id="patrono-mese-select" class="w-full input-box !py-2 !text-xs font-bold text-center">
-                            <option value="01">Gennaio</option><option value="02">Febbraio</option><option value="03">Marzo</option><option value="04">Aprile</option><option value="05">Maggio</option><option value="06">Giugno</option><option value="07">Luglio</option><option value="08">Agosto</option><option value="09">Settembre</option><option value="10">Ottobre</option><option value="11">Novembre</option><option value="12">Dicembre</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="closePatronoModal()" class="px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100">Annulla</button>
-                    <button type="button" onclick="savePatronoConfig()" class="px-4 py-1.5 rounded-lg bg-arma-navy text-white font-bold hover:bg-blue-900 shadow">Salva Sede</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="toast" class="fixed bottom-16 lg:bottom-5 right-5 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-2xl transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
-        <i class="fa-solid fa-cloud-arrow-up text-green-400"></i>
-        <span id="toast-msg" class="font-medium text-sm">Dati Salvati</span>
-    </div>
-
+    <!-- Script Javascript Integrato -->
     <script>
+        // Configurazione Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyDdAKESFQhXFmkjd1niesQJ3MAZfIH9M4U",
-            projectId: "memoriale-locale"
+            databaseURL: "https://turnicc-default-rtdb.europe-west1.firebasedatabase.app"
         };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        let currentCode = '';
-        let currentYear = 2027;
-        let allData = {}; 
-        let isDataLoadedFromCloud = false; 
-        let dynamicHolidays = [];
+        // Stato App
+        let userPin = localStorage.getItem('userPin') || '';
+        let currentDate = new Date(2027, 0, 1);
+        let monthData = {};
 
-        const MONTHS = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
-        const SHIFT_TYPES = ['', 'M', 'P', 'S', 'N', 'RS', 'RF', 'RRS', 'RRF', 'RM', 'LO', 'RFS', 'LT', 'RR', '96h', 'R.O.', 'SSE'];
-        const ABSENCE_SHIFTS = ['RRS', 'RRF', 'RM', 'LO', 'RFS', 'LT', 'RR', '96h', 'R.O.']; 
-        
-        let currentMonth = 0; 
-        let shiftData = {}; 
-        let chartInstance = null;
-        let saveTimeout = null;
+        // Inizializzazione Selezione Anni (2027 - 2035)
+        const yearSelect = document.getElementById('yearSelect');
+        const monthSelect = document.getElementById('monthSelect');
 
-        const DEFAULT_PATRONO = { citta: '', giorno: '01', mese: '01' };
-
-        window.onload = function() {
-            lockAppUI();
-            initYearData(currentYear);
-            renderApp();
-        };
-
-        function switchMobileTab(tab) {
-            const sidebar = document.getElementById('main-sidebar');
-            const daysSec = document.getElementById('days-section');
-            const btnDays = document.getElementById('tab-btn-days');
-            const btnSidebar = document.getElementById('tab-btn-sidebar');
-
-            if (window.innerWidth >= 1024) return;
-
-            if (tab === 'sidebar') {
-                sidebar.classList.remove('hidden');
-                sidebar.classList.add('w-full');
-                daysSec.classList.add('hidden');
-                btnSidebar.className = "flex flex-col items-center gap-1 text-arma-gold font-bold text-[10px]";
-                btnDays.className = "flex flex-col items-center gap-1 text-gray-400 font-semibold text-[10px]";
-            } else {
-                sidebar.classList.add('hidden');
-                daysSec.classList.remove('hidden');
-                btnDays.className = "flex flex-col items-center gap-1 text-arma-gold font-bold text-[10px]";
-                btnSidebar.className = "flex flex-col items-center gap-1 text-gray-400 font-semibold text-[10px]";
-            }
+        for (let y = 2027; y <= 2035; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
         }
 
-        function doLogin() {
-            const codeInput = document.getElementById('user-code-input');
-            if (!codeInput) return;
-            const codeVal = codeInput.value.trim().toUpperCase();
-            if(!codeVal) return;
-            
-            currentCode = codeVal;
-            unlockAppUI(codeVal);
-            loadProfileData(codeVal);
+        if (userPin) document.getElementById('pinInput').value = userPin;
+
+        function sanitizePin(pin) {
+            return pin.replace(/[.#$\[\]]/g, "_");
         }
 
-        function doLogout() {
-            currentCode = '';
-            isDataLoadedFromCloud = false;
-            allData = {};
-            document.getElementById('user-code-input').value = '';
-            lockAppUI();
-            initYearData(currentYear);
-            renderApp();
-            showToast("Disconnessione effettuata");
+        function initDataFetch() {
+            if (!userPin) return;
+            loadUserProfile();
+            loadMonthData();
         }
 
-        function lockAppUI() {
-            document.getElementById('app-screen').classList.add('app-locked');
-            document.getElementById('lock-warning').classList.remove('hidden');
-            document.getElementById('lock-warning-text').innerText = "ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto per accedere.";
-            document.getElementById('btn-logout').classList.add('hidden');
-            document.getElementById('btn-login-code').classList.remove('hidden');
-            document.getElementById('user-code-input').disabled = false;
-            document.getElementById('status-user-text').innerText = "Nessun Codice Inserito";
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-red-500 rounded-full';
-        }
-
-        function unlockAppUI(code) {
-            document.getElementById('app-screen').classList.remove('app-locked');
-            document.getElementById('btn-logout').classList.remove('hidden');
-            document.getElementById('btn-login-code').classList.add('hidden');
-            document.getElementById('user-code-input').disabled = true;
-            document.getElementById('status-user-text').innerText = "Profilo: " + code;
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse';
-            checkMandatoryFields();
-        }
-
-        function checkMandatoryFields() {
-            if (!currentCode) return false;
-            const user = getUserInfo();
-            const patrono = getPatronoConfig();
-            
-            const hasGrado = user && user.grado && user.grado.trim() !== '';
-            const hasNome = user && user.nome && user.nome.trim() !== '';
-            const hasCitta = patrono && patrono.citta && patrono.citta.trim() !== '';
-
-            const lockWarning = document.getElementById('lock-warning');
-            const lockWarningText = document.getElementById('lock-warning-text');
-            const daysContainer = document.getElementById('days-container');
-
-            const isFormValid = hasGrado && hasNome && hasCitta;
-
-            if (!isFormValid) {
-                let missing = [];
-                if (!hasGrado) missing.push("Grado");
-                if (!hasNome) missing.push("Cognome e Nome");
-                if (!hasCitta) missing.push("Città Sede di Comando");
-
-                lockWarning.classList.remove('hidden');
-                lockWarningText.innerText = "COMPILAZIONE BLOCCATA: Inserisci obbligatoriamente -> " + missing.join(", ");
-                if (daysContainer) daysContainer.classList.add('days-blocked');
-            } else {
-                lockWarning.classList.add('hidden');
-                if (daysContainer) daysContainer.classList.remove('days-blocked');
-            }
-
-            const inputsAndSelects = document.querySelectorAll('#days-container input, #days-container select');
-            inputsAndSelects.forEach(el => {
-                el.disabled = !isFormValid;
-            });
-
-            return isFormValid;
-        }
-
-        async function loadProfileData(code) {
-            showToast("Scarico dati da Cloud...");
-            isDataLoadedFromCloud = false;
-
-            const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/users/${code}?key=${firebaseConfig.apiKey}`;
-            try {
-                const res = await fetch(url);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.fields && data.fields.memorialeJson && data.fields.memorialeJson.stringValue) {
-                        const cloudParsed = JSON.parse(data.fields.memorialeJson.stringValue);
-                        if (cloudParsed && typeof cloudParsed === 'object') {
-                            allData = cloudParsed;
-                        } else {
-                            allData = {};
-                        }
-                    } else {
-                        allData = {};
-                    }
-                } else {
-                    allData = {};
-                }
-            } catch(err) {
-                console.warn("Errore durante il recupero dal Cloud:", err);
-                allData = {};
-            }
-
-            isDataLoadedFromCloud = true;
-            initYearData(currentYear);
-            renderApp();
-            showToast("Profilo Cloud Caricato!");
-        }
-
-        function triggerSave() {
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(async () => {
-                if (!currentCode || !isDataLoadedFromCloud) return;
-
-                const jsonString = JSON.stringify(allData, (key, val) => val === undefined ? "" : val);
-                const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/users/${currentCode}?updateMask.fieldPaths=memorialeJson&key=${firebaseConfig.apiKey}`;
-                const payload = { fields: { memorialeJson: { stringValue: jsonString } } };
-
-                try {
-                    const res = await fetch(url, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (res.ok) {
-                        showToast("Sincronizzato sul Cloud!");
-                    } else {
-                        showToast("Errore salvataggio Cloud");
-                    }
-                } catch(e) {
-                    showToast("Errore di rete durante il salvataggio");
-                }
-            }, 300); 
-        }
-
-        function getUserInfo() {
-            if (!allData.userInfo) allData.userInfo = { grado: '', nome: '' };
-            return allData.userInfo;
-        }
-
-        function saveUserInfo() {
-            if (!currentCode) return;
-            const gradoInput = document.getElementById('user-grado-input');
-            const nomeInput = document.getElementById('user-nome-input');
-            const grado = (gradoInput ? gradoInput.value : '').trim();
-            const nome = (nomeInput ? nomeInput.value : '').trim();
-            allData.userInfo = { grado, nome };
-            updateUserDisplay();
-            checkMandatoryFields();
-            triggerSave();
-        }
-
-        function updateUserDisplay() {
-            const user = getUserInfo();
-            const gradoInput = document.getElementById('user-grado-input');
-            const nomeInput = document.getElementById('user-nome-input');
-            const asideDisplay = document.getElementById('aside-user-display');
-            const tableDisplay = document.getElementById('table-user-name');
-            const tablePill = document.getElementById('table-user-pill');
-
-            if (gradoInput && document.activeElement !== gradoInput) gradoInput.value = user.grado || '';
-            if (nomeInput && document.activeElement !== nomeInput) nomeInput.value = user.nome || '';
-
-            const fullName = `${user.grado ? user.grado + ' ' : ''}${user.nome || ''}`.trim() || 'Militare';
-            if (asideDisplay) asideDisplay.innerText = fullName;
-            if (tableDisplay) tableDisplay.innerText = fullName;
-            if (tablePill) {
-                if (user.grado || user.nome) tablePill.classList.remove('hidden');
-                else tablePill.classList.add('hidden');
-            }
-        }
-
-        function getPatronoConfig() {
-            if (!allData.config) allData.config = {};
-            if (!allData.config.patrono) allData.config.patrono = { ...DEFAULT_PATRONO };
-            return allData.config.patrono;
-        }
-
-        const getDefaultLicenzeConfig = (year) => {
-            const yr = parseInt(year) || currentYear;
-            if (yr === 2027) {
-                return { lo_2025: 0, lo_2026: 0, lo_curr: 45, rfs: 4, ls: 45, lt: 0, rr: 0, ore96: 0 };
-            }
-            return { lo_curr: 45, rfs: 4, ls: 45, lt: 0, rr: 0, ore96: 0 };
-        };
-
-        const getEmptyDay = () => ({ 
-            shift: '', start: '', end: '', mos: false, linked_rest: '', linked_lo: '', note: '',
-            str1_start: '', str1_end: '', str2_start: '', str2_end: '', 
-            str3_start: '', str3_end: '', str4_start: '', str4_end: '' 
+        // Eventi Login
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const pin = document.getElementById('pinInput').value.trim();
+            if (!pin) return alert('Inserisci un PIN valido');
+            userPin = pin;
+            localStorage.setItem('userPin', userPin);
+            initDataFetch();
         });
 
-        function calcEaster(year) {
-            const f = Math.floor, G = year % 19, C = f(year / 100);
-            const H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30;
-            const I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11));
-            const J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7;
-            const L = I - J;
-            const m = 3 + f((L + 40) / 44);
-            const d = L + 28 - 31 * f(m / 4);
-            let m2 = m, d2 = d + 1;
-            if ((m === 3 && d2 > 31) || (m === 4 && d2 > 30)) { m2++; d2 = 1; }
-            return [
-                `${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`,
-                `${m2.toString().padStart(2, '0')}-${d2.toString().padStart(2, '0')}`
-            ];
+        // Cambio Mese/Anno
+        monthSelect.addEventListener('change', (e) => {
+            currentDate.setMonth(parseInt(e.target.value));
+            loadMonthData();
+        });
+
+        yearSelect.addEventListener('change', (e) => {
+            currentDate.setFullYear(parseInt(e.target.value));
+            loadMonthData();
+        });
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            if (currentDate.getFullYear() < 2027) currentDate.setFullYear(2027);
+            syncSelects();
+            loadMonthData();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            if (currentDate.getFullYear() > 2035) currentDate.setFullYear(2035);
+            syncSelects();
+            loadMonthData();
+        });
+
+        function syncSelects() {
+            monthSelect.value = currentDate.getMonth();
+            yearSelect.value = currentDate.getFullYear();
         }
 
-        function updateHolidays() {
-            const fixedNational = ['01-01', '01-06', '04-25', '05-01', '06-02', '08-15', '11-01', '12-08', '12-25', '12-26'];
-            const patrono = getPatronoConfig();
-            const patronoDate = `${(patrono.mese || '01').toString().padStart(2, '0')}-${(patrono.giorno || '01').toString().padStart(2, '0')}`;
-            const fixedWithPatrono = [...fixedNational];
-            if (patrono.citta && !fixedWithPatrono.includes(patronoDate)) fixedWithPatrono.push(patronoDate);
-            dynamicHolidays = [...fixedWithPatrono, ...calcEaster(currentYear)];
-            updatePatronoUI();
-        }
-
-        function updatePatronoUI() {
-            const patrono = getPatronoConfig();
-            const btnText = document.getElementById('patrono-btn-text');
-            const pillText = document.getElementById('patrono-active-pill');
-            
-            if (patrono && patrono.citta) {
-                const labelStr = `${patrono.citta} (${patrono.giorno}/${patrono.mese})`;
-                if (btnText) btnText.innerText = labelStr;
-                if (pillText) pillText.innerHTML = `<i class="fa-solid fa-location-dot text-amber-600 mr-1"></i>Sede: ${patrono.citta} (${patrono.giorno}/${patrono.mese})`;
-            } else {
-                if (btnText) btnText.innerText = 'Imposta Sede';
-                if (pillText) pillText.innerHTML = `<i class="fa-solid fa-location-dot text-amber-600 mr-1"></i>Sede: Non Impostata`;
-            }
-        }
-
-        function openPatronoModal() {
-            if(!currentCode) return;
-            const modal = document.getElementById('patrono-modal');
-            const patrono = getPatronoConfig();
-            const giornoSelect = document.getElementById('patrono-giorno-select');
-            giornoSelect.innerHTML = '';
-            for (let i = 1; i <= 31; i++) {
-                const val = i.toString().padStart(2, '0');
-                giornoSelect.innerHTML += `<option value="${val}" ${val === (patrono.giorno || '01') ? 'selected' : ''}>${i}</option>`;
-            }
-            document.getElementById('patrono-citta-input').value = patrono.citta || '';
-            document.getElementById('patrono-mese-select').value = (patrono.mese || '01').toString().padStart(2, '0');
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            modal.classList.remove('hidden');
-        }
-
-        function closePatronoModal() {
-            document.getElementById('patrono-modal').classList.add('hidden');
-        }
-
-        function savePatronoConfig() {
-            if(!currentCode) return;
-            const citta = document.getElementById('patrono-citta-input').value.trim();
-            const giorno = document.getElementById('patrono-giorno-select').value;
-            const mese = document.getElementById('patrono-mese-select').value;
-            if (!allData.config) allData.config = {};
-            allData.config.patrono = { citta, giorno, mese };
-            updateHolidays();
-            renderApp();
-            checkMandatoryFields();
-            triggerSave();
-            closePatronoModal();
-            if(citta) {
-                showToast(`Sede impostata: ${citta} (${giorno}/${mese})`);
-            } else {
-                showToast("Sede di servizio rimossa");
-            }
-        }
-
-        function initYearData(year) {
-            if (!allData[year]) {
-                allData[year] = {};
-                for(let m=0; m<12; m++) {
-                    allData[year][m] = {};
-                    const daysInMonth = new Date(year, m + 1, 0).getDate();
-                    for(let d=1; d<=daysInMonth; d++) {
-                        allData[year][m][d] = getEmptyDay();
-                    }
-                }
-            } else {
-                for(let m=0; m<12; m++) {
-                    if(!allData[year][m]) allData[year][m] = {};
-                    const daysInMonth = new Date(year, m + 1, 0).getDate();
-                    for(let d=1; d<=daysInMonth; d++) {
-                        if(!allData[year][m][d]) allData[year][m][d] = getEmptyDay();
-                    }
-                }
-            }
-
-            if (!allData.licenze) allData.licenze = {};
-            if (!allData.licenze[year]) {
-                allData.licenze[year] = getDefaultLicenzeConfig(year);
-            } else {
-                allData.licenze[year] = { ...getDefaultLicenzeConfig(year), ...allData.licenze[year] };
-            }
-            allData.licenze[year].rfs = 4;
-            allData.licenze[year].ls = 45;
-            shiftData = allData[year];
-            updateHolidays();
-            updateUserDisplay();
-        }
-
-        function changeYear(newYear) {
-            currentYear = parseInt(newYear);
-            initYearData(currentYear);
-            renderApp();
-        }
-
-        function parseTime(timeStr) {
-            if (!timeStr) return 0;
-            const [h, m] = timeStr.split(':').map(Number);
-            if (isNaN(h) || isNaN(m)) return 0;
-            return (h * 60) + m;
-        }
-
-        function formatTime(minutes) {
-            if (minutes <= 0) return "00:00";
-            const h = Math.floor(minutes / 60).toString().padStart(2, '0');
-            const m = (minutes % 60).toString().padStart(2, '0');
-            return `${h}:${m}`;
-        }
-
-        function calcDuration(startStr, endStr) {
-            if (!startStr || !endStr) return 0;
-            let startMins = parseTime(startStr);
-            let endMins = parseTime(endStr);
-            if (endMins >= startMins) return endMins - startMins;
-            return (endMins + 1440) - startMins;
-        }
-
-        function isHoliday(yearToCheck, monthIndex, day) {
-            const dateStr = `${(monthIndex + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-            if (dynamicHolidays.includes(dateStr)) return true;
-            return new Date(yearToCheck, monthIndex, day).getDay() === 0;
-        }
-
-        function hasDayWorkedShift(dayObj) {
-            if (!dayObj) return false;
-            const isOperationalShift = ['M', 'P', 'S', 'N'].includes(dayObj.shift);
-            const hasMainHours = !!(dayObj.start && dayObj.end);
-            const hasExtraHours = !!(
-                (dayObj.str1_start && dayObj.str1_end) ||
-                (dayObj.str2_start && dayObj.str2_end) ||
-                (dayObj.str3_start && dayObj.str3_end) ||
-                (dayObj.str4_start && dayObj.str4_end)
-            );
-            return isOperationalShift || hasMainHours || hasExtraHours;
-        }
-
-        function calcDayLogic(dayObj) {
-            if(!dayObj) return { ordMins: 0, otMins: 0 };
-            let main_dur = calcDuration(dayObj.start, dayObj.end);
-            let str1_dur = calcDuration(dayObj.str1_start, dayObj.str1_end);
-            let str2_dur = calcDuration(dayObj.str2_start, dayObj.str2_end);
-            let str3_dur = calcDuration(dayObj.str3_start, dayObj.str3_end);
-            let str4_dur = calcDuration(dayObj.str4_start, dayObj.str4_end);
-            let mosDed = dayObj.mos ? 30 : 0;
-            let ordMins = Math.min(main_dur, 360);
-            let otMins = Math.max(0, main_dur - 360) + str1_dur + str2_dur + str3_dur + str4_dur - mosDed;
-            return { ordMins, otMins: Math.max(0, otMins) };
-        }
-
-        function calcTotals(monthIndex) {
-            let totalOrd = 0; let totalOt = 0;
-            const data = shiftData[monthIndex];
-            if(data) {
-                for (let day in data) {
-                    const res = calcDayLogic(data[day]);
-                    totalOrd += res.ordMins;
-                    totalOt += res.otMins;
-                }
-            }
-            return { totalOrd, totalOt };
-        }
-
-        function calcRiposi() {
-            let earned = [];
-            let used = {}; 
-            for (let yStr in allData) {
-                let yearNum = parseInt(yStr);
-                if (isNaN(yearNum) || yearNum < 2027) continue;
-
-                for (let m = 0; m < 12; m++) {
-                    const daysInMonth = new Date(yearNum, m + 1, 0).getDate();
-                    for (let d = 1; d <= daysInMonth; d++) {
-                        const sData = allData[yStr]?.[m]?.[d];
-                        if (!sData) continue;
-                        const worked = hasDayWorkedShift(sData);
-                        const isSun = new Date(yearNum, m, d).getDay() === 0;
-                        const isHol = isHoliday(yearNum, m, d);
-
-                        if (worked) {
-                            if (isSun) {
-                                earned.push({ id: `${yearNum}-${m}-${d}`, label: `${d} ${MONTHS[m]} ${yearNum}`, dateObj: new Date(yearNum, m, d), type: 'RS' });
-                            } else if (isHol) {
-                                earned.push({ id: `${yearNum}-${m}-${d}`, label: `${d} ${MONTHS[m]} ${yearNum}`, dateObj: new Date(yearNum, m, d), type: 'RF' });
-                            }
-                        }
-                        let linked = sData.linked_rest;
-                        if (['RRS', 'RRF'].includes(sData.shift) && linked) {
-                            used[linked] = `${yearNum}-${m}-${d}`; 
-                        }
-                    }
-                }
-            }
-            earned.sort((a,b) => a.dateObj - b.dateObj);
-            return { earned, used };
-        }
-
-        function generateRestOptions(currentY, currentM, currentD, currentLinked, filterType) {
-            const { earned, used } = calcRiposi();
-            let html = '';
-            earned.forEach(rest => {
-                if (filterType && rest.type !== filterType) return;
-                const isUsedByOther = used[rest.id] && used[rest.id] !== `${currentY}-${currentM}-${currentD}`;
-                if (!isUsedByOther || rest.id === currentLinked) {
-                    const selected = rest.id === currentLinked ? 'selected' : '';
-                    html += `<option value="${rest.id}" ${selected}>${rest.type}: ${rest.label}</option>`;
-                }
-            });
-            return html;
-        }
-
-        function countYearShifts(year) {
-            const yNum = parseInt(year);
-            const prev1 = (yNum - 1).toString();
-            const prev2 = (yNum - 2).toString();
-            const counts = { LO_prev2: 0, LO_prev1: 0, LO_curr: 0, RFS: 0, RM: 0, LT: 0, RR: 0, '96h': 0 };
-            const yData = allData[year];
-            if (!yData) return counts;
-
-            for (let m = 0; m < 12; m++) {
-                if (!yData[m]) continue;
-                for (let d in yData[m]) {
-                    const dayObj = yData[m][d];
-                    if (!dayObj) continue;
-                    const sh = dayObj.shift;
-
-                    if (sh === 'LO') {
-                        const target = dayObj.linked_lo;
-                        if (target === prev2) counts.LO_prev2++;
-                        else if (target === prev1) counts.LO_prev1++;
-                        else counts.LO_curr++;
-                    } else if (counts.hasOwnProperty(sh)) {
-                        counts[sh]++;
-                    }
-                }
-            }
-            return counts;
-        }
-
-        function getYearLoStats(year) {
-            const yNum = parseInt(year);
-            const counts = countYearShifts(year);
-            const cfg = allData.licenze?.[yNum] || getDefaultLicenzeConfig(yNum);
-            let loPrev2Spet = 0;
-            let loPrev1Spet = 0;
-
-            if (yNum === 2027) {
-                loPrev2Spet = parseInt(cfg.lo_2025) || 0;
-                loPrev1Spet = parseInt(cfg.lo_2026) || 0;
-            } else {
-                const prevStats = getYearLoStats(yNum - 1);
-                loPrev1Spet = Math.max(0, prevStats.loCurrRes);
-                loPrev2Spet = Math.max(0, prevStats.loPrev1Res);
-            }
-
-            const loCurrSpet = parseInt(cfg.lo_curr !== undefined ? cfg.lo_curr : 45);
-            const loPrev2Usate = counts.LO_prev2;
-            const loPrev2Res = loPrev2Spet - loPrev2Usate;
-            const loPrev1Usate = counts.LO_prev1;
-            const loPrev1Res = loPrev1Spet - loPrev1Usate;
-            const loCurrUsate = counts.LO_curr;
-            const loCurrRes = loCurrSpet - loCurrUsate;
-
-            return {
-                loPrev2Spet, loPrev2Usate, loPrev2Res,
-                loPrev1Spet, loPrev1Usate, loPrev1Res,
-                loCurrSpet, loCurrUsate, loCurrRes
+        // Salvataggio Profilo Anagrafico
+        document.getElementById('saveProfileBtn').addEventListener('click', () => {
+            if (!userPin) return alert('Inserisci prima il tuo PIN');
+            const cleanPin = sanitizePin(userPin);
+            const profile = {
+                grade: document.getElementById('userGrade').value,
+                location: document.getElementById('userLocation').value,
+                patron: document.getElementById('userPatron').value
             };
-        }
-
-        function renderLicenzeBox() {
-            const tbody = document.getElementById('licenze-table-body');
-            const badge = document.getElementById('lic-year-badge');
-            if (badge) badge.innerText = `Anno ${currentYear}`;
-            if (!tbody) return;
-
-            const counts = countYearShifts(currentYear);
-            const cfg = allData.licenze?.[currentYear] || getDefaultLicenzeConfig(currentYear);
-            const loStats = getYearLoStats(currentYear);
-            const prevYear1 = currentYear - 1;
-            const prevYear2 = currentYear - 2;
-
-            const rfsSpet = 4;
-            const rfsUsate = counts.RFS || 0;
-            const rfsRes = rfsSpet - rfsUsate;
-
-            const lsSpet = 45;
-            const rmUsate = counts.RM || 0;
-            const lsRes = lsSpet - rmUsate;
-
-            const ltSpet = parseInt(cfg.lt) || 0;
-            const ltUsate = counts.LT || 0;
-            const ltRes = ltSpet - ltUsate;
-
-            const rrSpet = parseInt(cfg.rr) || 0;
-            const rrUsate = counts.RR || 0;
-            const rrRes = rrSpet - rrUsate;
-
-            const ore96Spet = parseInt(cfg.ore96) || 0;
-            const ore96Usate = counts['96h'] || 0;
-            const ore96Res = ore96Spet - ore96Usate;
-
-            const isExpiredLoPrev2 = currentMonth >= 6;
-
-            const items = [
-                { id: 'lo_prev2', label: `LO Anno ${prevYear2}`, note: isExpiredLoPrev2 ? `decaduta il 30/06/${currentYear}` : `scade 30/06/${currentYear}`, spet: loStats.loPrev2Spet, usate: loStats.loPrev2Usate, res: loStats.loPrev2Res, locked: currentYear !== 2027 },
-                { id: 'lo_prev1', label: `LO Anno ${prevYear1}`, note: `residua ${prevYear1}`, spet: loStats.loPrev1Spet, usate: loStats.loPrev1Usate, res: loStats.loPrev1Res, locked: currentYear !== 2027 },
-                { id: 'lo_curr', label: `LO Anno Corr. (${currentYear})`, note: 'anno in corso (45 gg)', spet: loStats.loCurrSpet, usate: loStats.loCurrUsate, res: loStats.loCurrRes, locked: false },
-                { id: 'rfs', label: 'RFS Anno Corr.', note: 'vincolo 4 gg (fine anno)', spet: rfsSpet, usate: rfsUsate, res: rfsRes, locked: true },
-                { id: 'ls', label: 'LS (Straordinaria)', note: 'vincolo 45 gg (scala RM)', spet: lsSpet, usate: rmUsate, res: lsRes, locked: true },
-                { id: 'lt', label: 'LT (Trasferimento)', note: 'turni LT', spet: ltSpet, usate: ltUsate, res: ltRes, locked: false },
-                { id: 'rr', label: 'RR (Ricompensa)', note: 'turni RR', spet: rrSpet, usate: rrUsate, res: rrRes, locked: false },
-                { id: 'ore96', label: '96h (Permesso)', note: 'turni 96h', spet: ore96Spet, usate: ore96Usate, res: ore96Res, locked: false },
-            ];
-
-            tbody.innerHTML = items.map(item => {
-                let resClass = 'text-green-700 font-black';
-                if (item.id === 'lo_prev2' && isExpiredLoPrev2 && item.res > 0) {
-                    resClass = 'text-red-600 line-through font-bold';
-                } else if (item.res < 0) {
-                    resClass = 'text-red-600 font-black';
-                } else if (item.res === 0) {
-                    resClass = 'text-gray-400 font-semibold';
-                }
-
-                let inputHtml = '';
-                if (item.locked) {
-                    inputHtml = `<input type="number" class="lic-locked-input" value="${item.spet}" readonly>`;
-                } else {
-                    let fieldKey = item.id;
-                    if (currentYear === 2027) {
-                        if (item.id === 'lo_prev2') fieldKey = 'lo_2025';
-                        if (item.id === 'lo_prev1') fieldKey = 'lo_2026';
-                    }
-                    inputHtml = `<input type="number" min="0" max="365" class="lic-num-input" value="${item.spet}" data-lic-field="${fieldKey}" onchange="updateLicenzaConfig('${fieldKey}', this.value)">`;
-                }
-
-                return `
-                    <tr class="hover:bg-purple-50/40">
-                        <td class="py-1.5 font-medium text-gray-800">
-                            <div>${item.label}</div>
-                            <div class="text-[8px] ${item.id === 'lo_prev2' && isExpiredLoPrev2 ? 'text-red-500 font-semibold' : 'text-gray-400'} font-mono">${item.note}</div>
-                        </td>
-                        <td class="text-center py-1">${inputHtml}</td>
-                        <td class="text-center py-1 font-semibold text-gray-600">${item.usate}</td>
-                        <td class="text-right py-1 text-xs pr-1 ${resClass}">${item.res}</td>
-                    </tr>
-                `;
-            }).join('');
-
-            renderLicenzeAlerts(loStats.loPrev2Res, rfsRes, prevYear2);
-        }
-
-        function renderLicenzeAlerts(loPrev2Res, rfsRes, prevYear2) {
-            const container = document.getElementById('lic-alerts-container');
-            if (!container) return;
-            let alerts = [];
-
-            if (loPrev2Res > 0) {
-                if (currentMonth >= 4 && currentMonth <= 5) {
-                    const isUrgent = currentMonth === 5;
-                    alerts.push(`
-                        <div class="${isUrgent ? 'bg-red-50 border-red-200 text-red-900' : 'bg-amber-50 border-amber-200 text-amber-900'} border rounded-xl p-3 shadow-sm flex items-start gap-2.5">
-                            <i class="fa-solid fa-triangle-exclamation ${isUrgent ? 'text-red-600' : 'text-amber-600'} text-base mt-0.5"></i>
-                            <div class="text-[11px] leading-tight flex-1">
-                                <strong class="font-bold block uppercase tracking-wide text-[10px] ${isUrgent ? 'text-red-700' : 'text-amber-700'}">Attenzione Scadenza Licenza ${prevYear2}</strong>
-                                Hai ancora <span class="font-bold underline">${loPrev2Res} ${loPrev2Res === 1 ? 'giorno' : 'giorni'}</span> di <strong>LO ${prevYear2}</strong>. Scadono il <strong>30 Giugno ${currentYear}</strong>!
-                            </div>
-                        </div>
-                    `);
-                } else if (currentMonth >= 6) {
-                    alerts.push(`
-                        <div class="bg-red-100 border-red-300 text-red-950 border rounded-xl p-3 shadow-sm flex items-start gap-2.5">
-                            <i class="fa-solid fa-circle-xmark text-red-600 text-lg mt-0.5"></i>
-                            <div class="text-[11px] leading-tight flex-1">
-                                <strong class="font-bold block uppercase tracking-wide text-[10px] text-red-800">Licenza ${prevYear2} Scaduta</strong>
-                                Il termine del <strong>30 Giugno ${currentYear}</strong> è decorso.
-                            </div>
-                        </div>
-                    `);
-                }
-            }
-
-            if (currentMonth >= 10 && rfsRes > 0) {
-                alerts.push(`
-                    <div class="bg-red-50 border-red-200 text-red-900 border rounded-xl p-3 shadow-sm flex items-start gap-2.5">
-                        <i class="fa-solid fa-clock-rotate-left text-red-600 text-base mt-0.5"></i>
-                        <div class="text-[11px] leading-tight flex-1">
-                            <strong class="font-bold block uppercase tracking-wide text-[10px] text-red-700">Attenzione Scadenza RFS</strong>
-                            Hai ancora <span class="font-bold underline">${rfsRes} ${rfsRes === 1 ? 'giorno' : 'giorni'}</span> di <strong>RFS</strong> da fruire entro il <strong>31 Dicembre ${currentYear}</strong>.
-                        </div>
-                    </div>
-                `);
-            }
-
-            container.innerHTML = alerts.join('');
-        }
-
-        function updateLicenzaConfig(field, value) {
-            if (!currentCode) return;
-            if (field === 'rfs' || field === 'ls') return;
-            if (!allData.licenze) allData.licenze = {};
-            if (!allData.licenze[currentYear]) allData.licenze[currentYear] = getDefaultLicenzeConfig(currentYear);
-            const num = Math.max(0, parseInt(value) || 0);
-            allData.licenze[currentYear][field] = num;
-            renderLicenzeBox();
-            triggerSave();
-        }
-
-        function renderApp() {
-            renderMonthSelector();
-            renderDaysTable();
-            updateSummaryAndChart();
-            renderLicenzeBox();
-            updateUserDisplay();
-            checkMandatoryFields();
-        }
-
-        function renderMonthSelector() {
-            const grid = document.getElementById('month-grid');
-            if(!grid) return;
-            grid.innerHTML = '';
-            MONTHS.forEach((mName, index) => {
-                const btn = document.createElement('button');
-                const isSelected = index === currentMonth;
-                btn.className = `p-2 text-xs sm:text-sm font-semibold rounded-lg transition-colors border shadow-sm ${isSelected ? 'bg-arma-navy text-white border-arma-navy shadow-md scale-[1.02]' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200'}`;
-                btn.innerText = mName;
-                btn.onclick = () => { currentMonth = index; renderApp(); };
-                grid.appendChild(btn);
-            });
-            const monthTitle = document.getElementById('table-month-title');
-            if(monthTitle) monthTitle.innerText = `${MONTHS[currentMonth]} ${currentYear}`;
-        }
-
-        function getLoDropdownOptionsHtml(selectedVal) {
-            const prev1 = (currentYear - 1).toString();
-            const prev2 = (currentYear - 2).toString();
-            const curr = currentYear.toString();
-            const isAfterJune = currentMonth > 5;
-            let html = '';
-            if (!isAfterJune) {
-                html += `<option value="${prev2}" ${selectedVal === prev2 ? 'selected' : ''}>LO ${prev2}</option>`;
-            }
-            html += `<option value="${prev1}" ${selectedVal === prev1 ? 'selected' : ''}>LO ${prev1}</option>`;
-            html += `<option value="${curr}" ${(!selectedVal || selectedVal === curr || selectedVal === 'curr') ? 'selected' : ''}>LO ${curr}</option>`;
-            return html;
-        }
-
-        function renderDaysTable() {
-            const container = document.getElementById('days-container');
-            if(!container) return;
-            container.innerHTML = '';
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateObj = new Date(currentYear, currentMonth, day);
-                const dayOfWeek = daysOfWeek[dateObj.getDay()];
-                const isHol = isHoliday(currentYear, currentMonth, day);
-                const dayData = (shiftData && shiftData[currentMonth] && shiftData[currentMonth][day]) ? shiftData[currentMonth][day] : getEmptyDay();
-                const isAbsence = ABSENCE_SHIFTS.includes(dayData.shift);
-                
-                let rowStyle = 'row-normale';
-                if (dayData.shift === 'SSE') rowStyle = 'row-sse';
-                else if (dayData.shift === 'RRS') rowStyle = 'row-rrs';
-                else if (isHol) rowStyle = 'row-festivo'; 
-                else if (isAbsence) rowStyle = 'row-assenza';
-
-                const res = calcDayLogic(dayData);
-                const row = document.createElement('div');
-                row.id = `row-day-${day}`;
-                row.className = `day-card flex flex-col gap-2 p-2.5 sm:p-3.5 ${rowStyle}`;
-                
-                let html = `
-                    <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-2.5 w-full">
-                        <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                            <div class="flex items-center gap-2 w-20 flex-shrink-0 bg-black/10 py-1 px-2 rounded-lg">
-                                <span class="text-xl font-black leading-none">${day}</span>
-                                <span class="text-[10px] uppercase font-bold tracking-wide opacity-90">${dayOfWeek}</span>
-                            </div>
-                            
-                            <div class="flex items-center flex-shrink-0">
-                                <select class="input-box font-bold bg-white/95 w-[90px] sm:w-[105px] text-center shadow-sm" data-field="shift" data-day="${day}">
-                                    ${SHIFT_TYPES.map(s => `<option value="${s}" ${dayData.shift === s ? 'selected' : ''}>${s === '' ? '- Turno -' : s}</option>`).join('')}
-                                </select>
-                                
-                                <span id="linked-select-wrap-${day}">
-                                ${['RRS', 'RRF'].includes(dayData.shift) ? `
-                                    <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_rest" data-day="${day}">
-                                        <option value="">- Associa -</option>
-                                        ${generateRestOptions(currentYear, currentMonth, day, dayData.linked_rest, dayData.shift === 'RRS' ? 'RS' : 'RF')}
-                                    </select>
-                                ` : ''}
-                                ${dayData.shift === 'LO' ? `
-                                    <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_lo" data-day="${day}">
-                                        ${getLoDropdownOptionsHtml(dayData.linked_lo)}
-                                    </select>
-                                ` : ''}
-                                </span>
-                            </div>
-
-                            <div class="flex items-center gap-1 bg-blue-50/70 rounded-md px-1.5 py-1 border border-blue-200/70 flex-shrink-0 shadow-sm">
-                                <span class="text-[10px] font-bold opacity-75 text-gray-800">Ord:</span>
-                                <input type="time" class="input-box text-center w-[68px] sm:w-[78px] !py-0.5 !px-0.5" data-field="start" data-day="${day}" value="${dayData.start}">
-                                <span class="opacity-50 text-xs text-gray-700">-</span>
-                                <input type="time" class="input-box text-center w-[68px] sm:w-[78px] !py-0.5 !px-0.5" data-field="end" data-day="${day}" value="${dayData.end}">
-                            </div>
-                            
-                            <div class="flex items-center gap-2 px-2 py-1 bg-black/5 rounded-md flex-shrink-0 border border-black/5">
-                                <span class="text-[10px] font-semibold text-gray-800">MOS:</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" data-field="mos" data-day="${day}" ${dayData.mos ? 'checked' : ''}>
-                                    <div class="w-7 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-arma-gold"></div>
-                                </label>
-                            </div>
-
-                            <div class="flex-1 min-w-[140px] max-w-full">
-                                <input type="text" class="note-box w-full italic placeholder-amber-800/40 font-medium shadow-sm" placeholder="Promemoria / note di servizio..." data-field="note" data-day="${day}" value="${dayData.note || ''}">
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-4 xl:justify-end bg-black/10 px-3 py-1.5 rounded-lg border border-black/10 flex-shrink-0 shadow-sm justify-between sm:justify-start">
-                            <div class="text-right">
-                                <span class="text-[9px] uppercase font-bold opacity-75 block text-gray-600">Ordinarie</span>
-                                <span id="ord-display-${day}" class="text-xs font-bold text-gray-900">${res.ordMins ? formatTime(res.ordMins) : '<span class="opacity-30">00:00</span>'}</span>
-                            </div>
-                            <div class="border-l border-black/20 h-6"></div>
-                            <div class="text-right min-w-[3.5rem]">
-                                <span class="text-[9px] uppercase font-bold opacity-75 block text-arma-gold">Straord</span>
-                                <span id="ot-display-${day}" class="text-xs ${res.otMins ? 'text-arma-gold font-black text-sm' : 'opacity-30 text-gray-900'}">${res.otMins ? formatTime(res.otMins) : '00:00'}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="w-full xl:pl-[88px] mt-0.5 pr-0.5">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-1.5 w-full">
-                            <div class="flex items-center justify-between gap-0.5 bg-orange-50/90 rounded px-1 py-0.5 border border-orange-200/60 shadow-xs">
-                                <span class="text-[9px] font-bold text-orange-900">Str.1</span>
-                                <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str1_start" data-day="${day}" value="${dayData.str1_start}">
-                                    <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str1_end" data-day="${day}" value="${dayData.str1_end}">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between gap-0.5 bg-green-50/90 rounded px-1 py-0.5 border border-green-200/60 shadow-xs">
-                                <span class="text-[9px] font-bold text-green-900">Str.2</span>
-                                <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str2_start" data-day="${day}" value="${dayData.str2_start}">
-                                    <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str2_end" data-day="${day}" value="${dayData.str2_end}">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between gap-0.5 bg-purple-50/90 rounded px-1 py-0.5 border border-purple-200/60 shadow-xs">
-                                <span class="text-[9px] font-bold text-purple-900">Str.3</span>
-                                <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str3_start" data-day="${day}" value="${dayData.str3_start}">
-                                    <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str3_end" data-day="${day}" value="${dayData.str3_end}">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between gap-0.5 bg-pink-50/90 rounded px-1 py-0.5 border border-pink-200/60 shadow-xs">
-                                <span class="text-[9px] font-bold text-pink-900">Str.4</span>
-                                <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str4_start" data-day="${day}" value="${dayData.str4_start}">
-                                    <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str4_end" data-day="${day}" value="${dayData.str4_end}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                row.innerHTML = html;
-                container.appendChild(row);
-            }
-
-            attachInputListeners();
-            checkMandatoryFields();
-        }
-
-        function updateSingleDayRow(day) {
-            const dayData = shiftData[currentMonth][day];
-            const isHol = isHoliday(currentYear, currentMonth, day);
-            const isAbsence = ABSENCE_SHIFTS.includes(dayData.shift);
-            const row = document.getElementById(`row-day-${day}`);
-            if (!row) return;
-
-            row.classList.remove('row-normale', 'row-festivo', 'row-assenza', 'row-sse', 'row-rrs');
-            if (dayData.shift === 'SSE') row.classList.add('row-sse');
-            else if (dayData.shift === 'RRS') row.classList.add('row-rrs');
-            else if (isHol) row.classList.add('row-festivo');
-            else if (isAbsence) row.classList.add('row-assenza');
-            else row.classList.add('row-normale');
-
-            const selectWrap = document.getElementById(`linked-select-wrap-${day}`);
-            if (selectWrap) {
-                if (['RRS', 'RRF'].includes(dayData.shift)) {
-                    selectWrap.innerHTML = `
-                        <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_rest" data-day="${day}">
-                            <option value="">- Associa -</option>
-                            ${generateRestOptions(currentYear, currentMonth, day, dayData.linked_rest, dayData.shift === 'RRS' ? 'RS' : 'RF')}
-                        </select>
-                    `;
-                    const newSelect = selectWrap.querySelector('select');
-                    if (newSelect) {
-                        newSelect.addEventListener('change', (e) => {
-                            if(!currentCode) return;
-                            shiftData[currentMonth][day].linked_rest = e.target.value;
-                            updateSummaryAndChart();
-                            triggerSave();
-                        });
-                    }
-                } else if (dayData.shift === 'LO') {
-                    selectWrap.innerHTML = `
-                        <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_lo" data-day="${day}">
-                            ${getLoDropdownOptionsHtml(dayData.linked_lo)}
-                        </select>
-                    `;
-                    const newSelect = selectWrap.querySelector('select');
-                    if (newSelect) {
-                        newSelect.addEventListener('change', (e) => {
-                            if(!currentCode) return;
-                            shiftData[currentMonth][day].linked_lo = e.target.value;
-                            renderLicenzeBox();
-                            triggerSave();
-                        });
-                    }
-                } else {
-                    selectWrap.innerHTML = '';
-                }
-            }
-
-            const res = calcDayLogic(dayData);
-            const ordEl = document.getElementById(`ord-display-${day}`);
-            const otEl = document.getElementById(`ot-display-${day}`);
-            if (ordEl) ordEl.innerHTML = res.ordMins ? formatTime(res.ordMins) : '<span class="opacity-30">00:00</span>';
-            if (otEl) {
-                otEl.innerText = res.otMins ? formatTime(res.otMins) : '00:00';
-                otEl.className = `text-xs ${res.otMins ? 'text-arma-gold font-black text-sm' : 'opacity-30 text-gray-900'}`;
-            }
-        }
-
-        function attachInputListeners() {
-            const inputs = document.querySelectorAll('#days-container input, #days-container select');
-            inputs.forEach(input => {
-                const day = input.getAttribute('data-day');
-                const field = input.getAttribute('data-field');
-
-                const handleUpdate = (e) => {
-                    if (!currentCode) return;
-                    if (field === 'mos') {
-                        shiftData[currentMonth][day][field] = e.target.checked;
-                    } else {
-                        shiftData[currentMonth][day][field] = e.target.value;
-                    }
-
-                    if (field === 'shift') {
-                        const clearRestShifts = ['RS', 'RF', 'RRS', 'RRF', 'RM', 'LO', 'RFS', 'LT', 'RR', '96h', 'R.O.'];
-                        if (e.target.value === 'SSE' || clearRestShifts.includes(e.target.value)) {
-                            shiftData[currentMonth][day].start = ''; 
-                            shiftData[currentMonth][day].end = '';
-                            shiftData[currentMonth][day].str1_start = ''; shiftData[currentMonth][day].str1_end = '';
-                            shiftData[currentMonth][day].str2_start = ''; shiftData[currentMonth][day].str2_end = '';
-                            shiftData[currentMonth][day].str3_start = ''; shiftData[currentMonth][day].str3_end = '';
-                            shiftData[currentMonth][day].str4_start = ''; shiftData[currentMonth][day].str4_end = '';
-                            const rowInputs = document.querySelectorAll(`#row-day-${day} input[type="time"]`);
-                            rowInputs.forEach(inp => inp.value = '');
-                        } else if (e.target.value === 'M') {
-                            shiftData[currentMonth][day].start = '08:00';
-                            shiftData[currentMonth][day].end = '14:00';
-                            const startInp = document.querySelector(`#row-day-${day} [data-field="start"]`);
-                            const endInp = document.querySelector(`#row-day-${day} [data-field="end"]`);
-                            if (startInp) startInp.value = '08:00';
-                            if (endInp) endInp.value = '14:00';
-                        }
-
-                        if (!['RRS', 'RRF'].includes(e.target.value)) {
-                            shiftData[currentMonth][day].linked_rest = '';
-                        }
-                        if (e.target.value !== 'LO') {
-                            shiftData[currentMonth][day].linked_lo = '';
-                        } else if (!shiftData[currentMonth][day].linked_lo) {
-                            const prev1 = (currentYear - 1).toString();
-                            const prev2 = (currentYear - 2).toString();
-                            const isAfterJune = currentMonth > 5;
-                            shiftData[currentMonth][day].linked_lo = isAfterJune ? prev1 : prev2;
-                        }
-                    }
-
-                    updateSingleDayRow(day);
-                    updateSummaryAndChart();
-                    renderLicenzeBox();
-                    triggerSave();
-                };
-
-                input.addEventListener('input', handleUpdate);
-                input.addEventListener('change', handleUpdate);
-            });
-        }
-
-        function updateSummaryAndChart() {
-            const sumTitle = document.getElementById('summary-title');
-            if(sumTitle) sumTitle.innerText = `Riepilogo ${MONTHS[currentMonth]}`;
-            const currentTotals = calcTotals(currentMonth);
-            const otDisp = document.getElementById('monthly-ot-display');
-            const stdDisp = document.getElementById('monthly-std-display');
-            if(otDisp) otDisp.innerText = formatTime(currentTotals.totalOt);
-            if(stdDisp) stdDisp.innerText = formatTime(currentTotals.totalOrd);
-
-            const yearlyOtData = [];
-            for(let m=0; m<12; m++) yearlyOtData.push(calcTotals(m).totalOt / 60); 
-            renderChart(yearlyOtData);
-
-            const { earned, used } = calcRiposi();
-            const available = earned.filter(r => !used[r.id]);
-            const restContainer = document.getElementById('unpaid-rests-container');
             
-            if(restContainer) {
-                if (available.length === 0) {
-                    restContainer.innerHTML = '<p class="text-gray-400 text-xs italic mt-2 text-center">Nessun riposo da recuperare.</p>';
+            db.ref(`users/${cleanPin}/profile`).set(profile);
+            db.ref(`${cleanPin}/profile`).set(profile, (err) => {
+                if (!err) alert('Dati profilo salvati con successo sul Cloud!');
+            });
+        });
+
+        function loadUserProfile() {
+            if (!userPin) return;
+            const cleanPin = sanitizePin(userPin);
+            db.ref(`users/${cleanPin}/profile`).once('value', (snapshot) => {
+                let data = snapshot.val();
+                if (!data) {
+                    db.ref(`${cleanPin}/profile`).once('value', (s2) => {
+                        data = s2.val() || {};
+                        applyProfileData(data);
+                    });
                 } else {
-                    restContainer.innerHTML = available.map(r => `
-                        <div class="bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 flex justify-between items-center shadow-sm">
-                            <span class="text-xs font-semibold text-red-900"><i class="fa-regular fa-calendar text-red-400 mr-1.5"></i>${r.label}</span>
-                            <span class="text-[9px] font-bold ${r.type==='RS'?'bg-amber-600':'bg-purple-700'} text-white px-2 py-0.5 rounded shadow-xs">${r.type}</span>
-                        </div>
-                    `).join('');
+                    applyProfileData(data);
                 }
-            }
+            });
         }
 
-        function renderChart(dataArr) {
-            const canvas = document.getElementById('yearlyChart');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (chartInstance) {
-                chartInstance.data.datasets[0].data = dataArr;
-                chartInstance.data.datasets[0].backgroundColor = dataArr.map((_, i) => i === currentMonth ? '#D4AF37' : '#1B263B');
-                chartInstance.update();
+        function applyProfileData(data) {
+            document.getElementById('userGrade').value = data.grade || '';
+            document.getElementById('userLocation').value = data.location || '';
+            document.getElementById('userPatron').value = data.patron || '';
+        }
+
+        function getMonthKey() {
+            const y = currentDate.getFullYear();
+            const m = String(currentDate.getMonth() + 1).padStart(2, '0');
+            return `${y}-${m}`;
+        }
+
+        function loadMonthData() {
+            syncSelects();
+            if (!userPin) {
+                renderCalendar();
                 return;
             }
+            const cleanPin = sanitizePin(userPin);
+            const monthKey = getMonthKey();
 
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: MONTHS,
-                    datasets: [{
-                        label: 'Ore Str.',
-                        data: dataArr,
-                        backgroundColor: dataArr.map((_, i) => i === currentMonth ? '#D4AF37' : '#1B263B'),
-                        borderRadius: 3,
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' }, ticks: { font: { size: 9 } } },
-                        x: { grid: { display: false }, ticks: { font: { size: 9 } } }
-                    }
+            db.ref(`users/${cleanPin}/turns/${monthKey}`).on('value', (snapshot) => {
+                monthData = snapshot.val() || {};
+                if (Object.keys(monthData).length === 0) {
+                    db.ref(`${cleanPin}/turns/${monthKey}`).once('value', (s2) => {
+                        monthData = s2.val() || {};
+                        renderCalendar();
+                        calculateStats();
+                    });
+                } else {
+                    renderCalendar();
+                    calculateStats();
                 }
             });
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            if(!toast) return;
-            const toastMsg = document.getElementById('toast-msg');
-            if(toastMsg) toastMsg.innerText = message;
-            toast.classList.remove('translate-y-24', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 2500);
-        }
+        function renderCalendar() {
+            const calendarList = document.getElementById('calendarList');
+            calendarList.innerHTML = '';
 
-        function generateMonthlyPdf() {
-            if (!currentCode) return;
-            const user = typeof getUserInfo === 'function' ? getUserInfo() : { grado: '', nome: '' };
-            const patrono = typeof getPatronoConfig === 'function' ? getPatronoConfig() : { citta: '', giorno: '01', mese: '01' };
-            const totals = typeof calcTotals === 'function' ? calcTotals(currentMonth) : { totalOrd: 0, totalOt: 0 };
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            const firstDayIndex = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7; 
-            const dayNames = ['Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato', 'Domenica'];
-            
-            let container = document.getElementById('pdf-render-area');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'pdf-render-area';
-                document.body.appendChild(container);
-            }
-            container.style.display = 'none';
-            container.style.background = '#ffffff';
-            container.style.color = '#111827';
-            container.style.fontFamily = 'sans-serif';
-            container.style.width = '1060px';
-            container.style.maxWidth = '1060px';
-            container.style.padding = '12px 14px';
-            container.style.boxSizing = 'border-box';
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            let rsEarnedDates = [];
-            let rfEarnedDates = [];
-            let rrsFruiti = 0, rrfFruiti = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayKey = String(day).padStart(2, '0');
+                const data = monthData[dayKey] || { code: '', hours: '', overtime: '' };
+                const dateObj = new Date(year, month, day);
+                const dayName = dateObj.toLocaleDateString('it-IT', { weekday: 'short' });
+                const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
 
-            if (typeof shiftData !== 'undefined') {
-                for (let m = 0; m < 12; m++) {
-                    if (shiftData[m]) {
-                        for (let d = 1; d <= 31; d++) {
-                            const dayData = shiftData[m][d];
-                            if (!dayData) continue;
-                            const dateObj = new Date(currentYear, m, d);
-                            if (dateObj.getMonth() !== m) continue;
-                            const isSun = dateObj.getDay() === 0;
-                            const isHol = typeof isHoliday === 'function' ? isHoliday(currentYear, m, d) : isSun;
-                            const worked = dayData.shift === 'M' || dayData.shift === 'P' || dayData.shift === 'S' || dayData.shift === 'N' || (dayData.start && dayData.end);
-                            const dateLabel = `${d.toString().padStart(2, '0')}/${(m + 1).toString().padStart(2, '0')}`;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    isWeekend ? 'bg-amber-500/10 border-amber-500/20' : ''
+                }`;
 
-                            if (worked) {
-                                if (isSun) rsEarnedDates.push(dateLabel);
-                                if (isHol && !isSun) rfEarnedDates.push(dateLabel);
-                            }
-                            if (dayData.shift === 'RRS') rrsFruiti++;
-                            if (dayData.shift === 'RRF') rrfFruiti++;
-                        }
-                    }
-                }
-            }
-
-            const pendingRsDates = rsEarnedDates.slice(rrsFruiti);
-            const pendingRfDates = rfEarnedDates.slice(rrfFruiti);
-            const totRiposiResidui = pendingRsDates.length + pendingRfDates.length;
-
-            let textRiposiDetail = '';
-            if (totRiposiResidui === 0) {
-                textRiposiDetail = 'Nessun riposo arretrato da recuperare';
-            } else {
-                let parts = [];
-                if (pendingRsDates.length > 0) parts.push(`<b>RS:</b> ${pendingRsDates.join(', ')}`);
-                if (pendingRfDates.length > 0) parts.push(`<b>RF:</b> ${pendingRfDates.join(', ')}`);
-                textRiposiDetail = parts.join(' | ');
-            }
-
-            const loStats = getYearLoStats(currentYear);
-            const counts = countYearShifts(currentYear);
-            const cfg = allData.licenze?.[currentYear] || getDefaultLicenzeConfig(currentYear);
-
-            const resRFS = Math.max(0, 4 - (counts.RFS || 0));
-            const resLS = Math.max(0, 45 - (counts.RM || 0));
-            const resLT = Math.max(0, (parseInt(cfg.lt) || 0) - (counts.LT || 0));
-            const resRR = Math.max(0, (parseInt(cfg.rr) || 0) - (counts.RR || 0));
-            const res96 = Math.max(0, (parseInt(cfg.ore96) || 0) - (counts['96h'] || 0));
-
-            let gridCellsHtml = '';
-            for (let i = 0; i < firstDayIndex; i++) {
-                gridCellsHtml += '<div style="background:#f8fafc; border:1px dashed #cbd5e1; min-height:76px; border-radius:3px; opacity:0.35;"></div>';
-            }
-
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dateObj = new Date(currentYear, currentMonth, d);
-                const isSunday = dateObj.getDay() === 0;
-                const isHol = typeof isHoliday === 'function' ? isHoliday(currentYear, currentMonth, d) : isSunday;
-                const dData = (shiftData && shiftData[currentMonth] && shiftData[currentMonth][d]) ? shiftData[currentMonth][d] : {};
-                const dRes = typeof calcDayLogic === 'function' ? calcDayLogic(dData) : { ordMins: 0, otMins: 0 };
-
-                let headerBg = '#1B263B';
-                let cellBorder = '#cbd5e1';
-                let cellBg = '#ffffff';
-
-                if (isHol || isSunday) {
-                    headerBg = '#C00000';
-                    cellBorder = '#fca5a5';
-                    cellBg = '#fffafa';
-                } else if (dData.shift === 'SSE') {
-                    headerBg = '#16a34a';
-                    cellBorder = '#86efac';
-                    cellBg = '#f0fdf4';
-                } else if (dData.shift === 'RRS') {
-                    headerBg = '#d97706';
-                    cellBorder = '#fcd34d';
-                    cellBg = '#fffbeb';
-                } else if (dData.shift && ['RS','RF','RRF','RM','LO','RFS','LT','RR','96h'].includes(dData.shift)) {
-                    headerBg = '#4B0082';
-                    cellBorder = '#c084fc';
-                    cellBg = '#faf5ff';
-                }
-
-                let extra = [];
-                if (dData.str1_start && dData.str1_end) extra.push('1: ' + dData.str1_start + '-' + dData.str1_end);
-                if (dData.str2_start && dData.str2_end) extra.push('2: ' + dData.str2_start + '-' + dData.str2_end);
-                if (dData.str3_start && dData.str3_end) extra.push('3: ' + dData.str3_start + '-' + dData.str3_end);
-                if (dData.str4_start && dData.str4_end) extra.push('4: ' + dData.str4_start + '-' + dData.str4_end);
-
-                gridCellsHtml += `
-                    <div style="background:${cellBg}; border:1px solid ${cellBorder}; min-height:76px; border-radius:3px; display:flex; flex-direction:column; overflow:hidden; box-sizing:border-box;">
-                        <div style="background:${headerBg}; color:#fff; padding:2px 4px; display:flex; justify-content:space-between; align-items:center; font-size:8.5px; font-weight:bold;">
-                            <span style="font-size:10px;">${d}</span>
-                            <span style="font-size:7.5px; background:rgba(255,255,255,0.25); padding:0 3px; border-radius:2px;">${dData.shift || '-'}</span>
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl ${isWeekend ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/20'} font-black flex flex-col items-center justify-center text-xs">
+                            <span class="text-sm leading-none">${day}</span>
+                            <span class="text-[9px] font-semibold uppercase">${dayName}</span>
                         </div>
-                        <div style="padding:2px 3px; font-size:7.5px; display:flex; flex-direction:column; justify-content:space-between; flex:1;">
-                            <div style="display:flex; flex-direction:column; gap:1px;">
-                                ${(dData.start && dData.end) ? `<div style="font-weight:bold; color:#0f172a; font-size:8px;">${dData.start}-${dData.end}${dData.mos ? '<span style="color:#b45309;">(MOS)</span>' : ''}</div>` : ''}
-                                ${extra.length > 0 ? `<div style="font-size:6.5px; color:#b45309; background:#fffbeb; padding:0.5px 2px; border:1px solid #fde68a; border-radius:2px; line-height:1.1;">${extra.join(' | ')}</div>` : ''}
-                                ${dData.note ? `<div style="font-size:6.5px; color:#475569; font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${dData.note}</div>` : ''}
-                            </div>
-                            <div style="border-top:1px dashed #cbd5e1; padding-top:1px; margin-top:1px; display:flex; justify-content:space-between; font-size:7px; font-weight:bold; color:#334155;">
-                                <span>O: ${dRes.ordMins ? formatTime(dRes.ordMins) : '0'}</span>
-                                <span style="color:${dRes.otMins ? '#b45309' : '#94a3b8'};">S: ${dRes.otMins ? formatTime(dRes.otMins) : '0'}</span>
-                            </div>
-                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 flex-1 max-w-md">
+                        <input type="text" placeholder="Turno" value="${data.code || ''}" data-day="${dayKey}" data-field="code"
+                               class="shift-input px-2.5 py-1.5 rounded-lg text-xs font-bold">
+                        <input type="number" placeholder="Ore" value="${data.hours || ''}" data-day="${dayKey}" data-field="hours"
+                               class="shift-input px-2.5 py-1.5 rounded-lg text-xs font-bold">
+                        <input type="number" placeholder="Straord." value="${data.overtime || ''}" data-day="${dayKey}" data-field="overtime"
+                               class="shift-input px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-400">
                     </div>
                 `;
+                calendarList.appendChild(card);
             }
 
-            const fullName = `${user.grado ? user.grado + ' ' : ''}${user.nome || 'Militare'}`.trim();
-            const sedeStr = patrono.citta ? `${patrono.citta} (Patrono: ${patrono.giorno}/${patrono.mese})` : 'Non Impostata';
+            document.querySelectorAll('.shift-input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    if (!userPin) return alert('Inserisci il PIN per salvare');
+                    const cleanPin = sanitizePin(userPin);
+                    const day = e.target.dataset.day;
+                    const field = e.target.dataset.field;
+                    const val = e.target.value.toUpperCase();
 
-            container.innerHTML = `
-                <div style="border-bottom:2px solid #1B263B; padding-bottom:5px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-size:7.5px; color:#64748b; text-transform:uppercase; font-weight:bold; letter-spacing:1px;">Memoriale Mensile di Servizio</div>
-                        <h1 style="font-size:17px; font-weight:bold; color:#1B263B; margin:0;">${MONTHS[currentMonth]} ${currentYear}</h1>
-                        <div style="font-size:9px; font-weight:bold; color:#334155;">Militare: <span style="color:#C00000;">${fullName}</span> - Sede: <span>${sedeStr}</span></div>
-                    </div>
-                    <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:4px 8px; border-radius:5px; text-align:right;">
-                        <div style="font-size:7px; color:#64748b; font-weight:bold; text-transform:uppercase;">Riepilogo Ore Mese</div>
-                        <div style="font-size:9.5px; font-weight:bold; color:#1B263B;">Ordinarie: ${formatTime(totals.totalOrd)} | Straord: <span style="color:#b45309;">${formatTime(totals.totalOt)}</span></div>
-                    </div>
-                </div>
+                    if (!monthData[day]) monthData[day] = {};
+                    monthData[day][field] = val;
 
-                <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:6px;">
-                    <div style="background:#faf5ff; border:1px solid #d8b4fe; border-radius:4px; padding:3px 8px; font-size:7.5px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:bold; color:#581c87; text-transform:uppercase;">Licenze Residue:</span>
-                        <span style="color:#374151;">
-                            LO ${currentYear}: <b style="color:#1e1b4b;">${loStats.loCurrRes}</b> gg &bull; 
-                            LO Prec: <b style="color:#1e1b4b;">${loStats.loPrev1Res}</b> gg &bull; 
-                            RFS: <b style="color:#1e1b4b;">${resRFS}</b>/4 &bull; 
-                            LS: <b style="color:#1e1b4b;">${resLS}</b>/45 &bull; 
-                            LT: <b>${resLT}</b> &bull; 
-                            RR: <b>${resRR}</b> &bull; 
-                            96h: <b>${res96}</b>
-                        </span>
-                    </div>
-                    <div style="background:#fff7ed; border:1px solid #fdba74; border-radius:4px; padding:3px 8px; font-size:7.5px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <span style="font-weight:bold; color:#9a3412; text-transform:uppercase; margin-right:6px;">Riposi da Fruire (${totRiposiResidui}):</span>
-                            <span style="color:#7c2d12;">${textRiposiDetail}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px; margin-bottom:3px; text-align:center;">
-                    ${dayNames.map(name => `<div style="background:#1B263B; color:#ffffff; font-size:8.5px; font-weight:bold; padding:2px 0; border-radius:2px;">${name}</div>`).join('')}
-                </div>
-
-                <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px;">
-                    ${gridCellsHtml}
-                </div>
-
-                <div style="margin-top:6px; display:flex; justify-content:space-between; font-size:6.5px; color:#64748b; border-top:1px solid #e2e8f0; padding-top:2px;">
-                    <span>By_Lex190 - Gestionale Turni Personale</span>
-                    <span>Generato il: ${new Date().toLocaleDateString('it-IT')} ore ${new Date().toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'})}</span>
-                </div>
-            `;
-
-            container.style.display = 'block';
-            showToast("Creazione PDF in corso...");
-
-            const filenameUser = fullName.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
-            const opt = {
-                margin: [5, 5, 5, 5],
-                filename: `Calendario_${MONTHS[currentMonth]}_${currentYear}_${filenameUser}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            };
-
-            html2pdf().set(opt).from(container).save().then(() => {
-                container.style.display = 'none';
-                showToast("PDF scaricato con successo!");
-            }).catch(err => {
-                console.error(err);
-                container.style.display = 'none';
-                showToast("Errore creazione PDF");
+                    const monthKey = getMonthKey();
+                    
+                    db.ref(`users/${cleanPin}/turns/${monthKey}/${day}`).set(monthData[day]);
+                    db.ref(`${cleanPin}/turns/${monthKey}/${day}`).set(monthData[day]);
+                    
+                    calculateStats();
+                });
             });
         }
 
-        document.addEventListener('change', function(e) {
-            if (!currentCode) return;
-            if (e.target && e.target.getAttribute('data-field') === 'shift') {
-                const val = e.target.value;
-                const day = e.target.getAttribute('data-day');
-                if (!val || val === '') {
-                    if (typeof shiftData !== 'undefined' && shiftData[currentMonth] && shiftData[currentMonth][day]) {
-                        shiftData[currentMonth][day] = getEmptyDay();
-                        renderDaysTable();
-                        updateSummaryAndChart();
-                        renderLicenzeBox();
-                        triggerSave();
-                        showToast("Giorno formattato e ripulito!");
-                    }
+        // Funzione per verificare se un orario rientra nella fascia notturna (22:00 - 06:00)
+        function checkIsNightShift(code) {
+            const cleanCode = code.toUpperCase().trim();
+            
+            // Parole chiave notturne dirette
+            if (cleanCode.includes('NOTT') || cleanCode.includes('NOTTE') || cleanCode === 'N') {
+                return true;
+            }
+
+            // Ricerca fasce orarie che intercettano 22:00 - 06:00 (es. 22-06, 22/06, 19/01, 00/06, 23/07, ecc.)
+            const timeMatch = cleanCode.match(/(\d{1,2})[\/\-\:\. ]+(\d{1,2})/);
+            if (timeMatch) {
+                const startHour = parseInt(timeMatch[1], 10);
+                const endHour = parseInt(timeMatch[2], 10);
+
+                // Se l'orario di inizio è >= 22 oppure l'orario di fine è <= 6 (e diverso da 00)
+                if (startHour >= 22 || startHour < 6 || (endHour > 0 && endHour <= 6) || startHour > endHour) {
+                    return true;
                 }
             }
+            return false;
+        }
+
+        // Calcolo e suddivisione dei vari tipi di straordinario
+        function calculateStats() {
+            let totalHours = 0;
+            let totalOvertime = 0;
+            
+            let overtimeOrd = 0;
+            let overtimeNot = 0;
+            let overtimeFest = 0;
+            let overtimeNotFest = 0;
+
+            let licenceCount = 0;
+            let restCount = 0;
+            let sickCount = 0;
+
+            const patronValue = (document.getElementById('userPatron').value || '').toLowerCase();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            Object.entries(monthData).forEach(([dayKey, day]) => {
+                if (day.hours) totalHours += parseFloat(day.hours) || 0;
+                
+                const ov = parseFloat(day.overtime) || 0;
+                if (ov > 0) {
+                    totalOvertime += ov;
+
+                    const dayNum = parseInt(dayKey, 10);
+                    const dateObj = new Date(year, month, dayNum);
+                    const isSunday = dateObj.getDay() === 0;
+                    
+                    // Verifica Santo Patrono
+                    const dayFormatted = String(dayNum).padStart(2, '0');
+                    const monthFormatted = String(month + 1).padStart(2, '0');
+                    const isPatron = patronValue.includes(`${dayFormatted}/${monthFormatted}`) || patronValue.includes(`${dayNum}`);
+
+                    const isHoliday = isSunday || isPatron;
+                    const code = day.code || '';
+                    const isNight = checkIsNightShift(code);
+
+                    if (isHoliday && isNight) {
+                        overtimeNotFest += ov;
+                    } else if (isHoliday) {
+                        overtimeFest += ov;
+                    } else if (isNight) {
+                        overtimeNot += ov;
+                    } else {
+                        overtimeOrd += ov;
+                    }
+                }
+                
+                const code = (day.code || '').toUpperCase();
+                if (code.includes('LIC') || code.includes('SM') || code.includes('ORD')) licenceCount++;
+                if (code.includes('RIP') || code.includes('FEST')) restCount++;
+                if (code.includes('MAL') || code.includes('CM')) sickCount++;
+            });
+
+            document.getElementById('statHours').textContent = `${totalHours}h`;
+            document.getElementById('statOvertime').textContent = `${totalOvertime}h`;
+
+            document.getElementById('statOvertimeOrd').textContent = `${overtimeOrd}h`;
+            document.getElementById('statOvertimeNot').textContent = `${overtimeNot}h`;
+            document.getElementById('statOvertimeFest').textContent = `${overtimeFest}h`;
+            document.getElementById('statOvertimeNotFest').textContent = `${overtimeNotFest}h`;
+
+            document.getElementById('statLicence').textContent = licenceCount;
+            document.getElementById('statRest').textContent = restCount;
+            document.getElementById('statSick').textContent = sickCount;
+        }
+
+        // Esportazione PDF
+        document.getElementById('exportPdfBtn').addEventListener('click', () => {
+            const element = document.querySelector('main');
+            const opt = {
+                margin:       0.5,
+                filename:     `Turni_CC_${userPin}_${getMonthKey()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
         });
+
+        // Avvio automatico all'apertura
+        if (userPin) {
+            initDataFetch();
+        } else {
+            renderCalendar();
+        }
     </script>
 </body>
 </html>
