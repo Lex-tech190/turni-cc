@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gestione Turni CC Pro</title>
 
-    <!-- PWA & iOS Meta Tags -->
+    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Turni CC">
@@ -27,22 +27,14 @@
                 extend: {
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0f4f8',
-                            100: '#d9e2ec',
-                            500: '#1e3a8a',
-                            600: '#1d2a44',
-                            800: '#0f172a',
-                            gold: '#d97706',
-                            red: '#dc2626'
-                        }
                     }
                 }
             }
         }
     </script>
+
+    <!-- html2pdf Library per Esportazione PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -54,22 +46,20 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Glassmorphism Classes */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .dark .glass-panel {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -81,36 +71,23 @@
             background: rgba(156, 163, 175, 0.4);
             border-radius: 9999px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(107, 114, 128, 0.6);
-        }
 
-        /* Smooth Day Card Interactions */
-        .day-card {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .day-card:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Safe Area Padding for iOS Devices */
-        .pb-safe {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
         .pt-safe {
             padding-top: env(safe-area-inset-top);
         }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
     </style>
 </head>
-<body class="h-full bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-blue-500 selection:text-white flex flex-col">
+<body class="h-full bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased flex flex-col min-h-screen">
 
     <!-- Header Navigation -->
-    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-200 dark:border-slate-800/80 shadow-sm pt-safe">
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-200 dark:border-slate-800 shadow-sm pt-safe">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- App Title / Brand -->
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-900 to-indigo-700 flex items-center justify-center text-amber-400 shadow-md shadow-blue-900/20">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-900 to-indigo-700 flex items-center justify-center text-amber-400 shadow-md">
                         <i class="fa-solid fa-shield-halved text-lg"></i>
                     </div>
                     <div>
@@ -119,12 +96,16 @@
                     </div>
                 </div>
 
-                <!-- Sync Status & Dark Mode Toggle -->
                 <div class="flex items-center gap-3">
                     <div id="syncStatus" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>Sincronizzato</span>
+                        <span>Cloud Attivo</span>
                     </div>
+
+                    <button id="exportPdfBtn" class="px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-semibold shadow hover:bg-blue-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span class="hidden sm:inline">Esporta PDF</span>
+                    </button>
 
                     <button id="themeToggle" class="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
                         <i class="fa-solid fa-moon dark:hidden text-sm"></i>
@@ -135,136 +116,351 @@
         </div>
     </header>
 
-    <!-- Main Container Layout -->
-    <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6 overflow-hidden">
+    <!-- Main Content Container -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
         
-        <!-- Sidebar Summary Panel -->
+        <!-- Sidebar Panel: Credenziali e Anagrafica -->
         <aside class="w-full md:w-80 flex-shrink-0 flex flex-col gap-4">
             
-            <!-- Code Access Card -->
+            <!-- Codice Personale PIN -->
             <div class="glass-panel rounded-2xl p-5 shadow-sm">
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-                    <i class="fa-solid fa-key text-amber-500 mr-1.5"></i>Codice Personale
+                    <i class="fa-solid fa-key text-amber-500 mr-1.5"></i>Codice Personale (PIN)
                 </label>
-                <div class="relative">
-                    <input type="password" id="userCode" placeholder="Inserisci il tuo codice" 
-                        class="w-full pl-3 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
-                    <button id="toggleCode" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <i class="fa-solid fa-eye text-sm"></i>
+                <div class="flex gap-2">
+                    <input type="password" id="pinInput" placeholder="Inserisci PIN" 
+                        class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+                    <button id="loginBtn" class="px-4 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition shadow">
+                        Accedi
                     </button>
                 </div>
             </div>
 
-            <!-- Stats & Summaries -->
-            <div class="glass-panel rounded-2xl p-5 shadow-sm flex-1 flex flex-col gap-4">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center justify-between">
-                    <span><i class="fa-solid fa-chart-pie text-blue-500 mr-1.5"></i>Riepilogo Mese</span>
-                    <span id="monthYearBadge" class="normal-case text-xs font-semibold text-blue-600 dark:text-blue-400">Ottobre 2026</span>
+            <!-- Informazioni Personalizzate (Grado, Località, Santo Patrono) -->
+            <div class="glass-panel rounded-2xl p-5 shadow-sm space-y-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                    <i class="fa-solid fa-user-shield text-blue-500 mr-1.5"></i>Dati Anagrafici
                 </h2>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800">
-                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Turni Totali</p>
-                        <p id="totalShiftCount" class="text-2xl font-black text-slate-900 dark:text-white mt-1">0</p>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Grado</label>
+                    <input type="text" id="userGrade" placeholder="Es. App. Sc. Q.S." 
+                        class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Località / Sede</label>
+                    <input type="text" id="userLocation" placeholder="Es. Roma / Stazione CC" 
+                        class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Santo Patrono (Festività)</label>
+                    <input type="text" id="userPatron" placeholder="Es. 21 Novembre (Virgo Fidelis)" 
+                        class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <button id="saveProfileBtn" class="w-full py-2 bg-slate-800 dark:bg-slate-700 text-white font-semibold text-xs rounded-xl hover:bg-slate-900 transition mt-2">
+                    Salva Dati Profilo
+                </button>
+            </div>
+
+            <!-- Statistiche del Mese -->
+            <div class="glass-panel rounded-2xl p-5 shadow-sm flex-1 flex flex-col gap-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <i class="fa-solid fa-chart-pie text-emerald-500 mr-1.5"></i>Riepilogo Mensile
+                </h2>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Ore Ordinarie</p>
+                        <p id="statHours" class="text-xl font-black text-blue-600 dark:text-blue-400 mt-0.5">0h</p>
                     </div>
-                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800">
-                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Ore Lavorate</p>
-                        <p id="totalHoursCount" class="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">0h</p>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Straordinari</p>
+                        <p id="statOvertime" class="text-xl font-black text-amber-500 mt-0.5">0h</p>
                     </div>
                 </div>
 
-                <div class="space-y-2 mt-2">
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold text-xs">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-umbrella-beach"></i> Licenze / Smonti</span>
-                        <span id="licenceCount" class="font-bold">0</span>
+                <div class="space-y-1.5 text-xs font-semibold">
+                    <div class="flex justify-between p-2 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                        <span><i class="fa-solid fa-umbrella-beach mr-1"></i> Licenze / Smonti</span>
+                        <span id="statLicence">0</span>
                     </div>
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold text-xs">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-bed"></i> Riposi Fruiti</span>
-                        <span id="restCount" class="font-bold">0</span>
+                    <div class="flex justify-between p-2 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-300">
+                        <span><i class="fa-solid fa-bed mr-1"></i> Riposi Fruiti</span>
+                        <span id="statRest">0</span>
                     </div>
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-300 font-semibold text-xs">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Straordinari</span>
-                        <span id="overtimeCount" class="font-bold">0h</span>
+                    <div class="flex justify-between p-2 rounded-lg bg-red-500/10 text-red-700 dark:text-red-300">
+                        <span><i class="fa-solid fa-notes-medical mr-1"></i> Malattia / C.M.</span>
+                        <span id="statSick">0</span>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Calendar Area -->
-        <main class="flex-1 glass-panel rounded-2xl p-5 shadow-sm flex flex-col overflow-hidden">
+        <!-- Area Calendario / Turni -->
+        <main class="flex-1 glass-panel rounded-2xl p-5 shadow-sm flex flex-col">
             
-            <!-- Calendar Navigation Header -->
-            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
-                <button id="prevMonth" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
-                    <i class="fa-solid fa-chevron-left text-sm"></i>
-                </button>
-                <div class="text-center">
-                    <h2 id="currentMonthDisplay" class="text-xl font-extrabold text-slate-900 dark:text-white">Ottobre 2026</h2>
+            <!-- Selezione Mese ed Anno (Dal 2027 al 2035) -->
+            <div class="flex flex-wrap items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800 gap-3">
+                <div class="flex items-center gap-2">
+                    <button id="prevMonth" class="p-2 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 transition">
+                        <i class="fa-solid fa-chevron-left text-sm"></i>
+                    </button>
+                    <button id="nextMonth" class="p-2 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 transition">
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
                 </div>
-                <button id="nextMonth" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
-                    <i class="fa-solid fa-chevron-right text-sm"></i>
-                </button>
+
+                <!-- Selettori Rapidi Mese e Anno -->
+                <div class="flex items-center gap-2">
+                    <select id="monthSelect" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-bold text-sm">
+                        <option value="0">Gennaio</option>
+                        <option value="1">Febbraio</option>
+                        <option value="2">Marzo</option>
+                        <option value="3">Aprile</option>
+                        <option value="4">Maggio</option>
+                        <option value="5">Giugno</option>
+                        <option value="6">Luglio</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Settembre</option>
+                        <option value="9">Ottobre</option>
+                        <option value="10">Novembre</option>
+                        <option value="11">Dicembre</option>
+                    </select>
+
+                    <select id="yearSelect" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-bold text-sm">
+                        <!-- Popolato dinamicamente da JS: 2027-2035 -->
+                    </select>
+                </div>
             </div>
 
-            <!-- Calendar Days Scrollable Container -->
-            <div id="calendarGrid" class="flex-1 overflow-y-auto pr-1 space-y-3">
-                <!-- Dynamic Day Cards generated via JavaScript -->
+            <!-- Griglia dei Giorni -->
+            <div id="calendarList" class="flex-1 overflow-y-auto space-y-2 pr-1">
+                <div class="text-center py-10 text-slate-400 font-medium">
+                    Inserisci il tuo PIN in alto a sinistra per caricare i dati dei tuoi turni.
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Firebase Logic & Application Scripts -->
+    <!-- Script Javascript Integrato -->
     <script>
-        // Theme Management Toggle
+        // Gestione Tema Scuro / Chiaro
         const themeToggle = document.getElementById('themeToggle');
         themeToggle.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
         });
-
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
         }
 
-        // Firebase Configuration (I tuoi parametri attivi)
+        // Configurazione Firebase
         const firebaseConfig = {
             databaseURL: "https://turnicc-default-rtdb.europe-west1.firebasedatabase.app"
         };
-        
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Sample Data Generation Engine
-        const calendarGrid = document.getElementById('calendarGrid');
-        
-        function renderCalendar() {
-            calendarGrid.innerHTML = '';
-            for (let day = 1; day <= 31; day++) {
-                const dayCard = document.createElement('div');
-                dayCard.className = 'day-card p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between gap-4';
-                dayCard.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-bold flex items-center justify-center text-sm">
-                            ${day}
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-slate-800 dark:text-slate-100">Giorno ${day}</p>
-                            <p class="text-xs text-slate-400 font-medium">Nessun Turno Assegnato</p>
-                        </div>
-                    </div>
-                    <button class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-200/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition">
-                        Modifica
-                    </button>
-                `;
-                calendarGrid.appendChild(dayCard);
-            }
+        // Stato dell'applicazione
+        let userPin = localStorage.getItem('userPin') || '';
+        let currentDate = new Date(2027, 0, 1); // Parte da Gennaio 2027
+        let monthData = {};
+
+        // Inizializzazione Selezione Anni (2027 - 2035)
+        const yearSelect = document.getElementById('yearSelect');
+        const monthSelect = document.getElementById('monthSelect');
+
+        for (let y = 2027; y <= 2035; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
         }
 
-        renderCalendar();
+        if (userPin) document.getElementById('pinInput').value = userPin;
+
+        // Gestione Login / Cambio PIN
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const pin = document.getElementById('pinInput').value.trim();
+            if (!pin) return alert('Inserisci un PIN valido');
+            userPin = pin;
+            localStorage.setItem('userPin', userPin);
+            loadUserProfile();
+            loadMonthData();
+        });
+
+        // Cambio Mese ed Anno
+        monthSelect.addEventListener('change', (e) => {
+            currentDate.setMonth(parseInt(e.target.value));
+            loadMonthData();
+        });
+
+        yearSelect.addEventListener('change', (e) => {
+            currentDate.setFullYear(parseInt(e.target.value));
+            loadMonthData();
+        });
+
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            if (currentDate.getFullYear() < 2027) currentDate.setFullYear(2027);
+            syncSelects();
+            loadMonthData();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            if (currentDate.getFullYear() > 2035) currentDate.setFullYear(2035);
+            syncSelects();
+            loadMonthData();
+        });
+
+        function syncSelects() {
+            monthSelect.value = currentDate.getMonth();
+            yearSelect.value = currentDate.getFullYear();
+        }
+
+        // Salvataggio Profilo Anagrafico
+        document.getElementById('saveProfileBtn').addEventListener('click', () => {
+            if (!userPin) return alert('Inserisci prima il tuo PIN');
+            const profile = {
+                grade: document.getElementById('userGrade').value,
+                location: document.getElementById('userLocation').value,
+                patron: document.getElementById('userPatron').value
+            };
+            db.ref(`users/${userPin}/profile`).set(profile, (err) => {
+                if (!err) alert('Dati profilo salvati con successo sul Cloud!');
+            });
+        });
+
+        function loadUserProfile() {
+            if (!userPin) return;
+            db.ref(`users/${userPin}/profile`).once('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                document.getElementById('userGrade').value = data.grade || '';
+                document.getElementById('userLocation').value = data.location || '';
+                document.getElementById('userPatron').value = data.patron || '';
+            });
+        }
+
+        function getMonthKey() {
+            const y = currentDate.getFullYear();
+            const m = String(currentDate.getMonth() + 1).padStart(2, '0');
+            return `${y}-${m}`;
+        }
+
+        function loadMonthData() {
+            if (!userPin) return;
+            syncSelects();
+            const monthKey = getMonthKey();
+
+            db.ref(`users/${userPin}/turns/${monthKey}`).on('value', (snapshot) => {
+                monthData = snapshot.val() || {};
+                renderCalendar();
+                calculateStats();
+            });
+        }
+
+        function renderCalendar() {
+            const calendarList = document.getElementById('calendarList');
+            calendarList.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayKey = String(day).padStart(2, '0');
+                const data = monthData[dayKey] || { code: '', hours: '', overtime: '' };
+                const dateObj = new Date(year, month, day);
+                const dayName = dateObj.toLocaleDateString('it-IT', { weekday: 'short' });
+                const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
+
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                    isWeekend ? 'bg-amber-500/5 border-amber-500/20' : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl ${isWeekend ? 'bg-amber-500/10 text-amber-600' : 'bg-blue-600/10 text-blue-600 dark:text-blue-400'} font-black flex flex-col items-center justify-center text-xs">
+                            <span class="text-sm leading-none">${day}</span>
+                            <span class="text-[9px] font-semibold uppercase">${dayName}</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 flex-1 max-w-md">
+                        <input type="text" placeholder="Turno" value="${data.code || ''}" data-day="${dayKey}" data-field="code"
+                               class="shift-input px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-bold focus:ring-1 focus:ring-blue-500">
+                        <input type="number" placeholder="Ore" value="${data.hours || ''}" data-day="${dayKey}" data-field="hours"
+                               class="shift-input px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-bold focus:ring-1 focus:ring-blue-500">
+                        <input type="number" placeholder="Straord." value="${data.overtime || ''}" data-day="${dayKey}" data-field="overtime"
+                               class="shift-input px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-bold focus:ring-1 focus:ring-amber-500">
+                    </div>
+                `;
+                calendarList.appendChild(card);
+            }
+
+            document.querySelectorAll('.shift-input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const day = e.target.dataset.day;
+                    const field = e.target.dataset.field;
+                    const val = e.target.value.toUpperCase();
+
+                    if (!monthData[day]) monthData[day] = {};
+                    monthData[day][field] = val;
+
+                    const monthKey = getMonthKey();
+                    db.ref(`users/${userPin}/turns/${monthKey}/${day}`).set(monthData[day]);
+                    calculateStats();
+                });
+            });
+        }
+
+        function calculateStats() {
+            let totalHours = 0;
+            let totalOvertime = 0;
+            let licenceCount = 0;
+            let restCount = 0;
+            let sickCount = 0;
+
+            Object.values(monthData).forEach(day => {
+                if (day.hours) totalHours += parseFloat(day.hours) || 0;
+                if (day.overtime) totalOvertime += parseFloat(day.overtime) || 0;
+                
+                const code = (day.code || '').toUpperCase();
+                if (code.includes('LIC') || code.includes('SM') || code.includes('ORD')) licenceCount++;
+                if (code.includes('RIP') || code.includes('FEST')) restCount++;
+                if (code.includes('MAL') || code.includes('CM')) sickCount++;
+            });
+
+            document.getElementById('statHours').textContent = `${totalHours}h`;
+            document.getElementById('statOvertime').textContent = `${totalOvertime}h`;
+            document.getElementById('statLicence').textContent = licenceCount;
+            document.getElementById('statRest').textContent = restCount;
+            document.getElementById('statSick').textContent = sickCount;
+        }
+
+        // Esportazione PDF
+        document.getElementById('exportPdfBtn').addEventListener('click', () => {
+            const element = document.querySelector('main');
+            const opt = {
+                margin:       0.5,
+                filename:     `Turni_CC_${userPin}_${getMonthKey()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+
+        // Avvio automatico se il PIN è già salvato
+        if (userPin) {
+            loadUserProfile();
+            loadMonthData();
+        }
     </script>
 </body>
 </html>
