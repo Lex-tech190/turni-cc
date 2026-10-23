@@ -40,7 +40,7 @@
             color: #f1f5f9;
         }
 
-        /* Effetto Glassmorphism per i pannelli principali */
+        /* Glassmorphism per i pannelli principali */
         aside, main, header {
             background: rgba(10, 15, 29, 0.75) !important;
             backdrop-filter: blur(16px) !important;
@@ -64,7 +64,7 @@
             transform: translateY(-1px);
         }
 
-        /* Stile per i campi di testo */
+        /* Input & Selects */
         input, select {
             background-color: rgba(5, 8, 17, 0.6) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -192,19 +192,19 @@
                 <!-- Dettaglio Straordinari Differenziato -->
                 <div class="space-y-1.5 text-xs font-semibold">
                     <div class="flex justify-between p-2 rounded-lg bg-blue-950/30 text-blue-300 border border-blue-500/20">
-                        <span><i class="fa-solid fa-clock mr-1 text-blue-400"></i> Straord. Ordinario</span>
+                        <span><i class="fa-solid fa-sun mr-1 text-blue-400"></i> Straord. Diurno Feriale</span>
                         <span id="statOvertimeOrd" class="font-bold">0h</span>
                     </div>
                     <div class="flex justify-between p-2 rounded-lg bg-indigo-950/30 text-indigo-300 border border-indigo-500/20">
-                        <span><i class="fa-solid fa-moon mr-1 text-indigo-400"></i> Straord. Notturno (22-06)</span>
+                        <span><i class="fa-solid fa-moon mr-1 text-indigo-400"></i> Straord. Notturno Feriale (22-06)</span>
                         <span id="statOvertimeNot" class="font-bold">0h</span>
                     </div>
                     <div class="flex justify-between p-2 rounded-lg bg-amber-950/30 text-amber-300 border border-amber-500/20">
-                        <span><i class="fa-solid fa-sun mr-1 text-amber-400"></i> Straord. Festivo</span>
+                        <span><i class="fa-solid fa-umbrella-beach mr-1 text-amber-400"></i> Straord. Diurno Festivo</span>
                         <span id="statOvertimeFest" class="font-bold">0h</span>
                     </div>
                     <div class="flex justify-between p-2 rounded-lg bg-purple-950/30 text-purple-300 border border-purple-500/20">
-                        <span><i class="fa-solid fa-cloud-moon mr-1 text-purple-400"></i> Straord. Notturno Festivo</span>
+                        <span><i class="fa-solid fa-cloud-moon mr-1 text-purple-400"></i> Straord. Notturno Festivo (22-06)</span>
                         <span id="statOvertimeNotFest" class="font-bold">0h</span>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
                 <!-- Licenze, Riposi e Malattia -->
                 <div class="space-y-1.5 text-xs font-semibold pt-1">
                     <div class="flex justify-between p-2 rounded-lg bg-emerald-950/40 text-emerald-300 border border-emerald-500/20">
-                        <span><i class="fa-solid fa-umbrella-beach mr-1 text-emerald-400"></i> Licenze / Smonti</span>
+                        <span><i class="fa-solid fa-plane-departure mr-1 text-emerald-400"></i> Licenze / Smonti</span>
                         <span id="statLicence" class="font-bold">0</span>
                     </div>
                     <div class="flex justify-between p-2 rounded-lg bg-amber-950/40 text-amber-300 border border-amber-500/20">
