@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it" class="h-full">
+<html lang="it" class="h-full dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -72,12 +72,8 @@
             border-radius: 9999px;
         }
 
-        .pt-safe {
-            padding-top: env(safe-area-inset-top);
-        }
-        .pb-safe {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
 <body class="h-full bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased flex flex-col min-h-screen">
@@ -97,7 +93,7 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <div id="syncStatus" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50">
+                    <div id="syncStatus" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span>Cloud Attivo</span>
                     </div>
@@ -119,7 +115,7 @@
     <!-- Main Content Container -->
     <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
         
-        <!-- Sidebar Panel: Credenziali e Anagrafica -->
+        <!-- Sidebar Panel -->
         <aside class="w-full md:w-80 flex-shrink-0 flex flex-col gap-4">
             
             <!-- Codice Personale PIN -->
@@ -136,36 +132,36 @@
                 </div>
             </div>
 
-            <!-- Informazioni Personalizzate (Grado, Località, Santo Patrono) -->
+            <!-- Dati Anagrafici -->
             <div class="glass-panel rounded-2xl p-5 shadow-sm space-y-3">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                     <i class="fa-solid fa-user-shield text-blue-500 mr-1.5"></i>Dati Anagrafici
                 </h2>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Grado</label>
-                    <input type="text" id="userGrade" placeholder="Es. App. Sc. Q.S." 
+                    <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Grado e Nome</label>
+                    <input type="text" id="userGrade" placeholder="Es. Brigadiere Alessandro Sironi" 
                         class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Località / Sede</label>
-                    <input type="text" id="userLocation" placeholder="Es. Roma / Stazione CC" 
+                    <input type="text" id="userLocation" placeholder="Es. Cantù" 
                         class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Santo Patrono (Festività)</label>
-                    <input type="text" id="userPatron" placeholder="Es. 21 Novembre (Virgo Fidelis)" 
+                    <input type="text" id="userPatron" placeholder="Es. 09 febbraio" 
                         class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <button id="saveProfileBtn" class="w-full py-2 bg-slate-800 dark:bg-slate-700 text-white font-semibold text-xs rounded-xl hover:bg-slate-900 transition mt-2">
+                <button id="saveProfileBtn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition mt-2 shadow">
                     Salva Dati Profilo
                 </button>
             </div>
 
-            <!-- Statistiche del Mese -->
+            <!-- Riepilogo Mensile -->
             <div class="glass-panel rounded-2xl p-5 shadow-sm flex-1 flex flex-col gap-3">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <i class="fa-solid fa-chart-pie text-emerald-500 mr-1.5"></i>Riepilogo Mensile
@@ -202,7 +198,7 @@
         <!-- Area Calendario / Turni -->
         <main class="flex-1 glass-panel rounded-2xl p-5 shadow-sm flex flex-col">
             
-            <!-- Selezione Mese ed Anno (Dal 2027 al 2035) -->
+            <!-- Selezione Mese ed Anno -->
             <div class="flex flex-wrap items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800 gap-3">
                 <div class="flex items-center gap-2">
                     <button id="prevMonth" class="p-2 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 transition">
@@ -213,7 +209,6 @@
                     </button>
                 </div>
 
-                <!-- Selettori Rapidi Mese e Anno -->
                 <div class="flex items-center gap-2">
                     <select id="monthSelect" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-bold text-sm">
                         <option value="0">Gennaio</option>
@@ -231,30 +226,26 @@
                     </select>
 
                     <select id="yearSelect" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-bold text-sm">
-                        <!-- Popolato dinamicamente da JS: 2027-2035 -->
                     </select>
                 </div>
             </div>
 
             <!-- Griglia dei Giorni -->
             <div id="calendarList" class="flex-1 overflow-y-auto space-y-2 pr-1">
-                <div class="text-center py-10 text-slate-400 font-medium">
-                    Inserisci il tuo PIN in alto a sinistra per caricare i dati dei tuoi turni.
-                </div>
             </div>
         </main>
     </div>
 
     <!-- Script Javascript Integrato -->
     <script>
-        // Gestione Tema Scuro / Chiaro
+        // Gestione Tema
         const themeToggle = document.getElementById('themeToggle');
         themeToggle.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
         });
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
         }
 
         // Configurazione Firebase
@@ -264,9 +255,9 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Stato dell'applicazione
+        // Stato App
         let userPin = localStorage.getItem('userPin') || '';
-        let currentDate = new Date(2027, 0, 1); // Parte da Gennaio 2027
+        let currentDate = new Date(2027, 0, 1);
         let monthData = {};
 
         // Inizializzazione Selezione Anni (2027 - 2035)
@@ -282,17 +273,26 @@
 
         if (userPin) document.getElementById('pinInput').value = userPin;
 
-        // Gestione Login / Cambio PIN
+        function sanitizePin(pin) {
+            return pin.replace(/[.#$\[\]]/g, "_");
+        }
+
+        function initDataFetch() {
+            if (!userPin) return;
+            loadUserProfile();
+            loadMonthData();
+        }
+
+        // Eventi Login
         document.getElementById('loginBtn').addEventListener('click', () => {
             const pin = document.getElementById('pinInput').value.trim();
             if (!pin) return alert('Inserisci un PIN valido');
             userPin = pin;
             localStorage.setItem('userPin', userPin);
-            loadUserProfile();
-            loadMonthData();
+            initDataFetch();
         });
 
-        // Cambio Mese ed Anno
+        // Cambio Mese/Anno
         monthSelect.addEventListener('change', (e) => {
             currentDate.setMonth(parseInt(e.target.value));
             loadMonthData();
@@ -325,19 +325,21 @@
         // Salvataggio Profilo Anagrafico
         document.getElementById('saveProfileBtn').addEventListener('click', () => {
             if (!userPin) return alert('Inserisci prima il tuo PIN');
+            const cleanPin = sanitizePin(userPin);
             const profile = {
                 grade: document.getElementById('userGrade').value,
                 location: document.getElementById('userLocation').value,
                 patron: document.getElementById('userPatron').value
             };
-            db.ref(`users/${userPin}/profile`).set(profile, (err) => {
+            db.ref(`users/${cleanPin}/profile`).set(profile, (err) => {
                 if (!err) alert('Dati profilo salvati con successo sul Cloud!');
             });
         });
 
         function loadUserProfile() {
             if (!userPin) return;
-            db.ref(`users/${userPin}/profile`).once('value', (snapshot) => {
+            const cleanPin = sanitizePin(userPin);
+            db.ref(`users/${cleanPin}/profile`).once('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 document.getElementById('userGrade').value = data.grade || '';
                 document.getElementById('userLocation').value = data.location || '';
@@ -352,11 +354,15 @@
         }
 
         function loadMonthData() {
-            if (!userPin) return;
             syncSelects();
+            if (!userPin) {
+                renderCalendar();
+                return;
+            }
+            const cleanPin = sanitizePin(userPin);
             const monthKey = getMonthKey();
 
-            db.ref(`users/${userPin}/turns/${monthKey}`).on('value', (snapshot) => {
+            db.ref(`users/${cleanPin}/turns/${monthKey}`).on('value', (snapshot) => {
                 monthData = snapshot.val() || {};
                 renderCalendar();
                 calculateStats();
@@ -405,6 +411,8 @@
 
             document.querySelectorAll('.shift-input').forEach(input => {
                 input.addEventListener('change', (e) => {
+                    if (!userPin) return alert('Inserisci il PIN per salvare');
+                    const cleanPin = sanitizePin(userPin);
                     const day = e.target.dataset.day;
                     const field = e.target.dataset.field;
                     const val = e.target.value.toUpperCase();
@@ -413,7 +421,7 @@
                     monthData[day][field] = val;
 
                     const monthKey = getMonthKey();
-                    db.ref(`users/${userPin}/turns/${monthKey}/${day}`).set(monthData[day]);
+                    db.ref(`users/${cleanPin}/turns/${monthKey}/${day}`).set(monthData[day]);
                     calculateStats();
                 });
             });
@@ -456,11 +464,8 @@
             html2pdf().set(opt).from(element).save();
         });
 
-        // Avvio automatico se il PIN è già salvato
-        if (userPin) {
-            loadUserProfile();
-            loadMonthData();
-        }
+        // Avvio automatico all'apertura della pagina
+        initDataFetch();
     </script>
 </body>
 </html>
