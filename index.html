@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it" class="h-full dark">
+<html lang="it" class="h-full dark overflow-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Turni CC">
-    <meta name="theme-color" content="#0a0f1d">
+    <meta name="theme-color" content="#050811">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
     <!-- Fonts & Icons -->
@@ -29,20 +29,28 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <style>
+        html, body {
+            height: 100%;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden !important;
+            background-color: #050811 !important;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            background-color: #050811 !important;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.2) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.1) 0px, transparent 50%) !important;
+                radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.25) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.15) 0px, transparent 50%) !important;
             background-attachment: fixed;
             color: #f1f5f9;
         }
 
-        /* Glassmorphism per i pannelli principali */
+        /* Glassmorphism per pannelli principali */
         aside, main, header {
-            background: rgba(10, 15, 29, 0.75) !important;
+            background: rgba(10, 15, 29, 0.8) !important;
             backdrop-filter: blur(16px) !important;
             -webkit-backdrop-filter: blur(16px) !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -64,9 +72,9 @@
             transform: translateY(-1px);
         }
 
-        /* Input & Selects */
+        /* Inputs & Selects */
         input, select {
-            background-color: rgba(5, 8, 17, 0.6) !important;
+            background-color: rgba(5, 8, 17, 0.7) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
             color: #f8fafc !important;
             transition: all 0.2s ease;
@@ -88,109 +96,107 @@
             border-radius: 9999px;
         }
 
-        .pt-safe { padding-top: env(safe-area-inset-top); }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: max(1rem, env(safe-area-inset-top)); }
+        .pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
     </style>
 </head>
-<body class="h-full antialiased flex flex-col min-h-screen">
+<body class="h-full w-full antialiased flex flex-col overflow-hidden">
 
     <!-- Header Navigation -->
-    <header class="sticky top-0 z-40 w-full pt-safe">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-900 to-amber-700/50 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-md">
-                        <i class="fa-solid fa-shield-halved text-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-lg text-white tracking-tight leading-none">Gestione Turni</h1>
-                        <p class="text-xs text-amber-500/80 font-medium">Comando Stazione CC</p>
-                    </div>
+    <header class="flex-shrink-0 z-40 w-full pt-safe px-4 sm:px-6 lg:px-8 border-b border-white/10">
+        <div class="max-w-7xl mx-auto flex items-center justify-between h-14">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-900 to-amber-700/50 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-md">
+                    <i class="fa-solid fa-shield-halved text-base"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-base text-white tracking-tight leading-none">Gestione Turni</h1>
+                    <p class="text-[11px] text-amber-500/80 font-medium">Comando Stazione CC</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div id="syncStatus" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="syncText">Sincronizzato</span>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <div id="syncStatus" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="syncText">Sincronizzato</span>
-                    </div>
-
-                    <button id="exportPdfBtn" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-lg border border-amber-400/30 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        <span class="hidden sm:inline">Esporta PDF</span>
-                    </button>
-                </div>
+                <button id="exportPdfBtn" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-lg border border-amber-400/30 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span class="hidden sm:inline">Esporta PDF</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Container -->
-    <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row gap-6">
+    <!-- Main Content Container (Con Scroll Indipendente) -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 lg:p-6 flex flex-col md:flex-row gap-4 min-h-0 overflow-hidden">
         
         <!-- Sidebar Panel -->
-        <aside class="w-full md:w-80 flex-shrink-0 flex flex-col gap-4 p-5 rounded-2xl">
+        <aside class="w-full md:w-80 flex-shrink-0 flex flex-col gap-3 p-4 rounded-2xl overflow-y-auto max-h-full">
             
             <!-- Codice Personale PIN -->
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-2">
-                    <i class="fa-solid fa-key mr-1.5"></i>Codice Personale (PIN)
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-amber-400/90 mb-1.5">
+                    <i class="fa-solid fa-key mr-1"></i>Codice Personale (PIN)
                 </label>
                 <div class="flex gap-2">
                     <input type="password" id="pinInput" placeholder="Inserisci PIN" 
-                        class="w-full px-3 py-2.5 rounded-xl text-sm font-semibold">
-                    <button id="loginBtn" class="px-4 py-2.5 bg-blue-900/80 hover:bg-blue-800 text-white font-bold text-xs rounded-xl border border-blue-500/30 transition shadow">
+                        class="w-full px-3 py-2 rounded-xl text-xs font-semibold">
+                    <button id="loginBtn" class="px-3.5 py-2 bg-blue-900/80 hover:bg-blue-800 text-white font-bold text-xs rounded-xl border border-blue-500/30 transition shadow">
                         Accedi
                     </button>
                 </div>
             </div>
 
             <!-- Dati Anagrafici -->
-            <div class="space-y-3 pt-2">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-1">
-                    <i class="fa-solid fa-user-shield text-amber-500 mr-1.5"></i>Dati Anagrafici
+            <div class="space-y-2.5 pt-1">
+                <h2 class="text-[11px] font-bold uppercase tracking-wider text-amber-400/90 mb-1">
+                    <i class="fa-solid fa-user-shield text-amber-500 mr-1"></i>Dati Anagrafici
                 </h2>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Grado e Nome</label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Grado e Nome</label>
                     <input type="text" id="userGrade" placeholder="Es. Brigadiere Alessandro Sironi" 
-                        class="w-full px-3 py-2 rounded-xl text-xs font-semibold">
+                        class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Località / Sede</label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Località / Sede</label>
                     <input type="text" id="userLocation" placeholder="Es. Cantù" 
-                        class="w-full px-3 py-2 rounded-xl text-xs font-semibold">
+                        class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Santo Patrono (Festività)</label>
+                    <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Santo Patrono (Festività)</label>
                     <input type="text" id="userPatron" placeholder="Es. 09 febbraio" 
-                        class="w-full px-3 py-2 rounded-xl text-xs font-semibold">
+                        class="w-full px-2.5 py-1.5 rounded-xl text-xs font-semibold">
                 </div>
 
-                <button id="saveProfileBtn" class="w-full py-2.5 bg-amber-600/80 hover:bg-amber-600 text-white font-bold text-xs rounded-xl border border-amber-500/30 transition mt-2 shadow">
+                <button id="saveProfileBtn" class="w-full py-2 bg-amber-600/80 hover:bg-amber-600 text-white font-bold text-xs rounded-xl border border-amber-500/30 transition mt-1 shadow">
                     Salva Dati Profilo
                 </button>
             </div>
 
             <!-- Riepilogo Mensile -->
-            <div class="flex-1 flex flex-col gap-3 pt-2">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-amber-400/90">
-                    <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i>Riepilogo Mensile
+            <div class="flex-1 flex flex-col gap-2.5 pt-1">
+                <h2 class="text-[11px] font-bold uppercase tracking-wider text-amber-400/90">
+                    <i class="fa-solid fa-chart-pie text-amber-500 mr-1"></i>Riepilogo Mensile
                 </h2>
 
                 <div class="grid grid-cols-2 gap-2">
-                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                    <div class="p-2.5 rounded-xl bg-slate-900/60 border border-white/5">
                         <p class="text-[10px] text-slate-400 font-medium">Ore Ordinarie</p>
-                        <p id="statHours" class="text-xl font-black text-blue-400 mt-0.5">0h</p>
+                        <p id="statHours" class="text-lg font-black text-blue-400 mt-0.5">0h</p>
                     </div>
-                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5">
+                    <div class="p-2.5 rounded-xl bg-slate-900/60 border border-white/5">
                         <p class="text-[10px] text-slate-400 font-medium">Tot. Straordinari</p>
-                        <p id="statOvertime" class="text-xl font-black text-amber-400 mt-0.5">0h</p>
+                        <p id="statOvertime" class="text-lg font-black text-amber-400 mt-0.5">0h</p>
                     </div>
                 </div>
 
                 <!-- Dettaglio Straordinari Differenziato -->
-                <div class="space-y-1.5 text-xs font-semibold">
+                <div class="space-y-1 text-xs font-semibold">
                     <div class="flex justify-between p-2 rounded-lg bg-blue-950/30 text-blue-300 border border-blue-500/20">
                         <span><i class="fa-solid fa-sun mr-1 text-blue-400"></i> Straord. Diurno Feriale</span>
                         <span id="statOvertimeOrd" class="font-bold">0h</span>
@@ -210,7 +216,7 @@
                 </div>
 
                 <!-- Licenze, Riposi e Malattia -->
-                <div class="space-y-1.5 text-xs font-semibold pt-1">
+                <div class="space-y-1 text-xs font-semibold pt-0.5">
                     <div class="flex justify-between p-2 rounded-lg bg-emerald-950/40 text-emerald-300 border border-emerald-500/20">
                         <span><i class="fa-solid fa-plane-departure mr-1 text-emerald-400"></i> Licenze / Smonti</span>
                         <span id="statLicence" class="font-bold">0</span>
@@ -228,21 +234,21 @@
         </aside>
 
         <!-- Area Calendario / Turni -->
-        <main class="flex-1 p-5 rounded-2xl flex flex-col">
+        <main class="flex-1 p-4 rounded-2xl flex flex-col min-h-0 overflow-hidden">
             
             <!-- Selezione Mese ed Anno -->
-            <div class="flex flex-wrap items-center justify-between pb-4 mb-4 border-b border-white/10 gap-3">
-                <div class="flex items-center gap-2">
-                    <button id="prevMonth" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-white/5 transition">
-                        <i class="fa-solid fa-chevron-left text-sm"></i>
+            <div class="flex flex-wrap items-center justify-between pb-3 mb-3 border-b border-white/10 gap-2 flex-shrink-0">
+                <div class="flex items-center gap-1.5">
+                    <button id="prevMonth" class="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-white/5 transition">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
                     </button>
-                    <button id="nextMonth" class="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-white/5 transition">
-                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    <button id="nextMonth" class="p-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-white/5 transition">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <select id="monthSelect" class="px-3 py-1.5 rounded-xl font-bold text-sm">
+                    <select id="monthSelect" class="px-2.5 py-1 rounded-xl font-bold text-xs">
                         <option value="0">Gennaio</option>
                         <option value="1">Febbraio</option>
                         <option value="2">Marzo</option>
@@ -257,13 +263,13 @@
                         <option value="11">Dicembre</option>
                     </select>
 
-                    <select id="yearSelect" class="px-3 py-1.5 rounded-xl font-bold text-sm">
+                    <select id="yearSelect" class="px-2.5 py-1 rounded-xl font-bold text-xs">
                     </select>
                 </div>
             </div>
 
-            <!-- Griglia dei Giorni -->
-            <div id="calendarList" class="flex-1 overflow-y-auto space-y-2 pr-1">
+            <!-- Griglia dei Giorni (Unica area con scroll verticale) -->
+            <div id="calendarList" class="flex-1 overflow-y-auto space-y-2 pr-1 h-full">
             </div>
         </main>
     </div>
@@ -428,25 +434,25 @@
                 const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
 
                 const card = document.createElement('div');
-                card.className = `p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                card.className = `p-2.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
                     isWeekend ? 'bg-amber-500/10 border-amber-500/20' : ''
                 }`;
 
                 card.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl ${isWeekend ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/20'} font-black flex flex-col items-center justify-center text-xs">
-                            <span class="text-sm leading-none">${day}</span>
-                            <span class="text-[9px] font-semibold uppercase">${dayName}</span>
+                        <div class="w-9 h-9 rounded-xl ${isWeekend ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/20'} font-black flex flex-col items-center justify-center text-xs">
+                            <span class="text-xs leading-none">${day}</span>
+                            <span class="text-[8px] font-semibold uppercase">${dayName}</span>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2 flex-1 max-w-md">
                         <input type="text" placeholder="Turno" value="${data.code || ''}" data-day="${dayKey}" data-field="code"
-                               class="shift-input px-2.5 py-1.5 rounded-lg text-xs font-bold">
+                               class="shift-input px-2 py-1 rounded-lg text-xs font-bold">
                         <input type="number" placeholder="Ore" value="${data.hours || ''}" data-day="${dayKey}" data-field="hours"
-                               class="shift-input px-2.5 py-1.5 rounded-lg text-xs font-bold">
+                               class="shift-input px-2 py-1 rounded-lg text-xs font-bold">
                         <input type="number" placeholder="Straord." value="${data.overtime || ''}" data-day="${dayKey}" data-field="overtime"
-                               class="shift-input px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-400">
+                               class="shift-input px-2 py-1 rounded-lg text-xs font-bold text-amber-400">
                     </div>
                 `;
                 calendarList.appendChild(card);
