@@ -239,12 +239,12 @@
             animation: badge-sync 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
         }
 
-        /* Sidebar fissa su desktop */
+     /* Sidebar fissa su desktop perfettamente adiacente all'header */
         @media (min-width: 1024px) {
             .sticky-sidebar {
                 position: sticky;
-                top: calc(env(safe-area-inset-top, 0px) + 145px);
-                max-height: calc(100vh - 160px);
+                top: 108px;
+                max-height: calc(100vh - 120px);
                 overflow-y: auto;
             }
         }
