@@ -83,7 +83,7 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        /* Palette Tema Chiaro Ricalibrata: sfondo più scuro e card solide ben distinte */
+        /* Palette Tema Chiaro */
         html.light {
             background-color: #E2E8F0;
             color: #0F172A;
@@ -202,11 +202,28 @@
         .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1.5px) grayscale(65%); }
         .days-blocked { pointer-events: none; opacity: 0.45; }
 
+        /* Animazioni di lampeggio netto per status Cloud e Pallino */
+        @keyframes pulse-netto {
+            0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.8)); }
+            50% { opacity: 0.15; transform: scale(0.85); filter: none; }
+        }
+        .blink-vivido {
+            animation: pulse-netto 1.3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes badge-glow {
+            0%, 100% { border-color: rgba(16, 185, 129, 0.7); background-color: rgba(16, 185, 129, 0.18); }
+            50% { border-color: rgba(16, 185, 129, 0.2); background-color: rgba(16, 185, 129, 0.05); }
+        }
+        .badge-pulse {
+            animation: badge-glow 1.8s ease-in-out infinite;
+        }
+
         @media (min-width: 1024px) {
             .sticky-sidebar {
                 position: sticky;
-                top: 82px;
-                max-height: calc(100vh - 95px);
+                top: 88px;
+                max-height: calc(100vh - 105px);
                 overflow-y: auto;
             }
         }
@@ -217,7 +234,7 @@
     <div class="watermark-bg"></div>
 
     <!-- Banner Iniziale Sincronizzazione con Safe Area iPhone Rispettata -->
-    <div class="fixed top-0 left-0 right-0 z-40 bg-arma-navy pt-[calc(env(safe-area-inset-top,0px)+14px)] border-b border-arma-gold/30 shadow-lg text-white">
+    <div class="fixed top-0 left-0 right-0 z-50 bg-arma-navy pt-[calc(env(safe-area-inset-top,0px)+14px)] border-b border-arma-gold/30 shadow-lg text-white">
         <div id="auth-banner" class="px-3 py-2">
             <div class="w-full flex items-center justify-between gap-2 max-w-[1600px] mx-auto">
                 <div class="flex items-center gap-2 min-w-0">
@@ -251,17 +268,17 @@
     </div>
 
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 mt-1 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
-        <!-- Header con Campi Grado e Cognome chiaramente separati e non sovrapposti -->
-        <header class="glass-panel text-inherit z-10 flex-shrink-0 w-full rounded-2xl mb-2.5">
+        <!-- Header Sticky che non scorre con la pagina -->
+        <header class="glass-panel text-inherit sticky top-[calc(env(safe-area-inset-top,0px)+85px)] lg:top-1 z-30 flex-shrink-0 w-full rounded-2xl mb-2.5 shadow-md">
             <div class="w-full px-2.5 sm:px-3.5 py-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
                 
-                <!-- Riga 1 su mobile: Titolo + Anno + Grado + Nome -->
+                <!-- Titolo + Anno + Grado + Nome -->
                 <div class="flex items-center gap-2 min-w-0 flex-1">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
                         <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
                     </div>
                     <div class="flex flex-col min-w-0 flex-1">
-                        <span class="text-[8px] sm:text-[9px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX-TECH // TURNI CC</span>
+                        <span class="text-[8px] sm:text-[9px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX_190 // TURNI</span>
                         <div class="flex items-center gap-1.5 mt-0.5 min-w-0 flex-wrap sm:flex-nowrap">
                             <h1 class="text-sm sm:text-lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
                             <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
@@ -271,7 +288,7 @@
                                 <option value="2030">2030</option>
                             </select>
                             
-                            <!-- Box Grado e Cognome/Nome: entrambi visibili e con spazio garantito -->
+                            <!-- Box Grado e Cognome -->
                             <div class="flex items-center gap-1 inner-box px-2 py-1 rounded-lg min-w-0 flex-1">
                                 <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
                                 <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-16 sm:w-20 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
@@ -282,7 +299,7 @@
                     </div>
                 </div>
 
-                <!-- Riga 2 su mobile / A destra su desktop: Tasto Sede, Switch Tema e Status Cloud -->
+                <!-- Tasto Sede, Switch Tema e Status Cloud -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-500/10">
                     <button type="button" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0" title="Imposta Sede">
                         <i class="fa-solid fa-landmark text-xs sm:text-sm"></i>
@@ -294,10 +311,10 @@
                         <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
                     </button>
 
-                    <!-- Cloud Sync -->
+                    <!-- Cloud Sync con lampeggio più netto -->
                     <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl flex-shrink-0">
                         <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-                        <span class="hidden md:inline text-xs font-bold opacity-80" id="status-user-text">Nessun Codice Inserito</span>
+                        <span class="hidden md:inline text-xs font-bold opacity-90" id="status-user-text">Nessun Codice Inserito</span>
                     </div>
                 </div>
             </div>
@@ -306,7 +323,7 @@
         <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start">
             <!-- Sidebar Riepiloghi Sticky -->
             <aside id="main-sidebar" class="w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
-                <!-- Selettore Mese: titolo pulito senza il nome utente -->
+                <!-- Selettore Mese -->
                 <div class="glass-panel rounded-2xl p-3 border-t-2 border-arma-gold flex-shrink-0">
                     <div class="flex items-center mb-2">
                         <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 opacity-90">
@@ -316,7 +333,7 @@
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <!-- Riquadro Riepilogo Ore Mensili (senza la barra di avanzamento) -->
+                <!-- Riquadro Riepilogo Ore Mensili -->
                 <div class="glass-panel rounded-2xl p-3 flex-shrink-0 border-t-2 border-arma-gold">
                     <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-500/20">
                         <h2 class="text-xs font-bold text-arma-gold uppercase tracking-wider flex items-center gap-1.5" id="summary-title">
@@ -431,8 +448,9 @@
                             <i class="fa-solid fa-id-badge mr-1"></i><span id="table-user-name">Militare</span>
                         </span>
                     </div>
-                    <span class="text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/20 shadow-sm flex items-center gap-1.5">
-                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Cloud Attivo
+                    <!-- Badge Cloud con lampeggio netto -->
+                    <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/40 shadow-sm flex items-center gap-1.5 badge-pulse">
+                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full blink-vivido"></span> Cloud Attivo
                     </span>
                 </div>
 
@@ -616,7 +634,7 @@
             document.getElementById('btn-login-code').classList.add('hidden');
             document.getElementById('user-code-input').disabled = true;
             document.getElementById('status-user-text').innerText = "Profilo: " + code;
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-sm animate-pulse';
+            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-sm blink-vivido';
             checkMandatoryFields();
         }
 
@@ -993,7 +1011,7 @@
                 let currMinute = (startM + i) % 1440;
                 let isNextDay = (startM + i) >= 1440;
                 let dayIsFestive = isNextDay ? nextDayFestivo : isDayFestivo;
-                let isNight = (currMinute < 360 || currMinute >= 1320); // Notte: 22:00 - 06:00
+                let isNight = (currMinute < 360 || currMinute >= 1320); // 22:00 - 06:00
 
                 let type = 'df'; // Diurno feriale
                 if (!isNight && dayIsFestive) type = 'fest'; // Diurno festivo
@@ -1372,10 +1390,10 @@
                 let html = `
                     <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-2.5 w-full">
                         <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                            <!-- Badge Giorno del Mese -->
+                            <!-- Badge Giorno del Mese (Rosso nei festivi) -->
                             <div class="flex items-center gap-1.5 w-16 sm:w-20 flex-shrink-0 inner-box py-1 px-2 rounded-xl">
-                                <span class="text-lg sm:text-xl font-black leading-none text-arma-gold">${day}</span>
-                                <span class="text-[10px] uppercase font-bold tracking-wider opacity-60">${dayOfWeek}</span>
+                                <span class="text-lg sm:text-xl font-black leading-none ${isHol ? 'text-red-500 dark:text-red-400' : 'text-arma-gold'}">${day}</span>
+                                <span class="text-[10px] uppercase font-bold tracking-wider ${isHol ? 'text-red-500/80 dark:text-red-400/80' : 'opacity-60'}">${dayOfWeek}</span>
                             </div>
                             
                             <!-- Dropdown Turno -->
