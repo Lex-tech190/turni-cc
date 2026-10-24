@@ -54,7 +54,7 @@
             transition: background-color 0.2s ease, color 0.2s ease;
         }
 
-        /* Palette Tema Scuro (Elegante, profondo, sobrio) */
+        /* Palette Tema Scuro */
         html.dark {
             background-color: #070D1E;
             color: #F1F5F9;
@@ -71,7 +71,7 @@
         html.dark .input-box {
             background-color: #1A2A54;
             color: #F8FAFC;
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.14);
         }
         html.dark .note-box {
             background-color: rgba(212, 175, 55, 0.08);
@@ -83,34 +83,34 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        /* Palette Tema Chiaro (Solido, nitido, niente effetto trasparenza) */
+        /* Palette Tema Chiaro Ricalibrata: sfondo più scuro e card solide ben distinte */
         html.light {
-            background-color: #F3F4F6;
-            color: #1E293B;
+            background-color: #E2E8F0;
+            color: #0F172A;
         }
         html.light .glass-panel {
             background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #CBD5E1;
+            box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08);
         }
         html.light .glass-card {
             background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+            border: 1px solid #CBD5E1;
+            box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.05);
         }
         html.light .input-box {
             background-color: #F8FAFC;
             color: #0F172A;
-            border: 1px solid #CBD5E1;
+            border: 1px solid #94A3B8;
         }
         html.light .note-box {
-            background-color: #FFFBEB;
-            color: #92400E;
-            border: 1px solid #FDE68A;
+            background-color: #FEF3C7;
+            color: #78350F;
+            border: 1px solid #FCD34D;
         }
         html.light .inner-box {
-            background-color: #F8FAFC;
-            border: 1px solid #E2E8F0;
+            background-color: #F1F5F9;
+            border: 1px solid #CBD5E1;
         }
 
         .watermark-bg {
@@ -161,32 +161,32 @@
             box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
         }
 
-        /* Indicatori laterali sobri per tipo riga */
+        /* Righe turni */
         .row-normale {
-            border-left: 4.5px solid #334155 !important;
+            border-left: 4.5px solid #475569 !important;
         }
         html.light .row-normale {
             border-left: 4.5px solid #0F172A !important;
         }
         .row-festivo {
             border-left: 4.5px solid #DC2626 !important;
-            background: rgba(220, 38, 38, 0.04) !important;
+            background: rgba(220, 38, 38, 0.05) !important;
         }
         .row-assenza {
             border-left: 4.5px solid #7C3AED !important;
-            background: rgba(124, 58, 237, 0.04) !important;
+            background: rgba(124, 58, 237, 0.05) !important;
         }
         .row-rrs {
             border-left: 4.5px solid #EA580C !important;
-            background: rgba(234, 88, 12, 0.04) !important;
+            background: rgba(234, 88, 12, 0.05) !important;
         }
         .row-sse {
             border-left: 4.5px solid #059669 !important;
-            background: rgba(5, 150, 105, 0.04) !important;
+            background: rgba(5, 150, 105, 0.05) !important;
         }
 
         .lic-num-input {
-            width: 44px; text-align: center; border: 1px solid #CBD5E1; border-radius: 0.4rem;
+            width: 44px; text-align: center; border: 1px solid #94A3B8; border-radius: 0.4rem;
             padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: inherit; background: transparent;
         }
         html.dark .lic-num-input {
@@ -202,15 +202,6 @@
         .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1.5px) grayscale(65%); }
         .days-blocked { pointer-events: none; opacity: 0.45; }
 
-        .progress-bar-bg {
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-        html.dark .progress-bar-bg {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
         @media (min-width: 1024px) {
             .sticky-sidebar {
                 position: sticky;
@@ -221,13 +212,13 @@
         }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+96px)] sm:pt-[calc(env(safe-area-inset-top,0px)+86px)] lg:pt-[76px] pb-16 lg:pb-4 font-sans">
+<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+125px)] sm:pt-[calc(env(safe-area-inset-top,0px)+105px)] lg:pt-[82px] pb-16 lg:pb-4 font-sans">
 
     <div class="watermark-bg"></div>
 
-    <!-- Banner Iniziale Sincronizzazione con Safe Area per iPhone -->
-    <div class="fixed top-0 left-0 right-0 z-40 bg-arma-navy pt-[env(safe-area-inset-top,0px)] border-b border-arma-gold/30 shadow-lg text-white">
-        <div id="auth-banner" class="px-3 py-1.5">
+    <!-- Banner Iniziale Sincronizzazione con Safe Area iPhone Rispettata -->
+    <div class="fixed top-0 left-0 right-0 z-40 bg-arma-navy pt-[calc(env(safe-area-inset-top,0px)+14px)] border-b border-arma-gold/30 shadow-lg text-white">
+        <div id="auth-banner" class="px-3 py-2">
             <div class="w-full flex items-center justify-between gap-2 max-w-[1600px] mx-auto">
                 <div class="flex items-center gap-2 min-w-0">
                     <div class="w-7 h-7 rounded-lg bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center flex-shrink-0 text-arma-gold">
@@ -260,16 +251,18 @@
     </div>
 
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 mt-1 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
-        <!-- Header Pulito ed Elegante -->
+        <!-- Header con Campi Grado e Cognome chiaramente separati e non sovrapposti -->
         <header class="glass-panel text-inherit z-10 flex-shrink-0 w-full rounded-2xl mb-2.5">
-            <div class="w-full px-2.5 sm:px-3.5 py-2 flex justify-between items-center gap-2">
-                <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <div class="w-9 h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
-                        <i class="fa-solid fa-calendar-check text-base"></i>
+            <div class="w-full px-2.5 sm:px-3.5 py-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+                
+                <!-- Riga 1 su mobile: Titolo + Anno + Grado + Nome -->
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
+                        <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
                     </div>
                     <div class="flex flex-col min-w-0 flex-1">
                         <span class="text-[8px] sm:text-[9px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX-TECH // TURNI CC</span>
-                        <div class="flex items-center gap-1.5 sm:gap-2 mt-0.5 min-w-0">
+                        <div class="flex items-center gap-1.5 mt-0.5 min-w-0 flex-wrap sm:flex-nowrap">
                             <h1 class="text-sm sm:text-lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
                             <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
                                 <option value="2027">2027</option>
@@ -278,31 +271,31 @@
                                 <option value="2030">2030</option>
                             </select>
                             
-                            <!-- Box Grado e Cognome -->
-                            <div class="flex items-center gap-1 inner-box px-2 py-0.5 rounded-lg min-w-0 flex-1 max-w-[240px] sm:max-w-none">
+                            <!-- Box Grado e Cognome/Nome: entrambi visibili e con spazio garantito -->
+                            <div class="flex items-center gap-1 inner-box px-2 py-1 rounded-lg min-w-0 flex-1">
                                 <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
-                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-14 sm:w-16 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-16 sm:w-20 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
                                 <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
-                                <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs w-full min-w-0 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                                <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs min-w-[90px] flex-1 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tasto Sede, Switch Tema e Status Cloud -->
-                <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1 rounded-xl flex items-center gap-1.5 transition shadow-sm" title="Imposta Sede">
+                <!-- Riga 2 su mobile / A destra su desktop: Tasto Sede, Switch Tema e Status Cloud -->
+                <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-500/10">
+                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0" title="Imposta Sede">
                         <i class="fa-solid fa-landmark text-xs sm:text-sm"></i>
-                        <span class="hidden md:inline text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
+                        <span class="text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
                     </button>
 
                     <!-- Toggle Tema Dark/Light -->
-                    <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-xl inner-box flex items-center justify-center transition hover:border-arma-gold" title="Cambia Tema">
+                    <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-xl inner-box flex items-center justify-center transition hover:border-arma-gold flex-shrink-0" title="Cambia Tema">
                         <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
                     </button>
 
                     <!-- Cloud Sync -->
-                    <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl">
+                    <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl flex-shrink-0">
                         <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                         <span class="hidden md:inline text-xs font-bold opacity-80" id="status-user-text">Nessun Codice Inserito</span>
                     </div>
@@ -313,18 +306,17 @@
         <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start">
             <!-- Sidebar Riepiloghi Sticky -->
             <aside id="main-sidebar" class="w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
-                <!-- Selettore Mese -->
+                <!-- Selettore Mese: titolo pulito senza il nome utente -->
                 <div class="glass-panel rounded-2xl p-3 border-t-2 border-arma-gold flex-shrink-0">
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 opacity-80">
+                    <div class="flex items-center mb-2">
+                        <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 opacity-90">
                             <i class="fa-regular fa-calendar-days text-arma-gold"></i> Seleziona Mese
                         </h2>
-                        <span id="aside-user-display" class="text-[9px] font-bold text-arma-gold bg-arma-gold/10 border border-arma-gold/20 px-2 py-0.5 rounded-full truncate max-w-[120px]">Militare</span>
                     </div>
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <!-- Riquadro Riepilogo Ore Mensili -->
+                <!-- Riquadro Riepilogo Ore Mensili (senza la barra di avanzamento) -->
                 <div class="glass-panel rounded-2xl p-3 flex-shrink-0 border-t-2 border-arma-gold">
                     <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-500/20">
                         <h2 class="text-xs font-bold text-arma-gold uppercase tracking-wider flex items-center gap-1.5" id="summary-title">
@@ -334,7 +326,7 @@
                     </div>
 
                     <!-- Totali Generali Card -->
-                    <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div class="grid grid-cols-2 gap-2 mb-2.5">
                         <div class="inner-box p-2 rounded-xl">
                             <span class="text-[9px] uppercase font-bold opacity-60 block tracking-wider">Tot. Ordinarie</span>
                             <span class="text-xl font-black" id="monthly-std-display">00:00</span>
@@ -342,17 +334,6 @@
                         <div class="inner-box p-2 rounded-xl">
                             <span class="text-[9px] uppercase font-bold text-arma-gold block tracking-wider">Tot. Straord.</span>
                             <span class="text-xl font-black text-arma-gold" id="monthly-ot-display">00:00</span>
-                        </div>
-                    </div>
-
-                    <!-- Avanzamento Mensile -->
-                    <div class="mb-2.5 px-0.5">
-                        <div class="flex justify-between text-[9px] font-semibold opacity-70 mb-1">
-                            <span>Avanzamento Ordinarie</span>
-                            <span id="monthly-progress-pct" class="text-arma-gold font-mono">0%</span>
-                        </div>
-                        <div class="w-full h-1.5 progress-bar-bg">
-                            <div id="monthly-progress-bar" class="h-full bg-arma-gold rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
 
@@ -430,7 +411,7 @@
                     <div id="unpaid-rests-container" class="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar flex-1"></div>
                 </div>
 
-                <!-- Pulsante Stampa PDF -->
+                <!-- Pulsante Stampa PDF per Versione Web / Desktop -->
                 <div class="glass-panel rounded-2xl p-2.5 border-t-2 border-arma-gold flex flex-col flex-shrink-0">
                     <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow transition active:scale-95">
                         <i class="fa-solid fa-file-pdf"></i> Scarica PDF Calendario Mese
@@ -570,7 +551,7 @@
             if (theme === 'dark') {
                 icon.className = 'fa-solid fa-sun text-xs text-arma-gold';
             } else {
-                icon.className = 'fa-solid fa-moon text-xs text-arma-navy';
+                icon.className = 'fa-solid fa-moon text-xs text-slate-800';
             }
         }
 
@@ -756,7 +737,6 @@
             const user = getUserInfo();
             const gradoInput = document.getElementById('user-grado-input');
             const nomeInput = document.getElementById('user-nome-input');
-            const asideDisplay = document.getElementById('aside-user-display');
             const tableDisplay = document.getElementById('table-user-name');
             const tablePill = document.getElementById('table-user-pill');
 
@@ -764,7 +744,6 @@
             if (nomeInput && document.activeElement !== nomeInput) nomeInput.value = user.nome || '';
 
             const fullName = `${user.grado ? user.grado + ' ' : ''}${user.nome || ''}`.trim() || 'Militare';
-            if (asideDisplay) asideDisplay.innerText = fullName;
             if (tableDisplay) tableDisplay.innerText = fullName;
             if (tablePill) {
                 if (user.grado || user.nome) tablePill.classList.remove('hidden');
@@ -1014,7 +993,7 @@
                 let currMinute = (startM + i) % 1440;
                 let isNextDay = (startM + i) >= 1440;
                 let dayIsFestive = isNextDay ? nextDayFestivo : isDayFestivo;
-                let isNight = (currMinute < 360 || currMinute >= 1320); // 22:00 - 06:00
+                let isNight = (currMinute < 360 || currMinute >= 1320); // Notte: 22:00 - 06:00
 
                 let type = 'df'; // Diurno feriale
                 if (!isNight && dayIsFestive) type = 'fest'; // Diurno festivo
@@ -1258,10 +1237,10 @@
                     <tr class="hover:bg-gray-500/5 transition-colors">
                         <td class="py-1.5 font-medium">
                             <div>${item.label}</div>
-                            <div class="text-[8px] ${item.id === 'lo_prev2' && isExpiredLoPrev2 ? 'text-red-500 font-semibold' : 'opacity-40'} font-mono">${item.note}</div>
+                            <div class="text-[8px] ${item.id === 'lo_prev2' && isExpiredLoPrev2 ? 'text-red-500 font-semibold' : 'opacity-50'} font-mono">${item.note}</div>
                         </td>
                         <td class="text-center py-1">${inputHtml}</td>
-                        <td class="text-center py-1 font-semibold opacity-70">${item.usate}</td>
+                        <td class="text-center py-1 font-semibold opacity-75">${item.usate}</td>
                         <td class="text-right py-1 text-xs pr-1 ${resClass}">${item.res}</td>
                     </tr>
                 `;
@@ -1401,7 +1380,7 @@
                             
                             <!-- Dropdown Turno -->
                             <div class="flex items-center flex-shrink-0">
-                                <select class="input-box font-extrabold w-[85px] sm:w-[95px] text-center shadow-sm cursor-pointer !rounded-xl text-arma-gold border-arma-gold/30" data-field="shift" data-day="${day}">
+                                <select class="input-box font-extrabold w-[85px] sm:w-[95px] text-center shadow-sm cursor-pointer !rounded-xl text-arma-gold border-arma-gold/40" data-field="shift" data-day="${day}">
                                     ${SHIFT_TYPES.map(s => `<option value="${s}" ${dayData.shift === s ? 'selected' : ''}>${s === '' ? '- Turno -' : s}</option>`).join('')}
                                 </select>
                                 
@@ -1439,7 +1418,7 @@
 
                             <!-- Note Giorno -->
                             <div class="flex-1 min-w-[130px] max-w-full">
-                                <input type="text" class="note-box w-full italic placeholder-amber-500/40 font-medium shadow-sm" placeholder="Note servizio o promemoria..." data-field="note" data-day="${day}" value="${dayData.note || ''}">
+                                <input type="text" class="note-box w-full italic placeholder-amber-600/40 font-medium shadow-sm" placeholder="Note servizio o promemoria..." data-field="note" data-day="${day}" value="${dayData.note || ''}">
                             </div>
                         </div>
 
@@ -1717,14 +1696,6 @@
             if (otDisp) otDisp.innerText = formatTime(currentTotals.totalOt);
             if (stdDisp) stdDisp.innerText = formatTime(currentTotals.totalOrd);
 
-            // Calcolo e animazione barra di avanzamento mensile (standard su 156 ore)
-            const targetMins = 156 * 60;
-            const pct = Math.min(100, Math.round((currentTotals.totalOrd / targetMins) * 100));
-            const progBar = document.getElementById('monthly-progress-bar');
-            const progPct = document.getElementById('monthly-progress-pct');
-            if (progBar) progBar.style.width = `${pct}%`;
-            if (progPct) progPct.innerText = `${pct}% (${formatTime(currentTotals.totalOrd)} / 156:00)`;
-
             const bOrdDf = document.getElementById('breakdown-ord-df');
             const bOrdFest = document.getElementById('breakdown-ord-fest');
             const bOrdNf = document.getElementById('breakdown-ord-nf');
@@ -1772,8 +1743,8 @@
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
             const isDark = document.documentElement.classList.contains('dark');
-            const textColor = isDark ? '#94A3B8' : '#475569';
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+            const textColor = isDark ? '#94A3B8' : '#334155';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)';
 
             if (chartInstance) {
                 chartInstance.data.datasets[0].data = dataArr;
@@ -1904,12 +1875,12 @@
                 const dData = (shiftData && shiftData[currentMonth] && shiftData[currentMonth][d]) ? shiftData[currentMonth][d] : {};
                 const dRes = typeof calcDayLogic === 'function' ? calcDayLogic(dData) : { ordMins: 0, otMins: 0 };
 
-                let headerBg = '#070D1E';
+                let headerBg = '#0B132B';
                 let cellBorder = '#cbd5e1';
                 let cellBg = '#ffffff';
 
                 if (isHol || isSunday) {
-                    headerBg = '#DC2626';
+                    headerBg = '#B91C1C';
                     cellBorder = '#fca5a5';
                     cellBg = '#fffafa';
                 } else if (dData.shift === 'SSE') {
@@ -1921,7 +1892,7 @@
                     cellBorder = '#fcd34d';
                     cellBg = '#fffbeb';
                 } else if (dData.shift && ['RS','RF','RRF','RM','LO','RFS','LT','RR','96h'].includes(dData.shift)) {
-                    headerBg = '#7C3AED';
+                    headerBg = '#6D28D9';
                     cellBorder = '#c084fc';
                     cellBg = '#faf5ff';
                 }
@@ -1957,15 +1928,15 @@
             const sedeStr = patrono.citta ? `${patrono.citta} (Patrono: ${patrono.giorno}/${patrono.mese})` : 'Non Impostata';
 
             container.innerHTML = `
-                <div style="border-bottom:2px solid #070D1E; padding-bottom:5px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="border-bottom:2px solid #0B132B; padding-bottom:5px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <div style="font-size:7.5px; color:#64748b; text-transform:uppercase; font-weight:bold; letter-spacing:1px;">Memoriale Mensile di Servizio</div>
-                        <h1 style="font-size:17px; font-weight:bold; color:#070D1E; margin:0;">${MONTHS[currentMonth]} ${currentYear}</h1>
-                        <div style="font-size:9px; font-weight:bold; color:#334155;">Militare: <span style="color:#DC2626;">${fullName}</span> - Sede: <span>${sedeStr}</span></div>
+                        <h1 style="font-size:17px; font-weight:bold; color:#0B132B; margin:0;">${MONTHS[currentMonth]} ${currentYear}</h1>
+                        <div style="font-size:9px; font-weight:bold; color:#334155;">Militare: <span style="color:#B91C1C;">${fullName}</span> - Sede: <span>${sedeStr}</span></div>
                     </div>
                     <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:4px 8px; border-radius:5px; text-align:right;">
                         <div style="font-size:7px; color:#64748b; font-weight:bold; text-transform:uppercase;">Riepilogo Ore Mese</div>
-                        <div style="font-size:9.5px; font-weight:bold; color:#070D1E;">Ordinarie: ${formatTime(totals.totalOrd)} | Straord: <span style="color:#b45309;">${formatTime(totals.totalOt)}</span></div>
+                        <div style="font-size:9.5px; font-weight:bold; color:#0B132B;">Ordinarie: ${formatTime(totals.totalOrd)} | Straord: <span style="color:#b45309;">${formatTime(totals.totalOt)}</span></div>
                     </div>
                 </div>
 
@@ -1991,7 +1962,7 @@
                 </div>
 
                 <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px; margin-bottom:3px; text-align:center;">
-                    ${dayNames.map(name => `<div style="background:#070D1E; color:#ffffff; font-size:8.5px; font-weight:bold; padding:2px 0; border-radius:2px;">${name}</div>`).join('')}
+                    ${dayNames.map(name => `<div style="background:#0B132B; color:#ffffff; font-size:8.5px; font-weight:bold; padding:2px 0; border-radius:2px;">${name}</div>`).join('')}
                 </div>
 
                 <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px;">
