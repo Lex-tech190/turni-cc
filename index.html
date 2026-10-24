@@ -61,13 +61,12 @@
         .input-box:focus { border-color: #D4AF37; box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3); }
         .input-box:disabled { background: #e5e7eb; cursor: not-allowed; opacity: 0.6; }
         
-      .time-box {
+        .time-box {
             font-family: 'Inter', sans-serif;
             font-variant-numeric: tabular-nums;
             letter-spacing: 0.3px;
             text-align: center;
             font-weight: 600;
-    
         }
 
         .note-box {
@@ -210,16 +209,51 @@
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <div class="bg-gradient-to-br from-arma-navy to-blue-900 rounded-xl shadow-md p-3.5 text-white flex-shrink-0">
-                    <h2 class="text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-1" id="summary-title">Riepilogo Mensile</h2>
-                    <div class="flex items-end justify-between mt-2">
-                        <div>
-                            <p class="text-2xl font-bold text-arma-gold" id="monthly-ot-display">00:00</p>
-                            <p class="text-[9px] text-gray-300 mt-0.5 uppercase">Straordinario Mensile</p>
+                <!-- Riquadro Riepilogo Mensile con suddivisione dettagliata -->
+                <div class="bg-gradient-to-br from-arma-navy to-blue-950 rounded-xl shadow-md p-3 text-white flex-shrink-0 border-t-4 border-arma-gold">
+                    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-white/10">
+                        <h2 class="text-xs font-bold text-arma-gold uppercase tracking-wider" id="summary-title">Riepilogo Mensile</h2>
+                        <span class="text-[10px] text-gray-300 font-mono" id="summary-month-badge">Ore Mese</span>
+                    </div>
+
+                    <!-- Totali Generali -->
+                    <div class="grid grid-cols-2 gap-2 mb-2.5">
+                        <div class="bg-black/25 p-2 rounded-lg border border-white/5">
+                            <span class="text-[9px] uppercase font-bold text-gray-300 block">Tot. Ordinarie</span>
+                            <span class="text-lg font-black text-white" id="monthly-std-display">00:00</span>
                         </div>
-                        <div class="text-right">
-                            <p class="text-lg font-bold" id="monthly-std-display">00:00</p>
-                            <p class="text-[9px] text-gray-300 mt-0.5 uppercase">Ore Ordinarie</p>
+                        <div class="bg-black/25 p-2 rounded-lg border border-white/5">
+                            <span class="text-[9px] uppercase font-bold text-arma-gold block">Tot. Straord.</span>
+                            <span class="text-lg font-black text-arma-gold" id="monthly-ot-display">00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Dettaglio 4 Categorie per Ordinarie e Straordinarie -->
+                    <div class="bg-black/30 rounded-lg p-2 border border-white/10 flex flex-col gap-1.5 text-[10px]">
+                        <div class="grid grid-cols-3 text-[8.5px] uppercase font-bold text-gray-400 pb-1 border-b border-white/10">
+                            <span>Fascia</span>
+                            <span class="text-center text-white">Ordinarie</span>
+                            <span class="text-right text-arma-gold">Straord.</span>
+                        </div>
+                        <div class="grid grid-cols-3 items-center">
+                            <span class="text-gray-300 font-medium">Diurno Fer.</span>
+                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-df">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-df">00:00</span>
+                        </div>
+                        <div class="grid grid-cols-3 items-center">
+                            <span class="text-amber-300 font-medium">Diurno Fest.</span>
+                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-fest">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-fest">00:00</span>
+                        </div>
+                        <div class="grid grid-cols-3 items-center">
+                            <span class="text-blue-300 font-medium">Notturno Fer.</span>
+                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-nf">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-nf">00:00</span>
+                        </div>
+                        <div class="grid grid-cols-3 items-center">
+                            <span class="text-purple-300 font-medium">Notturno Fest.</span>
+                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-not-fest">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-not-fest">00:00</span>
                         </div>
                     </div>
                 </div>
@@ -803,17 +837,81 @@
             return { ordMins, otMins: Math.max(0, otMins) };
         }
 
-        function calcTotals(monthIndex) {
-            let totalOrd = 0; let totalOt = 0;
-            const data = shiftData[monthIndex];
-            if(data) {
-                for (let day in data) {
-                    const res = calcDayLogic(data[day]);
-                    totalOrd += res.ordMins;
-                    totalOt += res.otMins;
-                }
+        function decomposeIntervalMins(startStr, endStr, isDayFestivo, nextDayFestivo) {
+            if (!startStr || !endStr) return [];
+            let startM = parseTime(startStr);
+            let endM = parseTime(endStr);
+            let totalDur = endM >= startM ? (endM - startM) : (endM + 1440 - startM);
+            let intervals = [];
+
+            for (let i = 0; i < totalDur; i++) {
+                let currMinute = (startM + i) % 1440;
+                let isNextDay = (startM + i) >= 1440;
+                let dayIsFestive = isNextDay ? nextDayFestivo : isDayFestivo;
+                let isNight = (currMinute < 360 || currMinute >= 1320); // Notte: 22:00 - 06:00
+
+                let type = 'df'; // Diurno feriale
+                if (!isNight && dayIsFestive) type = 'fest'; // Diurno festivo
+                else if (isNight && !dayIsFestive) type = 'nf'; // Notturno feriale
+                else if (isNight && dayIsFestive) type = 'not_fest'; // Notturno festivo
+
+                intervals.push(type);
             }
-            return { totalOrd, totalOt };
+            return intervals;
+        }
+
+        function calcTotals(monthIndex) {
+            let totals = {
+                totalOrd: 0, totalOt: 0,
+                ord: { df: 0, fest: 0, nf: 0, not_fest: 0 },
+                ot: { df: 0, fest: 0, nf: 0, not_fest: 0 }
+            };
+
+            const data = shiftData[monthIndex];
+            if (!data) return totals;
+
+            const daysInMonth = new Date(currentYear, monthIndex + 1, 0).getDate();
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayObj = data[d];
+                if (!dayObj) continue;
+
+                const isCurrentFestive = isHoliday(currentYear, monthIndex, d);
+                let nextD = d + 1;
+                let nextM = monthIndex;
+                let nextY = currentYear;
+                if (nextD > daysInMonth) {
+                    nextD = 1;
+                    nextM++;
+                    if (nextM > 11) { nextM = 0; nextY++; }
+                }
+                const isNextFestive = isHoliday(nextY, nextM, nextD);
+
+                let mainSlots = decomposeIntervalMins(dayObj.start, dayObj.end, isCurrentFestive, isNextFestive);
+                let ordSlots = mainSlots.slice(0, 360);
+                let mainOtSlots = mainSlots.slice(360);
+
+                let strSlots = [
+                    ...decomposeIntervalMins(dayObj.str1_start, dayObj.str1_end, isCurrentFestive, isNextFestive),
+                    ...decomposeIntervalMins(dayObj.str2_start, dayObj.str2_end, isCurrentFestive, isNextFestive),
+                    ...decomposeIntervalMins(dayObj.str3_start, dayObj.str3_end, isCurrentFestive, isNextFestive),
+                    ...decomposeIntervalMins(dayObj.str4_start, dayObj.str4_end, isCurrentFestive, isNextFestive)
+                ];
+
+                let allOtSlots = [...mainOtSlots, ...strSlots];
+                if (dayObj.mos && allOtSlots.length >= 30) {
+                    allOtSlots.splice(0, 30);
+                }
+
+                ordSlots.forEach(type => totals.ord[type]++);
+                allOtSlots.forEach(type => totals.ot[type]++);
+
+                const dayRes = calcDayLogic(dayObj);
+                totals.totalOrd += dayRes.ordMins;
+                totals.totalOt += dayRes.otMins;
+            }
+
+            return totals;
         }
 
         function calcRiposi() {
@@ -1436,22 +1534,47 @@
 
         function updateSummaryAndChart() {
             const sumTitle = document.getElementById('summary-title');
-            if(sumTitle) sumTitle.innerText = `Riepilogo ${MONTHS[currentMonth]}`;
+            if (sumTitle) sumTitle.innerText = `Riepilogo ${MONTHS[currentMonth]}`;
+            const sumBadge = document.getElementById('summary-month-badge');
+            if (sumBadge) sumBadge.innerText = `${MONTHS[currentMonth]} ${currentYear}`;
+
             const currentTotals = calcTotals(currentMonth);
+
             const otDisp = document.getElementById('monthly-ot-display');
             const stdDisp = document.getElementById('monthly-std-display');
-            if(otDisp) otDisp.innerText = formatTime(currentTotals.totalOt);
-            if(stdDisp) stdDisp.innerText = formatTime(currentTotals.totalOrd);
+            if (otDisp) otDisp.innerText = formatTime(currentTotals.totalOt);
+            if (stdDisp) stdDisp.innerText = formatTime(currentTotals.totalOrd);
+
+            // Aggiornamento riepilogo dettagliato
+            const bOrdDf = document.getElementById('breakdown-ord-df');
+            const bOrdFest = document.getElementById('breakdown-ord-fest');
+            const bOrdNf = document.getElementById('breakdown-ord-nf');
+            const bOrdNotFest = document.getElementById('breakdown-ord-not-fest');
+
+            const bOtDf = document.getElementById('breakdown-ot-df');
+            const bOtFest = document.getElementById('breakdown-ot-fest');
+            const bOtNf = document.getElementById('breakdown-ot-nf');
+            const bOtNotFest = document.getElementById('breakdown-ot-not-fest');
+
+            if (bOrdDf) bOrdDf.innerText = formatTime(currentTotals.ord.df);
+            if (bOrdFest) bOrdFest.innerText = formatTime(currentTotals.ord.fest);
+            if (bOrdNf) bOrdNf.innerText = formatTime(currentTotals.ord.nf);
+            if (bOrdNotFest) bOrdNotFest.innerText = formatTime(currentTotals.ord.not_fest);
+
+            if (bOtDf) bOtDf.innerText = formatTime(currentTotals.ot.df);
+            if (bOtFest) bOtFest.innerText = formatTime(currentTotals.ot.fest);
+            if (bOtNf) bOtNf.innerText = formatTime(currentTotals.ot.nf);
+            if (bOtNotFest) bOtNotFest.innerText = formatTime(currentTotals.ot.not_fest);
 
             const yearlyOtData = [];
-            for(let m=0; m<12; m++) yearlyOtData.push(calcTotals(m).totalOt / 60); 
+            for (let m = 0; m < 12; m++) yearlyOtData.push(calcTotals(m).totalOt / 60);
             renderChart(yearlyOtData);
 
             const { earned, used } = calcRiposi();
             const available = earned.filter(r => !used[r.id]);
             const restContainer = document.getElementById('unpaid-rests-container');
-            
-            if(restContainer) {
+
+            if (restContainer) {
                 if (available.length === 0) {
                     restContainer.innerHTML = '<p class="text-gray-400 text-xs italic mt-2 text-center">Nessun riposo da recuperare.</p>';
                 } else {
