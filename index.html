@@ -59,6 +59,9 @@
             background-color: #070D1E;
             color: #F1F5F9;
         }
+        html.dark .fixed-header-bg {
+            background-color: #070D1E;
+        }
         html.dark .glass-panel {
             background-color: #0F1A36;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -87,6 +90,9 @@
         html.light {
             background-color: #E2E8F0;
             color: #0F172A;
+        }
+        html.light .fixed-header-bg {
+            background-color: #E2E8F0;
         }
         html.light .glass-panel {
             background-color: #FFFFFF;
@@ -202,40 +208,56 @@
         .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1.5px) grayscale(65%); }
         .days-blocked { pointer-events: none; opacity: 0.45; }
 
-        /* Animazioni di lampeggio netto per status Cloud e Pallino */
-        @keyframes pulse-netto {
-            0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.8)); }
-            50% { opacity: 0.15; transform: scale(0.85); filter: none; }
+        /* Lampeggio sincrono e netto per pallino e banner Cloud */
+        @keyframes pulse-sync {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.15; 
+                transform: scale(0.9);
+            }
         }
-        .blink-vivido {
-            animation: pulse-netto 1.3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes badge-glow {
-            0%, 100% { border-color: rgba(16, 185, 129, 0.7); background-color: rgba(16, 185, 129, 0.18); }
-            50% { border-color: rgba(16, 185, 129, 0.2); background-color: rgba(16, 185, 129, 0.05); }
-        }
-        .badge-pulse {
-            animation: badge-glow 1.8s ease-in-out infinite;
+        .blink-sync {
+            animation: pulse-sync 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
         }
 
+        @keyframes badge-sync {
+            0%, 100% { 
+                border-color: rgba(16, 185, 129, 0.8); 
+                background-color: rgba(16, 185, 129, 0.2);
+                opacity: 1;
+            }
+            50% { 
+                border-color: rgba(16, 185, 129, 0.2); 
+                background-color: rgba(16, 185, 129, 0.04);
+                opacity: 0.35;
+            }
+        }
+        .badge-sync {
+            animation: badge-sync 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+        }
+
+        /* Sidebar fissa su desktop */
         @media (min-width: 1024px) {
             .sticky-sidebar {
                 position: sticky;
-                top: 88px;
-                max-height: calc(100vh - 105px);
+                top: calc(env(safe-area-inset-top, 0px) + 145px);
+                max-height: calc(100vh - 160px);
                 overflow-y: auto;
             }
         }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+125px)] sm:pt-[calc(env(safe-area-inset-top,0px)+105px)] lg:pt-[82px] pb-16 lg:pb-4 font-sans">
+<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+195px)] sm:pt-[calc(env(safe-area-inset-top,0px)+145px)] pb-16 lg:pb-4 font-sans">
 
     <div class="watermark-bg"></div>
 
-    <!-- Banner Iniziale Sincronizzazione con Safe Area iPhone Rispettata -->
-    <div class="fixed top-0 left-0 right-0 z-50 bg-arma-navy pt-[calc(env(safe-area-inset-top,0px)+14px)] border-b border-arma-gold/30 shadow-lg text-white">
-        <div id="auth-banner" class="px-3 py-2">
+    <!-- Blocco Intestazione Fissa Opaca (copre interamente lo scorrimento dei giorni sottostanti) -->
+    <div class="fixed top-0 left-0 right-0 z-40 fixed-header-bg pt-[calc(env(safe-area-inset-top,0px)+14px)] border-b border-arma-gold/30 shadow-md">
+        <!-- 1. Banner Autenticazione PIN -->
+        <div id="auth-banner" class="bg-arma-navy px-3 py-1.5 text-white">
             <div class="w-full flex items-center justify-between gap-2 max-w-[1600px] mx-auto">
                 <div class="flex items-center gap-2 min-w-0">
                     <div class="w-7 h-7 rounded-lg bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center flex-shrink-0 text-arma-gold">
@@ -261,18 +283,17 @@
             </div>
         </div>
 
+        <!-- Avviso compilazione bloccata -->
         <div id="lock-warning" class="bg-amber-500 text-slate-950 font-bold text-center py-0.5 px-2 text-[11px] shadow-sm flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-lock text-xs"></i>
             <span id="lock-warning-text">ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto.</span>
         </div>
-    </div>
 
-    <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 mt-1 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
-        <!-- Header Sticky che non scorre con la pagina -->
-        <header class="glass-panel text-inherit sticky top-[calc(env(safe-area-inset-top,0px)+85px)] lg:top-1 z-30 flex-shrink-0 w-full rounded-2xl mb-2.5 shadow-md">
-            <div class="w-full px-2.5 sm:px-3.5 py-2 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+        <!-- 2. Header Principale Memoriale (Opaco, ancorato e solidale col banner PIN) -->
+        <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
+            <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shadow-sm">
                 
-                <!-- Titolo + Anno + Grado + Nome -->
+                <!-- Titolo + Anno + Grado + Cognome/Nome -->
                 <div class="flex items-center gap-2 min-w-0 flex-1">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
                         <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
@@ -289,7 +310,7 @@
                             </select>
                             
                             <!-- Box Grado e Cognome -->
-                            <div class="flex items-center gap-1 inner-box px-2 py-1 rounded-lg min-w-0 flex-1">
+                            <div class="flex items-center gap-1 inner-box px-2 py-0.5 rounded-lg min-w-0 flex-1">
                                 <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
                                 <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-16 sm:w-20 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
                                 <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
@@ -299,8 +320,14 @@
                     </div>
                 </div>
 
-                <!-- Tasto Sede, Switch Tema e Status Cloud -->
+                <!-- Tasto Sede, Tasto Scarica PDF Rapido, Switch Tema e Status Cloud Sincrono -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-500/10">
+                    <!-- Tasto PDF sempre visibile nell'header -->
+                    <button type="button" onclick="generateMonthlyPdf()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0" title="Scarica PDF Mese">
+                        <i class="fa-solid fa-file-pdf text-xs sm:text-sm"></i>
+                        <span class="text-[11px] font-semibold hidden md:inline">PDF Mese</span>
+                    </button>
+
                     <button type="button" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0" title="Imposta Sede">
                         <i class="fa-solid fa-landmark text-xs sm:text-sm"></i>
                         <span class="text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
@@ -311,7 +338,7 @@
                         <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
                     </button>
 
-                    <!-- Cloud Sync con lampeggio più netto -->
+                    <!-- Cloud Sync con lampeggio simultaneo -->
                     <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl flex-shrink-0">
                         <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                         <span class="hidden md:inline text-xs font-bold opacity-90" id="status-user-text">Nessun Codice Inserito</span>
@@ -319,11 +346,16 @@
                 </div>
             </div>
         </header>
+    </div>
 
+    <!-- Contenuto Applicazione Principale -->
+    <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
         <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start">
+            
             <!-- Sidebar Riepiloghi Sticky -->
             <aside id="main-sidebar" class="w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
-                <!-- Selettore Mese -->
+                
+                <!-- 1. Selettore Mese -->
                 <div class="glass-panel rounded-2xl p-3 border-t-2 border-arma-gold flex-shrink-0">
                     <div class="flex items-center mb-2">
                         <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 opacity-90">
@@ -333,7 +365,7 @@
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <!-- Riquadro Riepilogo Ore Mensili -->
+                <!-- 2. Riquadro Riepilogo Ore Mensili -->
                 <div class="glass-panel rounded-2xl p-3 flex-shrink-0 border-t-2 border-arma-gold">
                     <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-500/20">
                         <h2 class="text-xs font-bold text-arma-gold uppercase tracking-wider flex items-center gap-1.5" id="summary-title">
@@ -384,9 +416,16 @@
                     </div>
                 </div>
 
+                <!-- 3. Pulsante Stampa PDF Visibile Subito in Alto nella Sidebar (Nessun bisogno di scrollare fino in fondo) -->
+                <div class="glass-panel rounded-2xl p-2.5 border-t-2 border-red-500 flex flex-col flex-shrink-0 shadow-sm">
+                    <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow transition active:scale-95">
+                        <i class="fa-solid fa-file-pdf text-sm"></i> Stampa PDF Calendario Mese
+                    </button>
+                </div>
+
                 <div id="lic-alerts-container" class="flex flex-col gap-2 flex-shrink-0"></div>
 
-                <!-- Box Licenze -->
+                <!-- 4. Box Licenze -->
                 <div class="glass-panel rounded-2xl p-3 border-t-2 border-purple-600 flex flex-col flex-shrink-0">
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-purple-600 dark:text-purple-400">
@@ -410,7 +449,7 @@
                     </div>
                 </div>
 
-                <!-- Grafico Straordinari Annuali -->
+                <!-- 5. Grafico Straordinari Annuali -->
                 <div class="glass-panel rounded-2xl p-3 min-h-[160px] border-t-2 border-arma-gold flex flex-col flex-shrink-0">
                     <h2 class="text-xs font-bold mb-2 flex items-center gap-1.5 opacity-80">
                         <i class="fa-solid fa-chart-simple text-arma-gold"></i> Andamento Annuale
@@ -420,23 +459,16 @@
                     </div>
                 </div>
 
-                <!-- Riposi Non Fruiti -->
+                <!-- 6. Riposi Non Fruiti -->
                 <div class="glass-panel rounded-2xl p-3 border-t-2 border-red-600 flex flex-col min-h-[120px]">
                     <h2 class="text-xs font-bold mb-2 flex items-center gap-1.5 opacity-80">
                         <i class="fa-solid fa-bed text-red-500"></i> Riposi Non Fruiti
                     </h2>
                     <div id="unpaid-rests-container" class="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar flex-1"></div>
                 </div>
-
-                <!-- Pulsante Stampa PDF per Versione Web / Desktop -->
-                <div class="glass-panel rounded-2xl p-2.5 border-t-2 border-arma-gold flex flex-col flex-shrink-0">
-                    <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow transition active:scale-95">
-                        <i class="fa-solid fa-file-pdf"></i> Scarica PDF Calendario Mese
-                    </button>
-                </div>
             </aside>
 
-            <!-- Sezione Tabella Giorni -->
+            <!-- Sezione Tabella Giorni (Scorre scomparendo sotto l'header opaco) -->
             <section id="days-section" class="flex-1 min-w-0 glass-panel rounded-2xl flex flex-col border-t-2 border-arma-gold relative w-full mb-2">
                 <div class="px-3.5 py-2.5 border-b border-gray-500/20 flex justify-between items-center z-10 flex-shrink-0">
                     <div class="flex items-center gap-2">
@@ -448,9 +480,9 @@
                             <i class="fa-solid fa-id-badge mr-1"></i><span id="table-user-name">Militare</span>
                         </span>
                     </div>
-                    <!-- Badge Cloud con lampeggio netto -->
-                    <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/40 shadow-sm flex items-center gap-1.5 badge-pulse">
-                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full blink-vivido"></span> Cloud Attivo
+                    <!-- Badge Cloud con animazione sincronizzata al pallino -->
+                    <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/40 shadow-sm flex items-center gap-1.5 badge-sync">
+                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full blink-sync"></span> Cloud Attivo
                     </span>
                 </div>
 
@@ -625,7 +657,8 @@
             document.getElementById('btn-login-code').classList.remove('hidden');
             document.getElementById('user-code-input').disabled = false;
             document.getElementById('status-user-text').innerText = "Nessun Codice Inserito";
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-red-500 rounded-full shadow-sm';
+            const dot = document.getElementById('cloud-dot');
+            dot.className = 'w-2.5 h-2.5 bg-red-500 rounded-full shadow-sm';
         }
 
         function unlockAppUI(code) {
@@ -634,7 +667,8 @@
             document.getElementById('btn-login-code').classList.add('hidden');
             document.getElementById('user-code-input').disabled = true;
             document.getElementById('status-user-text').innerText = "Profilo: " + code;
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-sm blink-vivido';
+            const dot = document.getElementById('cloud-dot');
+            dot.className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-sm blink-sync';
             checkMandatoryFields();
         }
 
