@@ -44,7 +44,7 @@
 
         .watermark-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.03' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 18 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.05' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.03' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 28 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.05' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: center; background-size: 80vh;
             z-index: -1; pointer-events: none;
         }
@@ -1295,13 +1295,26 @@
                             shiftData[currentMonth][day].str4_start = ''; shiftData[currentMonth][day].str4_end = '';
                             const rowInputs = document.querySelectorAll(`#row-day-${day} input[type="time"]`);
                             rowInputs.forEach(inp => inp.value = '');
-                        } else if (e.target.value === 'M') {
-                            shiftData[currentMonth][day].start = '08:00';
-                            shiftData[currentMonth][day].end = '14:00';
-                            const startInp = document.querySelector(`#row-day-${day} [data-field="start"]`);
-                            const endInp = document.querySelector(`#row-day-${day} [data-field="end"]`);
-                            if (startInp) startInp.value = '08:00';
-                            if (endInp) endInp.value = '14:00';
+                        } else {
+                            let defStart = '', defEnd = '';
+                            if (e.target.value === 'M') {
+                                defStart = '08:00'; defEnd = '14:00';
+                            } else if (e.target.value === 'P') {
+                                defStart = '12:00'; defEnd = '18:00';
+                            } else if (e.target.value === 'S') {
+                                defStart = '18:00'; defEnd = '00:00';
+                            } else if (e.target.value === 'N') {
+                                defStart = '00:00'; defEnd = '06:00';
+                            }
+
+                            if (defStart && defEnd) {
+                                shiftData[currentMonth][day].start = defStart;
+                                shiftData[currentMonth][day].end = defEnd;
+                                const startInp = document.querySelector(`#row-day-${day} [data-field="start"]`);
+                                const endInp = document.querySelector(`#row-day-${day} [data-field="end"]`);
+                                if (startInp) startInp.value = defStart;
+                                if (endInp) endInp.value = defEnd;
+                            }
                         }
 
                         if (!['RRS', 'RRF'].includes(e.target.value)) {
