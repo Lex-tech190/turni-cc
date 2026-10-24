@@ -122,76 +122,77 @@
         }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen pt-[100px] lg:pt-[75px] pb-16 lg:pb-4">
+<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+95px)] sm:pt-[calc(env(safe-area-inset-top,0px)+85px)] lg:pt-[75px] pb-16 lg:pb-4">
 
     <div class="watermark-bg"></div>
 
-    <!-- Banner Iniziale Sincronizzazione -->
-    <div class="fixed top-0 left-0 right-0 z-40">
-        <div id="auth-banner" class="bg-arma-navy border-b-2 border-arma-gold p-2 text-white shadow-lg">
-            <div class="w-full px-3 flex flex-col sm:flex-row items-center justify-between gap-2">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-key text-arma-gold text-base"></i>
-                    <div>
-                        <h3 class="font-bold text-xs sm:text-sm leading-tight">Profilo Personale Riservato</h3>
-                        <p class="text-[10px] text-slate-300">Inserisci il tuo Codice Unico per accedere</p>
+    <!-- Banner Iniziale Sincronizzazione con Safe Area per iOS -->
+    <div class="fixed top-0 left-0 right-0 z-40 bg-arma-navy pt-[env(safe-area-inset-top,0px)] shadow-lg">
+        <div id="auth-banner" class="bg-arma-navy border-b border-arma-gold/60 px-3 py-1.5 text-white">
+            <div class="w-full flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <i class="fa-solid fa-key text-arma-gold text-sm sm:text-base flex-shrink-0"></i>
+                    <div class="min-w-0">
+                        <h3 class="font-bold text-xs sm:text-sm leading-tight truncate">Profilo Personale</h3>
+                        <p class="text-[9px] sm:text-[10px] text-slate-300 truncate hidden sm:block">Inserisci il tuo Codice Unico per accedere</p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <input type="password" id="user-code-input" placeholder="Codice Personale..." class="input-box !py-1 !px-2.5 !text-xs font-mono font-bold w-full sm:w-48 text-center uppercase" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
-                        <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-arma-gold hover:bg-amber-600 text-arma-navy font-bold px-3 py-1 rounded text-xs transition shadow">Accedi</button>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <div class="flex items-center gap-1">
+                        <input type="password" id="user-code-input" placeholder="Codice..." class="input-box !py-1 !px-2 !text-xs font-mono font-bold w-28 sm:w-44 text-center uppercase" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
+                        <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-arma-gold hover:bg-amber-600 text-arma-navy font-bold px-2.5 py-1 rounded text-xs transition shadow">Accedi</button>
                     </div>
-                    <button type="button" id="btn-logout" onclick="doLogout(); return false;" class="hidden bg-arma-red hover:bg-red-700 text-white font-bold px-3 py-1 rounded text-xs transition shadow flex items-center gap-1">
+                    <button type="button" id="btn-logout" onclick="doLogout(); return false;" class="hidden bg-arma-red hover:bg-red-700 text-white font-bold px-2.5 py-1 rounded text-xs transition shadow flex items-center gap-1">
                         <i class="fa-solid fa-right-from-bracket"></i> ESCI
                     </button>
                 </div>
             </div>
         </div>
 
-        <div id="lock-warning" class="bg-amber-500 text-arma-navy font-bold text-center py-1 px-3 text-xs shadow-md flex items-center justify-center gap-2">
-            <i class="fa-solid fa-lock text-sm"></i>
-            <span id="lock-warning-text">ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto per accedere.</span>
+        <div id="lock-warning" class="bg-amber-500 text-arma-navy font-bold text-center py-0.5 px-2 text-[11px] shadow-sm flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-lock text-xs"></i>
+            <span id="lock-warning-text">ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto.</span>
         </div>
     </div>
 
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 mt-1 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
+        <!-- Header con Campi Grado e Nome non tagliati e Tasto Sede sempre visibile -->
         <header class="bg-arma-navy text-white shadow-lg z-10 flex-shrink-0 w-full rounded-xl mb-2">
-            <div class="w-full px-3 py-2 flex justify-between items-center gap-2">
-                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    <i class="fa-solid fa-box-archive text-arma-gold text-2xl"></i>
-                    <div class="flex flex-col">
-                        <span class="text-[9px] tracking-wider text-arma-gold/80 font-mono font-semibold uppercase leading-none">By_Lex190</span>
-                        <div class="flex items-center gap-1.5 mt-0.5">
-                            <h1 class="text-base sm:text-xl font-bold tracking-wider leading-none">TURNI</h1>
-                            <select id="year-select" class="bg-white text-arma-navy border border-gray-300 rounded px-1.5 py-0.5 text-xs sm:text-sm font-bold shadow-sm cursor-pointer" onchange="changeYear(this.value)">
+            <div class="w-full px-2.5 sm:px-3 py-2 flex justify-between items-center gap-1.5 sm:gap-2">
+                <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
+                    <i class="fa-solid fa-box-archive text-arma-gold text-xl sm:text-2xl flex-shrink-0"></i>
+                    <div class="flex flex-col min-w-0 flex-1">
+                        <span class="text-[8px] sm:text-[9px] tracking-wider text-arma-gold/80 font-mono font-semibold uppercase leading-none">By_Lex190</span>
+                        <div class="flex items-center gap-1 sm:gap-1.5 mt-0.5 min-w-0">
+                            <h1 class="text-sm sm:text-xl font-bold tracking-wider leading-none flex-shrink-0">TURNI</h1>
+                            <select id="year-select" class="bg-white text-arma-navy border border-gray-300 rounded px-1 py-0.5 text-xs sm:text-sm font-bold shadow-sm cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
                                 <option value="2027">2027</option>
                                 <option value="2028">2028</option>
                                 <option value="2029">2029</option>
                                 <option value="2030">2030</option>
                             </select>
                             
-                            <div class="flex items-center gap-1 bg-black/25 px-2 py-0.5 rounded border border-white/10 ml-1">
-                                <i class="fa-solid fa-user-shield text-arma-gold text-[10px]" title="Grado e Nominativo"></i>
-                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-semibold text-[11px] w-14 sm:w-16 placeholder-white/40 focus:bg-white focus:text-arma-navy rounded px-1 outline-none transition-colors" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
-                                <span class="text-white/30 text-xs font-light">|</span>
-                                <input type="text" id="user-nome-input" class="bg-transparent text-white font-semibold text-[11px] w-24 sm:w-32 placeholder-white/40 focus:bg-white focus:text-arma-navy rounded px-1 outline-none transition-colors" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                            <!-- Box Grado e Cognome con altezza corretta per evitare lettere tagliate -->
+                            <div class="flex items-center gap-1 bg-black/25 px-1.5 sm:px-2 py-1 rounded border border-white/10 min-w-0 flex-1 max-w-[230px] sm:max-w-none">
+                                <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
+                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-semibold text-[11px] sm:text-xs w-12 sm:w-16 placeholder-white/40 focus:bg-white focus:text-arma-navy rounded px-1 py-0.5 outline-none transition-colors leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                                <span class="text-white/30 text-xs font-light flex-shrink-0">|</span>
+                                <input type="text" id="user-nome-input" class="bg-transparent text-white font-semibold text-[11px] sm:text-xs w-full min-w-0 placeholder-white/40 focus:bg-white focus:text-arma-navy rounded px-1 py-0.5 outline-none transition-colors leading-normal" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-center flex-1 mx-2"></div>
-
-                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-arma-gold border border-arma-gold/40 px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-all shadow-sm">
-                        <i class="fa-solid fa-church"></i>
-                        <span class="hidden lg:inline text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
+                <!-- Tasto Sede e Indicatore Cloud -->
+                <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-amber-500/20 hover:bg-amber-500/30 text-arma-gold border border-arma-gold/40 px-2 sm:px-2.5 py-1 rounded-lg flex items-center gap-1 sm:gap-1.5 transition-all shadow-sm" title="Imposta Sede">
+                        <i class="fa-solid fa-church text-xs sm:text-sm"></i>
+                        <span class="hidden md:inline text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
                     </button>
 
-                    <div id="auth-status" class="text-xs sm:text-sm font-medium flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-white/10 shadow-inner">
-                        <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                    <div id="auth-status" class="text-xs font-medium flex items-center gap-1.5 bg-black/20 px-2 sm:px-3 py-1 rounded-full border border-white/10 shadow-inner">
+                        <span id="cloud-dot" class="w-2 sm:w-2.5 h-2 sm:h-2.5 bg-red-500 rounded-full"></span>
                         <span class="hidden md:inline text-xs font-bold" id="status-user-text">Nessun Codice Inserito</span>
                     </div>
                 </div>
@@ -209,7 +210,7 @@
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <!-- Riquadro Riepilogo Mensile con suddivisione dettagliata e testi ottimizzati -->
+                <!-- Riquadro Riepilogo Mensile con suddivisione dettagliata e testi ingranditi -->
                 <div class="bg-gradient-to-br from-arma-navy to-blue-950 rounded-xl shadow-md p-3 text-white flex-shrink-0 border-t-4 border-arma-gold">
                     <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-white/10">
                         <h2 class="text-[13px] font-bold text-arma-gold uppercase tracking-wider" id="summary-title">Riepilogo Mensile</h2>
@@ -455,12 +456,12 @@
         function lockAppUI() {
             document.getElementById('app-screen').classList.add('app-locked');
             document.getElementById('lock-warning').classList.remove('hidden');
-            document.getElementById('lock-warning-text').innerText = "ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto per accedere.";
+            document.getElementById('lock-warning-text').innerText = "ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto.";
             document.getElementById('btn-logout').classList.add('hidden');
             document.getElementById('btn-login-code').classList.remove('hidden');
             document.getElementById('user-code-input').disabled = false;
             document.getElementById('status-user-text').innerText = "Nessun Codice Inserito";
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-red-500 rounded-full';
+            document.getElementById('cloud-dot').className = 'w-2 sm:w-2.5 h-2 sm:h-2.5 bg-red-500 rounded-full';
         }
 
         function unlockAppUI(code) {
@@ -469,7 +470,7 @@
             document.getElementById('btn-login-code').classList.add('hidden');
             document.getElementById('user-code-input').disabled = true;
             document.getElementById('status-user-text').innerText = "Profilo: " + code;
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse';
+            document.getElementById('cloud-dot').className = 'w-2 sm:w-2.5 h-2 sm:h-2.5 bg-green-400 rounded-full animate-pulse';
             checkMandatoryFields();
         }
 
@@ -848,7 +849,7 @@
                 let currMinute = (startM + i) % 1440;
                 let isNextDay = (startM + i) >= 1440;
                 let dayIsFestive = isNextDay ? nextDayFestivo : isDayFestivo;
-                let isNight = (currMinute < 360 || currMinute >= 1320); // 22:00 - 06:00
+                let isNight = (currMinute < 360 || currMinute >= 1320); // Notte: 22:00 - 06:00
 
                 let type = 'df'; // Diurno feriale
                 if (!isNight && dayIsFestive) type = 'fest'; // Diurno festivo
