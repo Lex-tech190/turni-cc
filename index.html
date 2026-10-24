@@ -44,7 +44,7 @@
 
         .watermark-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.03' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 28 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.05' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.03' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 18 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.05' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: center; background-size: 80vh;
             z-index: -1; pointer-events: none;
         }
@@ -61,6 +61,12 @@
         .input-box:focus { border-color: #D4AF37; box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3); }
         .input-box:disabled { background: #e5e7eb; cursor: not-allowed; opacity: 0.6; }
         
+        .time-box {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
         .note-box {
             background: #fffbeb; color: #78350f; border: 1px solid #fde68a;
             border-radius: 0.375rem; padding: 0.25rem 0.5rem; font-size: 0.75rem; outline: none; transition: all 0.2s;
@@ -103,23 +109,6 @@
 
         .app-locked { pointer-events: none; opacity: 0.4; user-select: none; filter: grayscale(80%); }
         .days-blocked { pointer-events: none; opacity: 0.5; filter: grayscale(50%); }
-
-        input[type="time"]::-webkit-calendar-picker-indicator {
-            background: transparent;
-            bottom: 0;
-            color: transparent;
-            height: auto;
-            left: 0;
-            opacity: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: auto;
-            cursor: pointer;
-        }
-        input[type="time"] {
-            position: relative;
-        }
 
         /* Sidebar Fissa su Desktop */
         @media (min-width: 1024px) {
@@ -721,9 +710,48 @@
             renderApp();
         }
 
+        function cleanTimeFormat(val) {
+            if (!val) return '';
+            let s = val.trim().replace(/\s+/g, '');
+            if (!s) return '';
+            
+            // Se sono cifre pure (es: 8 -> 08:00, 14 -> 14:00, 830 -> 08:30, 0800 -> 08:00)
+            if (/^\d+$/.test(s)) {
+                if (s.length === 1 || s.length === 2) {
+                    let h = parseInt(s, 10);
+                    if (h >= 0 && h <= 24) return (h % 24).toString().padStart(2, '0') + ':00';
+                } else if (s.length === 3) {
+                    let h = parseInt(s.substring(0, 1), 10);
+                    let m = parseInt(s.substring(1), 10);
+                    if (m > 59) m = 59;
+                    return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+                } else if (s.length >= 4) {
+                    let h = parseInt(s.substring(0, 2), 10);
+                    let m = parseInt(s.substring(2, 4), 10);
+                    if (h >= 24) h = 0;
+                    if (m > 59) m = 59;
+                    return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+                }
+            }
+
+            // Se contiene separatori (: o .)
+            if (s.includes(':') || s.includes('.')) {
+                let parts = s.replace('.', ':').split(':');
+                let h = parseInt(parts[0], 10);
+                let m = parseInt(parts[1], 10);
+                if (isNaN(h)) return '';
+                if (isNaN(m)) m = 0;
+                if (h >= 24) h = 0;
+                if (m > 59) m = 59;
+                return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0');
+            }
+            return s;
+        }
+
         function parseTime(timeStr) {
             if (!timeStr) return 0;
-            const [h, m] = timeStr.split(':').map(Number);
+            const clean = cleanTimeFormat(timeStr);
+            const [h, m] = clean.split(':').map(Number);
             if (isNaN(h) || isNaN(m)) return 0;
             return (h * 60) + m;
         }
@@ -1107,19 +1135,19 @@
                             </div>
                             
                             <div class="flex items-center flex-shrink-0">
-                                <select class="input-box font-bold bg-white/95 w-[90px] sm:w-[105px] text-center shadow-sm" data-field="shift" data-day="${day}">
+                                <select class="input-box font-bold bg-white/95 w-[90px] sm:w-[105px] text-center shadow-sm cursor-pointer" data-field="shift" data-day="${day}">
                                     ${SHIFT_TYPES.map(s => `<option value="${s}" ${dayData.shift === s ? 'selected' : ''}>${s === '' ? '- Turno -' : s}</option>`).join('')}
                                 </select>
                                 
                                 <span id="linked-select-wrap-${day}">
                                 ${['RRS', 'RRF'].includes(dayData.shift) ? `
-                                    <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_rest" data-day="${day}">
+                                    <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm cursor-pointer" data-field="linked_rest" data-day="${day}">
                                         <option value="">- Associa -</option>
                                         ${generateRestOptions(currentYear, currentMonth, day, dayData.linked_rest, dayData.shift === 'RRS' ? 'RS' : 'RF')}
                                     </select>
                                 ` : ''}
                                 ${dayData.shift === 'LO' ? `
-                                    <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_lo" data-day="${day}">
+                                    <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm cursor-pointer" data-field="linked_lo" data-day="${day}">
                                         ${getLoDropdownOptionsHtml(dayData.linked_lo)}
                                     </select>
                                 ` : ''}
@@ -1128,9 +1156,9 @@
 
                             <div class="flex items-center gap-1 bg-blue-50/70 rounded-md px-1.5 py-1 border border-blue-200/70 flex-shrink-0 shadow-sm">
                                 <span class="text-[10px] font-bold opacity-75 text-gray-800">Ord:</span>
-                                <input type="time" class="input-box text-center w-[68px] sm:w-[78px] !py-0.5 !px-0.5" data-field="start" data-day="${day}" value="${dayData.start}">
+                                <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[64px] sm:w-[70px] !py-0.5 !px-0.5" data-field="start" data-day="${day}" value="${dayData.start}">
                                 <span class="opacity-50 text-xs text-gray-700">-</span>
-                                <input type="time" class="input-box text-center w-[68px] sm:w-[78px] !py-0.5 !px-0.5" data-field="end" data-day="${day}" value="${dayData.end}">
+                                <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[64px] sm:w-[70px] !py-0.5 !px-0.5" data-field="end" data-day="${day}" value="${dayData.end}">
                             </div>
                             
                             <div class="flex items-center gap-2 px-2 py-1 bg-black/5 rounded-md flex-shrink-0 border border-black/5">
@@ -1164,36 +1192,36 @@
                             <div class="flex items-center justify-between gap-0.5 bg-orange-50/90 rounded px-1 py-0.5 border border-orange-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-orange-900">Str.1</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str1_start" data-day="${day}" value="${dayData.str1_start}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str1_start" data-day="${day}" value="${dayData.str1_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str1_end" data-day="${day}" value="${dayData.str1_end}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str1_end" data-day="${day}" value="${dayData.str1_end}">
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between gap-0.5 bg-green-50/90 rounded px-1 py-0.5 border border-green-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-green-900">Str.2</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str2_start" data-day="${day}" value="${dayData.str2_start}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str2_start" data-day="${day}" value="${dayData.str2_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str2_end" data-day="${day}" value="${dayData.str2_end}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str2_end" data-day="${day}" value="${dayData.str2_end}">
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between gap-0.5 bg-purple-50/90 rounded px-1 py-0.5 border border-purple-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-purple-900">Str.3</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str3_start" data-day="${day}" value="${dayData.str3_start}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str3_start" data-day="${day}" value="${dayData.str3_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str3_end" data-day="${day}" value="${dayData.str3_end}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str3_end" data-day="${day}" value="${dayData.str3_end}">
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between gap-0.5 bg-pink-50/90 rounded px-1 py-0.5 border border-pink-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-pink-900">Str.4</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str4_start" data-day="${day}" value="${dayData.str4_start}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str4_start" data-day="${day}" value="${dayData.str4_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="time" class="input-box text-center w-[54px] sm:w-[62px] !p-0 !text-[10px]" data-field="str4_end" data-day="${day}" value="${dayData.str4_end}">
+                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str4_end" data-day="${day}" value="${dayData.str4_end}">
                                 </div>
                             </div>
                         </div>
@@ -1226,7 +1254,7 @@
             if (selectWrap) {
                 if (['RRS', 'RRF'].includes(dayData.shift)) {
                     selectWrap.innerHTML = `
-                        <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_rest" data-day="${day}">
+                        <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm cursor-pointer" data-field="linked_rest" data-day="${day}">
                             <option value="">- Associa -</option>
                             ${generateRestOptions(currentYear, currentMonth, day, dayData.linked_rest, dayData.shift === 'RRS' ? 'RS' : 'RF')}
                         </select>
@@ -1242,7 +1270,7 @@
                     }
                 } else if (dayData.shift === 'LO') {
                     selectWrap.innerHTML = `
-                        <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm" data-field="linked_lo" data-day="${day}">
+                        <select class="input-box bg-purple-100 text-purple-900 border-purple-300 w-24 sm:w-28 text-[10px] font-bold ml-1 h-[28px] shadow-sm cursor-pointer" data-field="linked_lo" data-day="${day}">
                             ${getLoDropdownOptionsHtml(dayData.linked_lo)}
                         </select>
                     `;
@@ -1276,10 +1304,39 @@
                 const day = input.getAttribute('data-day');
                 const field = input.getAttribute('data-field');
 
+                // Gestione orari con testo libero ed auto-formattazione rapida
+                const isTimeInput = input.classList.contains('time-box');
+
+                if (isTimeInput) {
+                    input.addEventListener('blur', (e) => {
+                        if (!currentCode) return;
+                        const formatted = cleanTimeFormat(e.target.value);
+                        e.target.value = formatted;
+                        shiftData[currentMonth][day][field] = formatted;
+                        updateSingleDayRow(day);
+                        updateSummaryAndChart();
+                        triggerSave();
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.target.blur();
+                        }
+                    });
+                }
+
                 const handleUpdate = (e) => {
                     if (!currentCode) return;
                     if (field === 'mos') {
                         shiftData[currentMonth][day][field] = e.target.checked;
+                    } else if (isTimeInput) {
+                        let val = e.target.value;
+                        // Auto-inserimento dei due punti mentre si digitano 4 cifre (es: 0800 -> 08:00)
+                        if (/^\d{4}$/.test(val)) {
+                            val = val.substring(0, 2) + ':' + val.substring(2);
+                            e.target.value = val;
+                        }
+                        shiftData[currentMonth][day][field] = val;
                     } else {
                         shiftData[currentMonth][day][field] = e.target.value;
                     }
@@ -1293,7 +1350,7 @@
                             shiftData[currentMonth][day].str2_start = ''; shiftData[currentMonth][day].str2_end = '';
                             shiftData[currentMonth][day].str3_start = ''; shiftData[currentMonth][day].str3_end = '';
                             shiftData[currentMonth][day].str4_start = ''; shiftData[currentMonth][day].str4_end = '';
-                            const rowInputs = document.querySelectorAll(`#row-day-${day} input[type="time"]`);
+                            const rowInputs = document.querySelectorAll(`#row-day-${day} .time-box`);
                             rowInputs.forEach(inp => inp.value = '');
                         } else {
                             let defStart = '', defEnd = '';
