@@ -239,18 +239,20 @@
             animation: badge-sync 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
         }
 
-     /* Sidebar fissa su desktop perfettamente adiacente all'header */
+        /* Sidebar autonoma e scroll indipendente su Desktop */
         @media (min-width: 1024px) {
             .sticky-sidebar {
                 position: sticky;
-                top: 108px;
-                max-height: calc(100vh - 120px);
+                top: 0px;
+                height: calc(100vh - 130px);
+                max-height: calc(100vh - 130px);
                 overflow-y: auto;
+                padding-right: 4px;
             }
         }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+195px)] sm:pt-[calc(env(safe-area-inset-top,0px)+145px)] pb-16 lg:pb-4 font-sans">
+<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+175px)] sm:pt-[calc(env(safe-area-inset-top,0px)+135px)] lg:pt-[122px] pb-16 lg:pb-4 font-sans">
 
     <div class="watermark-bg"></div>
 
@@ -289,7 +291,7 @@
             <span id="lock-warning-text">ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto.</span>
         </div>
 
-        <!-- 2. Header Principale Memoriale (Opaco, ancorato e solidale col banner PIN) -->
+        <!-- 2. Header Principale Memoriale -->
         <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
             <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shadow-sm">
                 
@@ -349,10 +351,10 @@
     </div>
 
     <!-- Contenuto Applicazione Principale -->
-    <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
-        <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start">
+    <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 w-full max-w-[1600px] mx-auto px-1 sm:px-3 mt-1 lg:mt-0">
+        <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start relative">
             
-            <!-- Sidebar Riepiloghi Sticky -->
+            <!-- Sidebar Riepiloghi Sticky e Autonoma -->
             <aside id="main-sidebar" class="w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
                 
                 <!-- 1. Selettore Mese -->
@@ -416,7 +418,7 @@
                     </div>
                 </div>
 
-                <!-- 3. Pulsante Stampa PDF Visibile Subito in Alto nella Sidebar (Nessun bisogno di scrollare fino in fondo) -->
+                <!-- 3. Pulsante Stampa PDF Visibile Subito in Alto nella Sidebar -->
                 <div class="glass-panel rounded-2xl p-2.5 border-t-2 border-red-500 flex flex-col flex-shrink-0 shadow-sm">
                     <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow transition active:scale-95">
                         <i class="fa-solid fa-file-pdf text-sm"></i> Stampa PDF Calendario Mese
