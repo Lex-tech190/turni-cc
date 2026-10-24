@@ -209,51 +209,51 @@
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <!-- Riquadro Riepilogo Mensile con suddivisione dettagliata -->
+                <!-- Riquadro Riepilogo Mensile con suddivisione dettagliata e testi ottimizzati -->
                 <div class="bg-gradient-to-br from-arma-navy to-blue-950 rounded-xl shadow-md p-3 text-white flex-shrink-0 border-t-4 border-arma-gold">
                     <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-white/10">
-                        <h2 class="text-xs font-bold text-arma-gold uppercase tracking-wider" id="summary-title">Riepilogo Mensile</h2>
-                        <span class="text-[10px] text-gray-300 font-mono" id="summary-month-badge">Ore Mese</span>
+                        <h2 class="text-[13px] font-bold text-arma-gold uppercase tracking-wider" id="summary-title">Riepilogo Mensile</h2>
+                        <span class="text-[11px] text-gray-300 font-mono" id="summary-month-badge">Ore Mese</span>
                     </div>
 
                     <!-- Totali Generali -->
                     <div class="grid grid-cols-2 gap-2 mb-2.5">
-                        <div class="bg-black/25 p-2 rounded-lg border border-white/5">
-                            <span class="text-[9px] uppercase font-bold text-gray-300 block">Tot. Ordinarie</span>
-                            <span class="text-lg font-black text-white" id="monthly-std-display">00:00</span>
+                        <div class="bg-black/30 p-2 rounded-lg border border-white/10">
+                            <span class="text-[10px] uppercase font-bold text-gray-300 block">Tot. Ordinarie</span>
+                            <span class="text-xl font-black text-white" id="monthly-std-display">00:00</span>
                         </div>
-                        <div class="bg-black/25 p-2 rounded-lg border border-white/5">
-                            <span class="text-[9px] uppercase font-bold text-arma-gold block">Tot. Straord.</span>
-                            <span class="text-lg font-black text-arma-gold" id="monthly-ot-display">00:00</span>
+                        <div class="bg-black/30 p-2 rounded-lg border border-white/10">
+                            <span class="text-[10px] uppercase font-bold text-arma-gold block">Tot. Straord.</span>
+                            <span class="text-xl font-black text-arma-gold" id="monthly-ot-display">00:00</span>
                         </div>
                     </div>
 
                     <!-- Dettaglio 4 Categorie per Ordinarie e Straordinarie -->
-                    <div class="bg-black/30 rounded-lg p-2 border border-white/10 flex flex-col gap-1.5 text-[10px]">
-                        <div class="grid grid-cols-3 text-[8.5px] uppercase font-bold text-gray-400 pb-1 border-b border-white/10">
+                    <div class="bg-black/35 rounded-lg px-2.5 py-2 border border-white/10 flex flex-col gap-1.5">
+                        <div class="grid grid-cols-3 text-[10px] uppercase font-bold text-gray-400 pb-1 border-b border-white/15">
                             <span>Fascia</span>
                             <span class="text-center text-white">Ordinarie</span>
                             <span class="text-right text-arma-gold">Straord.</span>
                         </div>
-                        <div class="grid grid-cols-3 items-center">
-                            <span class="text-gray-300 font-medium">Diurno Fer.</span>
-                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-df">00:00</span>
-                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-df">00:00</span>
+                        <div class="grid grid-cols-3 items-center text-[11px]">
+                            <span class="text-gray-200 font-semibold truncate pr-1">Diurno Fer.</span>
+                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-df">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-df">00:00</span>
                         </div>
-                        <div class="grid grid-cols-3 items-center">
-                            <span class="text-amber-300 font-medium">Diurno Fest.</span>
-                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-fest">00:00</span>
-                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-fest">00:00</span>
+                        <div class="grid grid-cols-3 items-center text-[11px]">
+                            <span class="text-amber-300 font-semibold truncate pr-1">Diurno Fest.</span>
+                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-fest">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-fest">00:00</span>
                         </div>
-                        <div class="grid grid-cols-3 items-center">
-                            <span class="text-blue-300 font-medium">Notturno Fer.</span>
-                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-nf">00:00</span>
-                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-nf">00:00</span>
+                        <div class="grid grid-cols-3 items-center text-[11px]">
+                            <span class="text-blue-300 font-semibold truncate pr-1">Notturno Fer.</span>
+                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-nf">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-nf">00:00</span>
                         </div>
-                        <div class="grid grid-cols-3 items-center">
-                            <span class="text-purple-300 font-medium">Notturno Fest.</span>
-                            <span class="text-center font-bold text-white font-mono" id="breakdown-ord-not-fest">00:00</span>
-                            <span class="text-right font-bold text-arma-gold font-mono" id="breakdown-ot-not-fest">00:00</span>
+                        <div class="grid grid-cols-3 items-center text-[11px]">
+                            <span class="text-purple-300 font-semibold truncate pr-1">Notturno Fest.</span>
+                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-not-fest">00:00</span>
+                            <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-not-fest">00:00</span>
                         </div>
                     </div>
                 </div>
@@ -848,7 +848,7 @@
                 let currMinute = (startM + i) % 1440;
                 let isNextDay = (startM + i) >= 1440;
                 let dayIsFestive = isNextDay ? nextDayFestivo : isDayFestivo;
-                let isNight = (currMinute < 360 || currMinute >= 1320); // Notte: 22:00 - 06:00
+                let isNight = (currMinute < 360 || currMinute >= 1320); // 22:00 - 06:00
 
                 let type = 'df'; // Diurno feriale
                 if (!isNight && dayIsFestive) type = 'fest'; // Diurno festivo
@@ -1431,7 +1431,6 @@
 
                         shiftData[currentMonth][day][field] = e.target.value;
 
-                        // Salto automatico alla casella successiva dopo 4 cifre
                         if (digits.length === 4) {
                             const nextFieldName = input.getAttribute('data-next');
                             if (nextFieldName) {
@@ -1545,7 +1544,6 @@
             if (otDisp) otDisp.innerText = formatTime(currentTotals.totalOt);
             if (stdDisp) stdDisp.innerText = formatTime(currentTotals.totalOrd);
 
-            // Aggiornamento riepilogo dettagliato
             const bOrdDf = document.getElementById('breakdown-ord-df');
             const bOrdFest = document.getElementById('breakdown-ord-fest');
             const bOrdNf = document.getElementById('breakdown-ord-nf');
