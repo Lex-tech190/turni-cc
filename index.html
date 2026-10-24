@@ -65,6 +65,7 @@
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             letter-spacing: 0.5px;
             text-align: center;
+            font-weight: 700;
         }
 
         .note-box {
@@ -110,7 +111,6 @@
         .app-locked { pointer-events: none; opacity: 0.4; user-select: none; filter: grayscale(80%); }
         .days-blocked { pointer-events: none; opacity: 0.5; filter: grayscale(50%); }
 
-        /* Sidebar Fissa su Desktop */
         @media (min-width: 1024px) {
             .sticky-sidebar {
                 position: sticky;
@@ -715,7 +715,6 @@
             let s = val.trim().replace(/\s+/g, '');
             if (!s) return '';
             
-            // Se sono cifre pure (es: 8 -> 08:00, 14 -> 14:00, 830 -> 08:30, 0800 -> 08:00)
             if (/^\d+$/.test(s)) {
                 if (s.length === 1 || s.length === 2) {
                     let h = parseInt(s, 10);
@@ -734,7 +733,6 @@
                 }
             }
 
-            // Se contiene separatori (: o .)
             if (s.includes(':') || s.includes('.')) {
                 let parts = s.replace('.', ':').split(':');
                 let h = parseInt(parts[0], 10);
@@ -1156,9 +1154,9 @@
 
                             <div class="flex items-center gap-1 bg-blue-50/70 rounded-md px-1.5 py-1 border border-blue-200/70 flex-shrink-0 shadow-sm">
                                 <span class="text-[10px] font-bold opacity-75 text-gray-800">Ord:</span>
-                                <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[64px] sm:w-[70px] !py-0.5 !px-0.5" data-field="start" data-day="${day}" value="${dayData.start}">
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[64px] sm:w-[70px] !py-0.5 !px-0.5" data-field="start" data-day="${day}" data-next="end" value="${dayData.start}">
                                 <span class="opacity-50 text-xs text-gray-700">-</span>
-                                <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[64px] sm:w-[70px] !py-0.5 !px-0.5" data-field="end" data-day="${day}" value="${dayData.end}">
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[64px] sm:w-[70px] !py-0.5 !px-0.5" data-field="end" data-day="${day}" value="${dayData.end}">
                             </div>
                             
                             <div class="flex items-center gap-2 px-2 py-1 bg-black/5 rounded-md flex-shrink-0 border border-black/5">
@@ -1192,36 +1190,36 @@
                             <div class="flex items-center justify-between gap-0.5 bg-orange-50/90 rounded px-1 py-0.5 border border-orange-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-orange-900">Str.1</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str1_start" data-day="${day}" value="${dayData.str1_start}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str1_start" data-day="${day}" data-next="str1_end" value="${dayData.str1_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str1_end" data-day="${day}" value="${dayData.str1_end}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str1_end" data-day="${day}" value="${dayData.str1_end}">
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between gap-0.5 bg-green-50/90 rounded px-1 py-0.5 border border-green-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-green-900">Str.2</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str2_start" data-day="${day}" value="${dayData.str2_start}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str2_start" data-day="${day}" data-next="str2_end" value="${dayData.str2_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str2_end" data-day="${day}" value="${dayData.str2_end}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str2_end" data-day="${day}" value="${dayData.str2_end}">
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between gap-0.5 bg-purple-50/90 rounded px-1 py-0.5 border border-purple-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-purple-900">Str.3</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str3_start" data-day="${day}" value="${dayData.str3_start}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str3_start" data-day="${day}" data-next="str3_end" value="${dayData.str3_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str3_end" data-day="${day}" value="${dayData.str3_end}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str3_end" data-day="${day}" value="${dayData.str3_end}">
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between gap-0.5 bg-pink-50/90 rounded px-1 py-0.5 border border-pink-200/60 shadow-xs">
                                 <span class="text-[9px] font-bold text-pink-900">Str.4</span>
                                 <div class="flex items-center gap-0.5">
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str4_start" data-day="${day}" value="${dayData.str4_start}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str4_start" data-day="${day}" data-next="str4_end" value="${dayData.str4_start}">
                                     <span class="opacity-50 text-[9px] text-gray-700">-</span>
-                                    <input type="text" inputmode="numeric" placeholder="HH:MM" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str4_end" data-day="${day}" value="${dayData.str4_end}">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[50px] sm:w-[56px] !p-0 !text-[10px]" data-field="str4_end" data-day="${day}" value="${dayData.str4_end}">
                                 </div>
                             </div>
                         </div>
@@ -1303,11 +1301,53 @@
             inputs.forEach(input => {
                 const day = input.getAttribute('data-day');
                 const field = input.getAttribute('data-field');
-
-                // Gestione orari con testo libero ed auto-formattazione rapida
                 const isTimeInput = input.classList.contains('time-box');
 
                 if (isTimeInput) {
+                    const selectAllText = () => {
+                        setTimeout(() => {
+                            input.select();
+                            if (input.setSelectionRange) {
+                                input.setSelectionRange(0, input.value.length);
+                            }
+                        }, 10);
+                    };
+
+                    input.addEventListener('focus', selectAllText);
+                    input.addEventListener('click', selectAllText);
+
+                    input.addEventListener('input', (e) => {
+                        if (!currentCode) return;
+                        let digits = e.target.value.replace(/\D/g, '');
+                        if (digits.length > 4) digits = digits.substring(0, 4);
+
+                        if (digits.length === 0) {
+                            e.target.value = '';
+                        } else if (digits.length <= 2) {
+                            e.target.value = digits;
+                        } else {
+                            e.target.value = digits.substring(0, 2) + ':' + digits.substring(2);
+                        }
+
+                        shiftData[currentMonth][day][field] = e.target.value;
+
+                        // Salto automatico alla casella successiva dopo 4 cifre
+                        if (digits.length === 4) {
+                            const nextFieldName = input.getAttribute('data-next');
+                            if (nextFieldName) {
+                                const nextInput = document.querySelector(`#row-day-${day} [data-field="${nextFieldName}"]`);
+                                if (nextInput) {
+                                    nextInput.focus();
+                                    nextInput.select();
+                                } else {
+                                    input.blur();
+                                }
+                            } else {
+                                input.blur();
+                            }
+                        }
+                    });
+
                     input.addEventListener('blur', (e) => {
                         if (!currentCode) return;
                         const formatted = cleanTimeFormat(e.target.value);
@@ -1327,16 +1367,10 @@
 
                 const handleUpdate = (e) => {
                     if (!currentCode) return;
+                    if (isTimeInput) return;
+
                     if (field === 'mos') {
                         shiftData[currentMonth][day][field] = e.target.checked;
-                    } else if (isTimeInput) {
-                        let val = e.target.value;
-                        // Auto-inserimento dei due punti mentre si digitano 4 cifre (es: 0800 -> 08:00)
-                        if (/^\d{4}$/.test(val)) {
-                            val = val.substring(0, 2) + ':' + val.substring(2);
-                            e.target.value = val;
-                        }
-                        shiftData[currentMonth][day][field] = val;
                     } else {
                         shiftData[currentMonth][day][field] = e.target.value;
                     }
