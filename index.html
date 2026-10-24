@@ -9,11 +9,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Turni CC">
-    <meta name="theme-color" content="#0B132B">
+    <meta name="theme-color" content="#070D1E">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,23 +24,27 @@
             theme: {
                 extend: {
                     fontFamily: { 
-                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
                         mono: ['Inter', 'monospace']
                     },
                     colors: {
                         arma: {
-                            navy: '#0B132B',
-                            darkBlue: '#1C2541',
-                            accentBlue: '#3A506B',
+                            navy: '#070D1E',
+                            darkBlue: '#0F1A36',
+                            cardDark: '#142145',
+                            accentBlue: '#2A3F6D',
                             gold: '#E5B842',
                             goldHover: '#C69926',
-                            red: '#D90429',
-                            crimson: '#9B111E'
+                            red: '#DC2626',
+                            festivo: '#991B1B',
+                            emerald: '#059669',
+                            purple: '#7C3AED'
                         }
                     },
                     boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-                        'card-soft': '0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04)'
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.35)',
+                        'glow-gold': '0 0 15px rgba(229, 184, 66, 0.25)',
+                        'soft-card': '0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04)'
                     }
                 }
             }
@@ -54,70 +58,67 @@
             width: 100%;
             height: 100%;
             overflow-x: hidden; 
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
         }
 
-        /* Dark / Light styling */
         html.dark {
-            background-color: #070D1E;
-            color: #F1F5F9;
+            background-color: #060B18;
+            color: #F8FAFC;
         }
         html.light {
-            background-color: #F1F5F9;
+            background-color: #F8FAFC;
             color: #0F172A;
         }
 
         .watermark-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.025' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 18 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.04' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.02' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 18 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.035' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: center; background-size: 75vh;
             z-index: -1; pointer-events: none;
         }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #3A506B; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb { background: #2A3F6D; border-radius: 9999px; }
         ::-webkit-scrollbar-thumb:hover { background: #E5B842; }
 
-        /* Glassmorphism Classes */
+        /* Effetti Glassmorphism */
         .glass-panel {
-            background: rgba(19, 29, 58, 0.72);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(15, 26, 54, 0.75);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         html.light .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.88);
             border: 1px solid rgba(15, 23, 42, 0.08);
         }
 
         .glass-card {
-            background: rgba(26, 38, 74, 0.65);
+            background: rgba(20, 33, 69, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         html.light .glass-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.96);
             border: 1px solid rgba(15, 23, 42, 0.06);
         }
         .glass-card:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.18);
+            transform: translateY(-1.5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.22);
         }
 
         .input-box {
-            background: rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.06);
             color: inherit;
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 0.5rem;
             padding: 0.25rem 0.4rem;
             font-size: 0.75rem;
             outline: none;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
         html.light .input-box {
             background: #ffffff;
@@ -129,7 +130,7 @@
             box-shadow: 0 0 0 2px rgba(229, 184, 66, 0.25);
         }
         .input-box:disabled {
-            opacity: 0.5;
+            opacity: 0.45;
             cursor: not-allowed;
         }
 
@@ -144,12 +145,12 @@
         .note-box {
             background: rgba(229, 184, 66, 0.08);
             color: #FCD34D;
-            border: 1px solid rgba(229, 184, 66, 0.2);
+            border: 1px solid rgba(229, 184, 66, 0.22);
             border-radius: 0.5rem;
             padding: 0.25rem 0.5rem;
             font-size: 0.75rem;
             outline: none;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
         html.light .note-box {
             background: #FEF9C3;
@@ -161,30 +162,30 @@
             box-shadow: 0 0 0 2px rgba(229, 184, 66, 0.3);
         }
 
-        /* Stili differenziati per riga turno */
+        /* Identificazione visiva elegante per le righe dei turni */
         .row-normale {
-            border-left: 4px solid #3A506B !important;
+            border-left: 4.5px solid #2A3F6D !important;
         }
         .row-festivo {
-            border-left: 4px solid #D90429 !important;
-            background: linear-gradient(90deg, rgba(217, 4, 41, 0.12) 0%, transparent 100%);
+            border-left: 4.5px solid #DC2626 !important;
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.14) 0%, transparent 100%);
         }
         .row-assenza {
-            border-left: 4px solid #8B5CF6 !important;
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.12) 0%, transparent 100%);
+            border-left: 4.5px solid #7C3AED !important;
+            background: linear-gradient(90deg, rgba(124, 58, 237, 0.14) 0%, transparent 100%);
         }
         .row-rrs {
-            border-left: 4px solid #EA580C !important;
-            background: linear-gradient(90deg, rgba(234, 88, 12, 0.12) 0%, transparent 100%);
+            border-left: 4.5px solid #EA580C !important;
+            background: linear-gradient(90deg, rgba(234, 88, 12, 0.14) 0%, transparent 100%);
         }
         .row-sse {
-            border-left: 4px solid #10B981 !important;
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.12) 0%, transparent 100%);
+            border-left: 4.5px solid #059669 !important;
+            background: linear-gradient(90deg, rgba(5, 150, 105, 0.14) 0%, transparent 100%);
         }
 
         .lic-num-input {
-            width: 44px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 0.35rem;
-            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: inherit; background: rgba(0, 0, 0, 0.2);
+            width: 44px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 0.4rem;
+            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: inherit; background: rgba(0, 0, 0, 0.25);
         }
         html.light .lic-num-input {
             background: #ffffff;
@@ -193,12 +194,22 @@
         }
 
         .lic-locked-input {
-            width: 44px; text-align: center; border: 1px solid transparent; border-radius: 0.35rem;
-            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: #94A3B8; background: rgba(255, 255, 255, 0.04);
+            width: 44px; text-align: center; border: 1px solid transparent; border-radius: 0.4rem;
+            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: #94A3B8; background: rgba(255, 255, 255, 0.05);
         }
 
-        .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1px) grayscale(60%); }
-        .days-blocked { pointer-events: none; opacity: 0.4; }
+        .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1.5px) grayscale(65%); }
+        .days-blocked { pointer-events: none; opacity: 0.45; }
+
+        /* Barre di Avanzamento Morbide */
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        html.light .progress-bar-bg {
+            background: rgba(0, 0, 0, 0.08);
+        }
 
         @media (min-width: 1024px) {
             .sticky-sidebar {
@@ -214,7 +225,7 @@
 
     <div class="watermark-bg"></div>
 
-    <!-- Banner Iniziale Sincronizzazione / Login con Safe Area -->
+    <!-- Banner Iniziale Sincronizzazione / Login con Safe Area per iPhone -->
     <div class="fixed top-0 left-0 right-0 z-40 bg-arma-navy/95 backdrop-blur-md pt-[env(safe-area-inset-top,0px)] border-b border-arma-gold/30 shadow-2xl">
         <div id="auth-banner" class="px-3 py-1.5 text-white">
             <div class="w-full flex items-center justify-between gap-2 max-w-[1600px] mx-auto">
@@ -231,7 +242,7 @@
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <div class="flex items-center gap-1.5">
                         <input type="password" id="user-code-input" placeholder="CODICE..." class="input-box !py-1 !px-2.5 !text-xs font-mono font-bold w-28 sm:w-44 text-center uppercase tracking-widest" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
-                        <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-gradient-to-r from-arma-gold to-amber-500 hover:from-amber-400 hover:to-amber-600 text-arma-navy font-bold px-3 py-1 rounded-lg text-xs transition shadow-md flex items-center gap-1">
+                        <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-gradient-to-r from-arma-gold to-amber-500 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition shadow-md flex items-center gap-1">
                             <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i> Accedi
                         </button>
                     </div>
@@ -249,18 +260,18 @@
     </div>
 
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 mt-1 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
-        <!-- Header Moderno Glassmorphism -->
+        <!-- Header Glassmorphism con Indicatori e Badge -->
         <header class="glass-panel text-white shadow-glass z-10 flex-shrink-0 w-full rounded-2xl mb-2.5">
             <div class="w-full px-2.5 sm:px-3.5 py-2 flex justify-between items-center gap-2">
                 <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-arma-gold/20 to-amber-500/10 border border-arma-gold/40 flex items-center justify-center text-arma-gold flex-shrink-0 shadow-inner">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-arma-gold/25 to-amber-500/10 border border-arma-gold/40 flex items-center justify-center text-arma-gold flex-shrink-0 shadow-inner">
                         <i class="fa-solid fa-calendar-check text-base"></i>
                     </div>
                     <div class="flex flex-col min-w-0 flex-1">
                         <span class="text-[8px] sm:text-[9px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX-TECH // TURNI CC</span>
                         <div class="flex items-center gap-1.5 sm:gap-2 mt-0.5 min-w-0">
                             <h1 class="text-sm sm:text-lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
-                            <select id="year-select" class="bg-black/30 border border-white/10 rounded-lg px-2 py-0.5 text-xs font-bold text-arma-gold shadow-inner cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
+                            <select id="year-select" class="bg-black/35 border border-white/10 rounded-lg px-2 py-0.5 text-xs font-bold text-arma-gold shadow-inner cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
                                 <option value="2027">2027</option>
                                 <option value="2028">2028</option>
                                 <option value="2029">2029</option>
@@ -303,7 +314,7 @@
             <!-- Sidebar Riepiloghi Sticky Glassmorphism -->
             <aside id="main-sidebar" class="w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
                 <!-- Selettore Mese -->
-                <div class="glass-panel rounded-2xl shadow-card-soft p-3 border-t-2 border-arma-gold/60 flex-shrink-0">
+                <div class="glass-panel rounded-2xl shadow-soft-card p-3 border-t-2 border-arma-gold/60 flex-shrink-0">
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-gray-300">
                             <i class="fa-regular fa-calendar-days text-arma-gold"></i> Seleziona Mese
@@ -313,8 +324,8 @@
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <!-- Riquadro Riepilogo Ore Mensili Avanzato -->
-                <div class="glass-panel rounded-2xl shadow-card-soft p-3 text-white flex-shrink-0 border-t-2 border-arma-gold">
+                <!-- Riquadro Riepilogo Ore Mensili con Barra di Avanzamento Dinamica -->
+                <div class="glass-panel rounded-2xl shadow-soft-card p-3 text-white flex-shrink-0 border-t-2 border-arma-gold">
                     <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-white/10">
                         <h2 class="text-xs font-bold text-arma-gold uppercase tracking-wider flex items-center gap-1.5" id="summary-title">
                             <i class="fa-solid fa-stopwatch text-arma-gold"></i> Riepilogo Mensile
@@ -323,14 +334,25 @@
                     </div>
 
                     <!-- Totali Generali Card -->
-                    <div class="grid grid-cols-2 gap-2 mb-2.5">
+                    <div class="grid grid-cols-2 gap-2 mb-2">
                         <div class="bg-black/30 p-2 rounded-xl border border-white/5 shadow-inner">
-                            <span class="text-[9px] uppercase font-bold text-gray-400 block tracking-wider">Ordinarie</span>
+                            <span class="text-[9px] uppercase font-bold text-gray-400 block tracking-wider">Tot. Ordinarie</span>
                             <span class="text-xl font-black text-white" id="monthly-std-display">00:00</span>
                         </div>
                         <div class="bg-black/30 p-2 rounded-xl border border-white/5 shadow-inner">
-                            <span class="text-[9px] uppercase font-bold text-arma-gold block tracking-wider">Straordinario</span>
+                            <span class="text-[9px] uppercase font-bold text-arma-gold block tracking-wider">Tot. Straord.</span>
                             <span class="text-xl font-black text-arma-gold" id="monthly-ot-display">00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Barra di Avanzamento Ore Ordinarie (base stimata 156h) -->
+                    <div class="mb-2.5 px-0.5">
+                        <div class="flex justify-between text-[9px] font-semibold text-gray-400 mb-1">
+                            <span>Avanzamento Mensile</span>
+                            <span id="monthly-progress-pct" class="text-arma-gold font-mono">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 progress-bar-bg">
+                            <div id="monthly-progress-bar" class="h-full bg-gradient-to-r from-arma-gold to-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
 
@@ -367,7 +389,7 @@
                 <div id="lic-alerts-container" class="flex flex-col gap-2 flex-shrink-0"></div>
 
                 <!-- Box Licenze -->
-                <div class="glass-panel rounded-2xl shadow-card-soft p-3 border-t-2 border-purple-500/70 flex flex-col flex-shrink-0">
+                <div class="glass-panel rounded-2xl shadow-soft-card p-3 border-t-2 border-purple-500/70 flex flex-col flex-shrink-0">
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-purple-300">
                             <i class="fa-solid fa-umbrella-beach"></i> Riepilogo Licenze
@@ -391,7 +413,7 @@
                 </div>
 
                 <!-- Grafico Straordinari Annuali -->
-                <div class="glass-panel rounded-2xl shadow-card-soft p-3 min-h-[160px] border-t-2 border-arma-gold/60 flex flex-col flex-shrink-0">
+                <div class="glass-panel rounded-2xl shadow-soft-card p-3 min-h-[160px] border-t-2 border-arma-gold/60 flex flex-col flex-shrink-0">
                     <h2 class="text-xs font-bold text-gray-300 mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-chart-simple text-arma-gold"></i> Andamento Annuale
                     </h2>
@@ -401,7 +423,7 @@
                 </div>
 
                 <!-- Riposi Non Fruiti -->
-                <div class="glass-panel rounded-2xl shadow-card-soft p-3 border-t-2 border-red-500/60 flex flex-col min-h-[120px]">
+                <div class="glass-panel rounded-2xl shadow-soft-card p-3 border-t-2 border-red-500/60 flex flex-col min-h-[120px]">
                     <h2 class="text-xs font-bold text-gray-300 mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-bed text-red-400"></i> Riposi Non Fruiti
                     </h2>
@@ -409,7 +431,7 @@
                 </div>
 
                 <!-- Pulsante Stampa PDF -->
-                <div class="glass-panel rounded-2xl shadow-card-soft p-2.5 border-t-2 border-arma-gold flex flex-col flex-shrink-0">
+                <div class="glass-panel rounded-2xl shadow-soft-card p-2.5 border-t-2 border-arma-gold flex flex-col flex-shrink-0">
                     <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg transition-all transform active:scale-95">
                         <i class="fa-solid fa-file-pdf"></i> Scarica PDF Calendario Mese
                     </button>
@@ -417,7 +439,7 @@
             </aside>
 
             <!-- Sezione Tabella Giorni Glassmorphism -->
-            <section id="days-section" class="flex-1 min-w-0 glass-panel rounded-2xl shadow-card-soft flex flex-col border-t-2 border-arma-gold relative w-full mb-2">
+            <section id="days-section" class="flex-1 min-w-0 glass-panel rounded-2xl shadow-soft-card flex flex-col border-t-2 border-arma-gold relative w-full mb-2">
                 <div class="px-3.5 py-2.5 border-b border-white/10 flex justify-between items-center z-10 flex-shrink-0">
                     <div class="flex items-center gap-2">
                         <h2 class="text-base font-extrabold uppercase tracking-wide text-white" id="table-month-title">Gennaio 2027</h2>
@@ -489,7 +511,7 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast Notification Glassmorphism -->
     <div id="toast" class="fixed bottom-16 lg:bottom-5 right-5 glass-panel text-white px-4 py-3 rounded-2xl shadow-glass transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 border border-arma-gold/40">
         <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
             <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -1695,6 +1717,14 @@
             if (otDisp) otDisp.innerText = formatTime(currentTotals.totalOt);
             if (stdDisp) stdDisp.innerText = formatTime(currentTotals.totalOrd);
 
+            // Calcolo e animazione barra di avanzamento mensile (standard su 156 ore)
+            const targetMins = 156 * 60;
+            const pct = Math.min(100, Math.round((currentTotals.totalOrd / targetMins) * 100));
+            const progBar = document.getElementById('monthly-progress-bar');
+            const progPct = document.getElementById('monthly-progress-pct');
+            if (progBar) progBar.style.width = `${pct}%`;
+            if (progPct) progPct.innerText = `${pct}% (${formatTime(currentTotals.totalOrd)} / 156:00)`;
+
             const bOrdDf = document.getElementById('breakdown-ord-df');
             const bOrdFest = document.getElementById('breakdown-ord-fest');
             const bOrdNf = document.getElementById('breakdown-ord-nf');
@@ -1747,7 +1777,7 @@
 
             if (chartInstance) {
                 chartInstance.data.datasets[0].data = dataArr;
-                chartInstance.data.datasets[0].backgroundColor = dataArr.map((_, i) => i === currentMonth ? '#E5B842' : (isDark ? '#3A506B' : '#94A3B8'));
+                chartInstance.data.datasets[0].backgroundColor = dataArr.map((_, i) => i === currentMonth ? '#E5B842' : (isDark ? '#2A3F6D' : '#94A3B8'));
                 chartInstance.options.scales.x.ticks.color = textColor;
                 chartInstance.options.scales.y.ticks.color = textColor;
                 chartInstance.options.scales.y.grid.color = gridColor;
@@ -1762,7 +1792,7 @@
                     datasets: [{
                         label: 'Ore Str.',
                         data: dataArr,
-                        backgroundColor: dataArr.map((_, i) => i === currentMonth ? '#E5B842' : (isDark ? '#3A506B' : '#94A3B8')),
+                        backgroundColor: dataArr.map((_, i) => i === currentMonth ? '#E5B842' : (isDark ? '#2A3F6D' : '#94A3B8')),
                         borderRadius: 6,
                     }]
                 },
@@ -1874,16 +1904,16 @@
                 const dData = (shiftData && shiftData[currentMonth] && shiftData[currentMonth][d]) ? shiftData[currentMonth][d] : {};
                 const dRes = typeof calcDayLogic === 'function' ? calcDayLogic(dData) : { ordMins: 0, otMins: 0 };
 
-                let headerBg = '#0B132B';
+                let headerBg = '#070D1E';
                 let cellBorder = '#cbd5e1';
                 let cellBg = '#ffffff';
 
                 if (isHol || isSunday) {
-                    headerBg = '#D90429';
+                    headerBg = '#DC2626';
                     cellBorder = '#fca5a5';
                     cellBg = '#fffafa';
                 } else if (dData.shift === 'SSE') {
-                    headerBg = '#10B981';
+                    headerBg = '#059669';
                     cellBorder = '#86efac';
                     cellBg = '#f0fdf4';
                 } else if (dData.shift === 'RRS') {
@@ -1891,7 +1921,7 @@
                     cellBorder = '#fcd34d';
                     cellBg = '#fffbeb';
                 } else if (dData.shift && ['RS','RF','RRF','RM','LO','RFS','LT','RR','96h'].includes(dData.shift)) {
-                    headerBg = '#8B5CF6';
+                    headerBg = '#7C3AED';
                     cellBorder = '#c084fc';
                     cellBg = '#faf5ff';
                 }
@@ -1927,15 +1957,15 @@
             const sedeStr = patrono.citta ? `${patrono.citta} (Patrono: ${patrono.giorno}/${patrono.mese})` : 'Non Impostata';
 
             container.innerHTML = `
-                <div style="border-bottom:2px solid #0B132B; padding-bottom:5px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="border-bottom:2px solid #070D1E; padding-bottom:5px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <div style="font-size:7.5px; color:#64748b; text-transform:uppercase; font-weight:bold; letter-spacing:1px;">Memoriale Mensile di Servizio</div>
-                        <h1 style="font-size:17px; font-weight:bold; color:#0B132B; margin:0;">${MONTHS[currentMonth]} ${currentYear}</h1>
-                        <div style="font-size:9px; font-weight:bold; color:#334155;">Militare: <span style="color:#D90429;">${fullName}</span> - Sede: <span>${sedeStr}</span></div>
+                        <h1 style="font-size:17px; font-weight:bold; color:#070D1E; margin:0;">${MONTHS[currentMonth]} ${currentYear}</h1>
+                        <div style="font-size:9px; font-weight:bold; color:#334155;">Militare: <span style="color:#DC2626;">${fullName}</span> - Sede: <span>${sedeStr}</span></div>
                     </div>
                     <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:4px 8px; border-radius:5px; text-align:right;">
                         <div style="font-size:7px; color:#64748b; font-weight:bold; text-transform:uppercase;">Riepilogo Ore Mese</div>
-                        <div style="font-size:9.5px; font-weight:bold; color:#0B132B;">Ordinarie: ${formatTime(totals.totalOrd)} | Straord: <span style="color:#b45309;">${formatTime(totals.totalOt)}</span></div>
+                        <div style="font-size:9.5px; font-weight:bold; color:#070D1E;">Ordinarie: ${formatTime(totals.totalOrd)} | Straord: <span style="color:#b45309;">${formatTime(totals.totalOt)}</span></div>
                     </div>
                 </div>
 
@@ -1961,7 +1991,7 @@
                 </div>
 
                 <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px; margin-bottom:3px; text-align:center;">
-                    ${dayNames.map(name => `<div style="background:#0B132B; color:#ffffff; font-size:8.5px; font-weight:bold; padding:2px 0; border-radius:2px;">${name}</div>`).join('')}
+                    ${dayNames.map(name => `<div style="background:#070D1E; color:#ffffff; font-size:8.5px; font-weight:bold; padding:2px 0; border-radius:2px;">${name}</div>`).join('')}
                 </div>
 
                 <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:3px;">
