@@ -9,11 +9,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Turni CC">
-    <meta name="theme-color" content="#070D1E">
+    <meta name="theme-color" content="#0B132B">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,22 +29,15 @@
                     },
                     colors: {
                         arma: {
-                            navy: '#070D1E',
-                            darkBlue: '#0F1A36',
-                            cardDark: '#142145',
-                            accentBlue: '#2A3F6D',
-                            gold: '#E5B842',
-                            goldHover: '#C69926',
-                            red: '#DC2626',
-                            festivo: '#991B1B',
+                            navy: '#0B132B',
+                            darkCard: '#131F3F',
+                            darkSub: '#1C2B54',
+                            gold: '#D4AF37',
+                            goldHover: '#B8972E',
+                            red: '#B91C1C',
                             emerald: '#059669',
-                            purple: '#7C3AED'
+                            purple: '#6D28D9'
                         }
-                    },
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.35)',
-                        'glow-gold': '0 0 15px rgba(229, 184, 66, 0.25)',
-                        'soft-card': '0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04)'
                     }
                 }
             }
@@ -58,76 +51,90 @@
             width: 100%;
             height: 100%;
             overflow-x: hidden; 
-            transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
+        /* Palette Tema Scuro (Elegante, profondo, sobrio) */
         html.dark {
-            background-color: #060B18;
-            color: #F8FAFC;
+            background-color: #070D1E;
+            color: #F1F5F9;
         }
+        html.dark .glass-panel {
+            background-color: #0F1A36;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+        }
+        html.dark .glass-card {
+            background-color: #142145;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        html.dark .input-box {
+            background-color: #1A2A54;
+            color: #F8FAFC;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        html.dark .note-box {
+            background-color: rgba(212, 175, 55, 0.08);
+            color: #FDE047;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+        }
+        html.dark .inner-box {
+            background-color: #0B142B;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Palette Tema Chiaro (Solido, nitido, niente effetto trasparenza) */
         html.light {
+            background-color: #F3F4F6;
+            color: #1E293B;
+        }
+        html.light .glass-panel {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.05);
+        }
+        html.light .glass-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+        }
+        html.light .input-box {
             background-color: #F8FAFC;
             color: #0F172A;
+            border: 1px solid #CBD5E1;
+        }
+        html.light .note-box {
+            background-color: #FFFBEB;
+            color: #92400E;
+            border: 1px solid #FDE68A;
+        }
+        html.light .inner-box {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
         }
 
         .watermark-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.02' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 18 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.035' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' opacity='0.02' d='M50 35C40 35 32 43 32 53C32 63 40 71 50 71C60 71 68 63 68 53C68 43 60 35 50 35ZM45 32C40 25 35 28 35 28C38 23 35 15 35 15C42 18 45 25 45 25ZM55 32C60 25 65 28 65 28C62 23 65 15 65 15C58 18 55 25 55 25ZM50 28C50 20 55 10 55 10C45 12 45 22 45 22C45 22 50 28 50 28Z'/%3E%3Ctext x='50' y='82' font-family='sans-serif' font-size='4' text-anchor='middle' font-weight='bold' fill='%23ffffff' opacity='0.03' letter-spacing='1' %3ENEI SECOLI FEDELE%3C/text%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: center; background-size: 75vh;
             z-index: -1; pointer-events: none;
         }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #2A3F6D; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #E5B842; }
-
-        /* Effetti Glassmorphism */
-        .glass-panel {
-            background: rgba(15, 26, 54, 0.75);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        html.light .glass-panel {
-            background: rgba(255, 255, 255, 0.88);
-            border: 1px solid rgba(15, 23, 42, 0.08);
-        }
-
-        .glass-card {
-            background: rgba(20, 33, 69, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        html.light .glass-card {
-            background: rgba(255, 255, 255, 0.96);
-            border: 1px solid rgba(15, 23, 42, 0.06);
-        }
-        .glass-card:hover {
-            transform: translateY(-1.5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.22);
-        }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
 
         .input-box {
-            background: rgba(255, 255, 255, 0.06);
-            color: inherit;
-            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 0.5rem;
             padding: 0.25rem 0.4rem;
             font-size: 0.75rem;
             outline: none;
-            transition: all 0.2s ease;
-        }
-        html.light .input-box {
-            background: #ffffff;
-            color: #0F172A;
-            border: 1px solid #CBD5E1;
+            transition: all 0.15s ease;
         }
         .input-box:focus {
-            border-color: #E5B842;
-            box-shadow: 0 0 0 2px rgba(229, 184, 66, 0.25);
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
         }
         .input-box:disabled {
             opacity: 0.45;
@@ -143,72 +150,65 @@
         }
 
         .note-box {
-            background: rgba(229, 184, 66, 0.08);
-            color: #FCD34D;
-            border: 1px solid rgba(229, 184, 66, 0.22);
             border-radius: 0.5rem;
             padding: 0.25rem 0.5rem;
             font-size: 0.75rem;
             outline: none;
-            transition: all 0.2s ease;
-        }
-        html.light .note-box {
-            background: #FEF9C3;
-            color: #854D0E;
-            border: 1px solid #FDE047;
+            transition: all 0.15s ease;
         }
         .note-box:focus {
-            border-color: #E5B842;
-            box-shadow: 0 0 0 2px rgba(229, 184, 66, 0.3);
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
         }
 
-        /* Identificazione visiva elegante per le righe dei turni */
+        /* Indicatori laterali sobri per tipo riga */
         .row-normale {
-            border-left: 4.5px solid #2A3F6D !important;
+            border-left: 4.5px solid #334155 !important;
+        }
+        html.light .row-normale {
+            border-left: 4.5px solid #0F172A !important;
         }
         .row-festivo {
             border-left: 4.5px solid #DC2626 !important;
-            background: linear-gradient(90deg, rgba(220, 38, 38, 0.14) 0%, transparent 100%);
+            background: rgba(220, 38, 38, 0.04) !important;
         }
         .row-assenza {
             border-left: 4.5px solid #7C3AED !important;
-            background: linear-gradient(90deg, rgba(124, 58, 237, 0.14) 0%, transparent 100%);
+            background: rgba(124, 58, 237, 0.04) !important;
         }
         .row-rrs {
             border-left: 4.5px solid #EA580C !important;
-            background: linear-gradient(90deg, rgba(234, 88, 12, 0.14) 0%, transparent 100%);
+            background: rgba(234, 88, 12, 0.04) !important;
         }
         .row-sse {
             border-left: 4.5px solid #059669 !important;
-            background: linear-gradient(90deg, rgba(5, 150, 105, 0.14) 0%, transparent 100%);
+            background: rgba(5, 150, 105, 0.04) !important;
         }
 
         .lic-num-input {
-            width: 44px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 0.4rem;
-            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: inherit; background: rgba(0, 0, 0, 0.25);
+            width: 44px; text-align: center; border: 1px solid #CBD5E1; border-radius: 0.4rem;
+            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: inherit; background: transparent;
         }
-        html.light .lic-num-input {
-            background: #ffffff;
-            color: #0F172A;
-            border: 1px solid #CBD5E1;
+        html.dark .lic-num-input {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .lic-locked-input {
             width: 44px; text-align: center; border: 1px solid transparent; border-radius: 0.4rem;
-            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: #94A3B8; background: rgba(255, 255, 255, 0.05);
+            padding: 2px 3px; font-size: 0.75rem; font-weight: 700; color: #94A3B8; background: rgba(0, 0, 0, 0.05);
         }
 
         .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1.5px) grayscale(65%); }
         .days-blocked { pointer-events: none; opacity: 0.45; }
 
-        /* Barre di Avanzamento Morbide */
         .progress-bar-bg {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.15);
             border-radius: 9999px;
             overflow: hidden;
         }
-        html.light .progress-bar-bg {
-            background: rgba(0, 0, 0, 0.08);
+        html.dark .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         @media (min-width: 1024px) {
@@ -225,53 +225,53 @@
 
     <div class="watermark-bg"></div>
 
-    <!-- Banner Iniziale Sincronizzazione / Login con Safe Area per iPhone -->
-    <div class="fixed top-0 left-0 right-0 z-40 bg-arma-navy/95 backdrop-blur-md pt-[env(safe-area-inset-top,0px)] border-b border-arma-gold/30 shadow-2xl">
-        <div id="auth-banner" class="px-3 py-1.5 text-white">
+    <!-- Banner Iniziale Sincronizzazione con Safe Area per iPhone -->
+    <div class="fixed top-0 left-0 right-0 z-40 bg-arma-navy pt-[env(safe-area-inset-top,0px)] border-b border-arma-gold/30 shadow-lg text-white">
+        <div id="auth-banner" class="px-3 py-1.5">
             <div class="w-full flex items-center justify-between gap-2 max-w-[1600px] mx-auto">
                 <div class="flex items-center gap-2 min-w-0">
-                    <div class="w-7 h-7 rounded-lg bg-arma-gold/15 border border-arma-gold/40 flex items-center justify-center flex-shrink-0 text-arma-gold shadow-sm">
+                    <div class="w-7 h-7 rounded-lg bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center flex-shrink-0 text-arma-gold">
                         <i class="fa-solid fa-shield-halved text-xs"></i>
                     </div>
                     <div class="min-w-0">
                         <h3 class="font-bold text-xs sm:text-sm leading-tight tracking-wide truncate">Portale Riservato</h3>
-                        <p class="text-[9px] text-slate-300 truncate hidden sm:block">Inserisci il Codice Personale per sincronizzare il database</p>
+                        <p class="text-[9px] text-slate-300 truncate hidden sm:block">Inserisci il Codice Personale per accedere ai tuoi dati</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <div class="flex items-center gap-1.5">
-                        <input type="password" id="user-code-input" placeholder="CODICE..." class="input-box !py-1 !px-2.5 !text-xs font-mono font-bold w-28 sm:w-44 text-center uppercase tracking-widest" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
-                        <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-gradient-to-r from-arma-gold to-amber-500 hover:from-amber-400 hover:to-amber-600 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition shadow-md flex items-center gap-1">
+                        <input type="password" id="user-code-input" placeholder="CODICE..." class="input-box !bg-white/10 !text-white !border-white/20 !py-1 !px-2.5 !text-xs font-mono font-bold w-28 sm:w-44 text-center uppercase tracking-widest placeholder-white/40" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
+                        <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-arma-gold hover:bg-arma-goldHover text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition shadow flex items-center gap-1">
                             <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i> Accedi
                         </button>
                     </div>
-                    <button type="button" id="btn-logout" onclick="doLogout(); return false;" class="hidden bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-bold px-3 py-1 rounded-lg text-xs transition shadow-md flex items-center gap-1">
+                    <button type="button" id="btn-logout" onclick="doLogout(); return false;" class="hidden bg-arma-red hover:bg-red-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition shadow flex items-center gap-1">
                         <i class="fa-solid fa-power-off text-[10px]"></i> ESCI
                     </button>
                 </div>
             </div>
         </div>
 
-        <div id="lock-warning" class="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-bold text-center py-0.5 px-2 text-[11px] shadow-sm flex items-center justify-center gap-1.5">
+        <div id="lock-warning" class="bg-amber-500 text-slate-950 font-bold text-center py-0.5 px-2 text-[11px] shadow-sm flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-lock text-xs"></i>
             <span id="lock-warning-text">ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto.</span>
         </div>
     </div>
 
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 mt-1 w-full max-w-[1600px] mx-auto px-1 sm:px-3">
-        <!-- Header Glassmorphism con Indicatori e Badge -->
-        <header class="glass-panel text-white shadow-glass z-10 flex-shrink-0 w-full rounded-2xl mb-2.5">
+        <!-- Header Pulito ed Elegante -->
+        <header class="glass-panel text-inherit z-10 flex-shrink-0 w-full rounded-2xl mb-2.5">
             <div class="w-full px-2.5 sm:px-3.5 py-2 flex justify-between items-center gap-2">
                 <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-arma-gold/25 to-amber-500/10 border border-arma-gold/40 flex items-center justify-center text-arma-gold flex-shrink-0 shadow-inner">
+                    <div class="w-9 h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
                         <i class="fa-solid fa-calendar-check text-base"></i>
                     </div>
                     <div class="flex flex-col min-w-0 flex-1">
                         <span class="text-[8px] sm:text-[9px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX-TECH // TURNI CC</span>
                         <div class="flex items-center gap-1.5 sm:gap-2 mt-0.5 min-w-0">
                             <h1 class="text-sm sm:text-lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
-                            <select id="year-select" class="bg-black/35 border border-white/10 rounded-lg px-2 py-0.5 text-xs font-bold text-arma-gold shadow-inner cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
+                            <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
                                 <option value="2027">2027</option>
                                 <option value="2028">2028</option>
                                 <option value="2029">2029</option>
@@ -279,108 +279,108 @@
                             </select>
                             
                             <!-- Box Grado e Cognome -->
-                            <div class="flex items-center gap-1 bg-black/25 px-2 py-1 rounded-lg border border-white/10 min-w-0 flex-1 max-w-[240px] sm:max-w-none">
+                            <div class="flex items-center gap-1 inner-box px-2 py-0.5 rounded-lg min-w-0 flex-1 max-w-[240px] sm:max-w-none">
                                 <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
-                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-14 sm:w-16 placeholder-white/30 focus:bg-white/10 rounded px-1 py-0.5 outline-none transition-colors leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
-                                <span class="text-white/20 text-xs font-light flex-shrink-0">|</span>
-                                <input type="text" id="user-nome-input" class="bg-transparent text-white font-semibold text-[11px] sm:text-xs w-full min-w-0 placeholder-white/30 focus:bg-white/10 rounded px-1 py-0.5 outline-none transition-colors leading-normal" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-14 sm:w-16 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                                <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
+                                <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs w-full min-w-0 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tasto Sede, Switch Dark/Light e Status Cloud -->
+                <!-- Tasto Sede, Switch Tema e Status Cloud -->
                 <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-amber-500/15 hover:bg-amber-500/25 text-arma-gold border border-arma-gold/30 px-2.5 py-1 rounded-xl flex items-center gap-1.5 transition-all shadow-sm" title="Imposta Sede">
+                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1 rounded-xl flex items-center gap-1.5 transition shadow-sm" title="Imposta Sede">
                         <i class="fa-solid fa-landmark text-xs sm:text-sm"></i>
                         <span class="hidden md:inline text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
                     </button>
 
                     <!-- Toggle Tema Dark/Light -->
-                    <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-arma-gold border border-white/10 flex items-center justify-center transition shadow-sm" title="Cambia Tema">
-                        <i id="theme-icon" class="fa-solid fa-sun text-xs"></i>
+                    <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-xl inner-box flex items-center justify-center transition hover:border-arma-gold" title="Cambia Tema">
+                        <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
                     </button>
 
-                    <!-- Cloud Sync Pulse -->
-                    <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 bg-black/30 px-2.5 py-1 rounded-xl border border-white/10 shadow-inner">
-                        <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full shadow-sm"></span>
-                        <span class="hidden md:inline text-xs font-bold text-gray-200" id="status-user-text">Nessun Codice Inserito</span>
+                    <!-- Cloud Sync -->
+                    <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl">
+                        <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                        <span class="hidden md:inline text-xs font-bold opacity-80" id="status-user-text">Nessun Codice Inserito</span>
                     </div>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start">
-            <!-- Sidebar Riepiloghi Sticky Glassmorphism -->
+            <!-- Sidebar Riepiloghi Sticky -->
             <aside id="main-sidebar" class="w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
                 <!-- Selettore Mese -->
-                <div class="glass-panel rounded-2xl shadow-soft-card p-3 border-t-2 border-arma-gold/60 flex-shrink-0">
+                <div class="glass-panel rounded-2xl p-3 border-t-2 border-arma-gold flex-shrink-0">
                     <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-gray-300">
+                        <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 opacity-80">
                             <i class="fa-regular fa-calendar-days text-arma-gold"></i> Seleziona Mese
                         </h2>
-                        <span id="aside-user-display" class="text-[9px] font-bold text-arma-gold bg-arma-gold/10 border border-arma-gold/30 px-2 py-0.5 rounded-full truncate max-w-[120px]">Militare</span>
+                        <span id="aside-user-display" class="text-[9px] font-bold text-arma-gold bg-arma-gold/10 border border-arma-gold/20 px-2 py-0.5 rounded-full truncate max-w-[120px]">Militare</span>
                     </div>
                     <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5" id="month-grid"></div>
                 </div>
 
-                <!-- Riquadro Riepilogo Ore Mensili con Barra di Avanzamento Dinamica -->
-                <div class="glass-panel rounded-2xl shadow-soft-card p-3 text-white flex-shrink-0 border-t-2 border-arma-gold">
-                    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-white/10">
+                <!-- Riquadro Riepilogo Ore Mensili -->
+                <div class="glass-panel rounded-2xl p-3 flex-shrink-0 border-t-2 border-arma-gold">
+                    <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-500/20">
                         <h2 class="text-xs font-bold text-arma-gold uppercase tracking-wider flex items-center gap-1.5" id="summary-title">
                             <i class="fa-solid fa-stopwatch text-arma-gold"></i> Riepilogo Mensile
                         </h2>
-                        <span class="text-[10px] text-gray-400 font-mono" id="summary-month-badge">Ore Mese</span>
+                        <span class="text-[10px] font-mono opacity-60" id="summary-month-badge">Ore Mese</span>
                     </div>
 
                     <!-- Totali Generali Card -->
                     <div class="grid grid-cols-2 gap-2 mb-2">
-                        <div class="bg-black/30 p-2 rounded-xl border border-white/5 shadow-inner">
-                            <span class="text-[9px] uppercase font-bold text-gray-400 block tracking-wider">Tot. Ordinarie</span>
-                            <span class="text-xl font-black text-white" id="monthly-std-display">00:00</span>
+                        <div class="inner-box p-2 rounded-xl">
+                            <span class="text-[9px] uppercase font-bold opacity-60 block tracking-wider">Tot. Ordinarie</span>
+                            <span class="text-xl font-black" id="monthly-std-display">00:00</span>
                         </div>
-                        <div class="bg-black/30 p-2 rounded-xl border border-white/5 shadow-inner">
+                        <div class="inner-box p-2 rounded-xl">
                             <span class="text-[9px] uppercase font-bold text-arma-gold block tracking-wider">Tot. Straord.</span>
                             <span class="text-xl font-black text-arma-gold" id="monthly-ot-display">00:00</span>
                         </div>
                     </div>
 
-                    <!-- Barra di Avanzamento Ore Ordinarie (base stimata 156h) -->
+                    <!-- Avanzamento Mensile -->
                     <div class="mb-2.5 px-0.5">
-                        <div class="flex justify-between text-[9px] font-semibold text-gray-400 mb-1">
-                            <span>Avanzamento Mensile</span>
+                        <div class="flex justify-between text-[9px] font-semibold opacity-70 mb-1">
+                            <span>Avanzamento Ordinarie</span>
                             <span id="monthly-progress-pct" class="text-arma-gold font-mono">0%</span>
                         </div>
                         <div class="w-full h-1.5 progress-bar-bg">
-                            <div id="monthly-progress-bar" class="h-full bg-gradient-to-r from-arma-gold to-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            <div id="monthly-progress-bar" class="h-full bg-arma-gold rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
 
                     <!-- Suddivisione 4 Categorie Dettagliate -->
-                    <div class="bg-black/30 rounded-xl px-2.5 py-2 border border-white/10 flex flex-col gap-1.5">
-                        <div class="grid grid-cols-3 text-[9px] uppercase font-bold text-gray-400 pb-1 border-b border-white/10">
+                    <div class="inner-box rounded-xl px-2.5 py-2 flex flex-col gap-1.5">
+                        <div class="grid grid-cols-3 text-[9px] uppercase font-bold opacity-60 pb-1 border-b border-gray-500/20">
                             <span>Fascia</span>
-                            <span class="text-center text-gray-300">Ord.</span>
+                            <span class="text-center">Ord.</span>
                             <span class="text-right text-arma-gold">Straord.</span>
                         </div>
                         <div class="grid grid-cols-3 items-center text-[11px]">
-                            <span class="text-gray-300 font-medium truncate pr-1">Diurno Fer.</span>
-                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-df">00:00</span>
+                            <span class="font-medium truncate pr-1">Diurno Fer.</span>
+                            <span class="text-center font-bold font-mono text-xs" id="breakdown-ord-df">00:00</span>
                             <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-df">00:00</span>
                         </div>
                         <div class="grid grid-cols-3 items-center text-[11px]">
-                            <span class="text-amber-400 font-medium truncate pr-1">Diurno Fest.</span>
-                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-fest">00:00</span>
+                            <span class="text-amber-500 font-medium truncate pr-1">Diurno Fest.</span>
+                            <span class="text-center font-bold font-mono text-xs" id="breakdown-ord-fest">00:00</span>
                             <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-fest">00:00</span>
                         </div>
                         <div class="grid grid-cols-3 items-center text-[11px]">
-                            <span class="text-sky-300 font-medium truncate pr-1">Notturno Fer.</span>
-                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-nf">00:00</span>
+                            <span class="text-sky-500 font-medium truncate pr-1">Notturno Fer.</span>
+                            <span class="text-center font-bold font-mono text-xs" id="breakdown-ord-nf">00:00</span>
                             <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-nf">00:00</span>
                         </div>
                         <div class="grid grid-cols-3 items-center text-[11px]">
-                            <span class="text-purple-300 font-medium truncate pr-1">Notturno Fest.</span>
-                            <span class="text-center font-bold text-white font-mono text-xs" id="breakdown-ord-not-fest">00:00</span>
+                            <span class="text-purple-500 font-medium truncate pr-1">Notturno Fest.</span>
+                            <span class="text-center font-bold font-mono text-xs" id="breakdown-ord-not-fest">00:00</span>
                             <span class="text-right font-bold text-arma-gold font-mono text-xs" id="breakdown-ot-not-fest">00:00</span>
                         </div>
                     </div>
@@ -389,32 +389,32 @@
                 <div id="lic-alerts-container" class="flex flex-col gap-2 flex-shrink-0"></div>
 
                 <!-- Box Licenze -->
-                <div class="glass-panel rounded-2xl shadow-soft-card p-3 border-t-2 border-purple-500/70 flex flex-col flex-shrink-0">
+                <div class="glass-panel rounded-2xl p-3 border-t-2 border-purple-600 flex flex-col flex-shrink-0">
                     <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-purple-300">
+                        <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-purple-600 dark:text-purple-400">
                             <i class="fa-solid fa-umbrella-beach"></i> Riepilogo Licenze
                         </h2>
-                        <span class="text-[9px] text-gray-400 font-mono" id="lic-year-badge">Anno 2027</span>
+                        <span class="text-[9px] opacity-60 font-mono" id="lic-year-badge">Anno 2027</span>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-[10px]">
                             <thead>
-                                <tr class="text-gray-400 border-b border-white/10 text-[9px] uppercase tracking-wider">
+                                <tr class="opacity-60 border-b border-gray-500/20 text-[9px] uppercase tracking-wider">
                                     <th class="text-left pb-1">Voce</th>
                                     <th class="text-center pb-1 font-semibold">Spet</th>
                                     <th class="text-center pb-1 font-semibold">Fruiti</th>
                                     <th class="text-right pb-1 font-semibold">Res</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5 text-gray-200" id="licenze-table-body"></tbody>
+                            <tbody class="divide-y divide-gray-500/10" id="licenze-table-body"></tbody>
                         </table>
                     </div>
                 </div>
 
                 <!-- Grafico Straordinari Annuali -->
-                <div class="glass-panel rounded-2xl shadow-soft-card p-3 min-h-[160px] border-t-2 border-arma-gold/60 flex flex-col flex-shrink-0">
-                    <h2 class="text-xs font-bold text-gray-300 mb-2 flex items-center gap-1.5">
+                <div class="glass-panel rounded-2xl p-3 min-h-[160px] border-t-2 border-arma-gold flex flex-col flex-shrink-0">
+                    <h2 class="text-xs font-bold mb-2 flex items-center gap-1.5 opacity-80">
                         <i class="fa-solid fa-chart-simple text-arma-gold"></i> Andamento Annuale
                     </h2>
                     <div class="relative flex-1 w-full min-h-[110px]">
@@ -423,35 +423,35 @@
                 </div>
 
                 <!-- Riposi Non Fruiti -->
-                <div class="glass-panel rounded-2xl shadow-soft-card p-3 border-t-2 border-red-500/60 flex flex-col min-h-[120px]">
-                    <h2 class="text-xs font-bold text-gray-300 mb-2 flex items-center gap-1.5">
-                        <i class="fa-solid fa-bed text-red-400"></i> Riposi Non Fruiti
+                <div class="glass-panel rounded-2xl p-3 border-t-2 border-red-600 flex flex-col min-h-[120px]">
+                    <h2 class="text-xs font-bold mb-2 flex items-center gap-1.5 opacity-80">
+                        <i class="fa-solid fa-bed text-red-500"></i> Riposi Non Fruiti
                     </h2>
                     <div id="unpaid-rests-container" class="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar flex-1"></div>
                 </div>
 
                 <!-- Pulsante Stampa PDF -->
-                <div class="glass-panel rounded-2xl shadow-soft-card p-2.5 border-t-2 border-arma-gold flex flex-col flex-shrink-0">
-                    <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg transition-all transform active:scale-95">
+                <div class="glass-panel rounded-2xl p-2.5 border-t-2 border-arma-gold flex flex-col flex-shrink-0">
+                    <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow transition active:scale-95">
                         <i class="fa-solid fa-file-pdf"></i> Scarica PDF Calendario Mese
                     </button>
                 </div>
             </aside>
 
-            <!-- Sezione Tabella Giorni Glassmorphism -->
-            <section id="days-section" class="flex-1 min-w-0 glass-panel rounded-2xl shadow-soft-card flex flex-col border-t-2 border-arma-gold relative w-full mb-2">
-                <div class="px-3.5 py-2.5 border-b border-white/10 flex justify-between items-center z-10 flex-shrink-0">
+            <!-- Sezione Tabella Giorni -->
+            <section id="days-section" class="flex-1 min-w-0 glass-panel rounded-2xl flex flex-col border-t-2 border-arma-gold relative w-full mb-2">
+                <div class="px-3.5 py-2.5 border-b border-gray-500/20 flex justify-between items-center z-10 flex-shrink-0">
                     <div class="flex items-center gap-2">
-                        <h2 class="text-base font-extrabold uppercase tracking-wide text-white" id="table-month-title">Gennaio 2027</h2>
-                        <span id="patrono-active-pill" class="text-[10px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded-full cursor-pointer hover:bg-amber-500/25 transition shadow-sm" onclick="openPatronoModal()">
-                            <i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>Sede: Non Impostata
+                        <h2 class="text-base font-extrabold uppercase tracking-wide" id="table-month-title">Gennaio 2027</h2>
+                        <span id="patrono-active-pill" class="text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full cursor-pointer hover:bg-amber-500/20 transition shadow-sm" onclick="openPatronoModal()">
+                            <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>Sede: Non Impostata
                         </span>
-                        <span id="table-user-pill" class="hidden sm:inline text-[10px] font-bold bg-blue-500/15 text-sky-300 border border-blue-400/30 px-2 py-0.5 rounded-full">
-                            <i class="fa-solid fa-id-badge mr-1 text-sky-400"></i><span id="table-user-name">Militare</span>
+                        <span id="table-user-pill" class="hidden sm:inline text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-sky-400 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                            <i class="fa-solid fa-id-badge mr-1"></i><span id="table-user-name">Militare</span>
                         </span>
                     </div>
-                    <span class="text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/30 shadow-sm flex items-center gap-1.5">
-                        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Cloud Attivo
+                    <span class="text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/20 shadow-sm flex items-center gap-1.5">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Cloud Attivo
                     </span>
                 </div>
 
@@ -460,8 +460,8 @@
         </main>
     </div>
 
-    <!-- Mobile Navigation Tab Bar con Effetto Blur -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-arma-navy/95 backdrop-blur-md border-t border-white/10 text-white flex justify-around items-center py-2 z-50 shadow-2xl">
+    <!-- Mobile Navigation Tab Bar -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-arma-navy border-t border-gray-700 text-white flex justify-around items-center py-2 z-50 shadow-2xl">
         <button type="button" onclick="switchMobileTab('days')" id="tab-btn-days" class="flex flex-col items-center gap-1 text-arma-gold font-bold text-[10px]">
             <i class="fa-solid fa-calendar-days text-base"></i>
             <span>Calendario</span>
@@ -476,44 +476,44 @@
         </button>
     </div>
 
-    <!-- Modal Santo Patrono Glassmorphism -->
-    <div id="patrono-modal" class="hidden fixed inset-x-0 top-12 z-[9999] bg-black/75 backdrop-blur-md flex justify-center items-start p-4 overflow-y-auto">
-        <div class="glass-panel text-white rounded-3xl shadow-2xl max-w-md w-full border border-arma-gold/50 overflow-hidden my-2 mx-2">
-            <div class="bg-arma-navy/90 px-5 py-3.5 flex justify-between items-center border-b border-white/10">
+    <!-- Modal Santo Patrono -->
+    <div id="patrono-modal" class="hidden fixed inset-x-0 top-12 z-[9999] bg-black/70 flex justify-center items-start p-4 overflow-y-auto">
+        <div class="glass-panel text-inherit rounded-3xl shadow-2xl max-w-md w-full border border-arma-gold/40 overflow-hidden my-2 mx-2">
+            <div class="bg-arma-navy text-white px-5 py-3.5 flex justify-between items-center border-b border-white/10">
                 <h3 class="font-bold text-sm tracking-wide flex items-center gap-2 text-arma-gold">
                     <i class="fa-solid fa-landmark"></i> Configura Sede e Santo Patrono
                 </h3>
                 <button type="button" onclick="closePatronoModal()" class="text-gray-400 hover:text-white text-lg leading-none">&times;</button>
             </div>
             <div class="p-5 flex flex-col gap-4 text-xs">
-                <p class="leading-relaxed text-gray-300">Personalizza il comune della tua sede di servizio per le festività infrasettimanali.</p>
+                <p class="leading-relaxed opacity-80">Personalizza il comune della tua sede di servizio per le festività infrasettimanali.</p>
                 <div>
-                    <label class="block font-bold text-gray-200 mb-1">Città / Sede di Comando:</label>
+                    <label class="block font-bold mb-1 opacity-90">Città / Sede di Comando:</label>
                     <input type="text" id="patrono-citta-input" class="w-full input-box !py-2 !text-xs font-semibold" placeholder="Es: Milano, Roma, Cantù...">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-gray-200 mb-1">Giorno Patrono:</label>
-                        <select id="patrono-giorno-select" class="w-full input-box !py-2 !text-xs font-bold text-center bg-black/40"></select>
+                        <label class="block font-bold mb-1 opacity-90">Giorno Patrono:</label>
+                        <select id="patrono-giorno-select" class="w-full input-box !py-2 !text-xs font-bold text-center"></select>
                     </div>
                     <div>
-                        <label class="block font-bold text-gray-200 mb-1">Mese Patrono:</label>
-                        <select id="patrono-mese-select" class="w-full input-box !py-2 !text-xs font-bold text-center bg-black/40">
+                        <label class="block font-bold mb-1 opacity-90">Mese Patrono:</label>
+                        <select id="patrono-mese-select" class="w-full input-box !py-2 !text-xs font-bold text-center">
                             <option value="01">Gennaio</option><option value="02">Febbraio</option><option value="03">Marzo</option><option value="04">Aprile</option><option value="05">Maggio</option><option value="06">Giugno</option><option value="07">Luglio</option><option value="08">Agosto</option><option value="09">Settembre</option><option value="10">Ottobre</option><option value="11">Novembre</option><option value="12">Dicembre</option>
                         </select>
                     </div>
                 </div>
-                <div class="flex justify-end gap-2 pt-2 border-t border-white/10">
-                    <button type="button" onclick="closePatronoModal()" class="px-3.5 py-1.5 rounded-xl border border-white/20 text-gray-300 hover:bg-white/10 font-semibold transition">Annulla</button>
-                    <button type="button" onclick="savePatronoConfig()" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-arma-gold to-amber-500 text-slate-950 font-bold hover:brightness-110 shadow-md transition">Salva Sede</button>
+                <div class="flex justify-end gap-2 pt-2 border-t border-gray-500/20">
+                    <button type="button" onclick="closePatronoModal()" class="px-3.5 py-1.5 rounded-xl border border-gray-400/30 opacity-80 hover:opacity-100 font-semibold transition">Annulla</button>
+                    <button type="button" onclick="savePatronoConfig()" class="px-4 py-1.5 rounded-xl bg-arma-gold text-slate-950 font-bold hover:bg-arma-goldHover shadow transition">Salva Sede</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification Glassmorphism -->
-    <div id="toast" class="fixed bottom-16 lg:bottom-5 right-5 glass-panel text-white px-4 py-3 rounded-2xl shadow-glass transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 border border-arma-gold/40">
-        <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-16 lg:bottom-5 right-5 glass-panel px-4 py-3 rounded-2xl shadow-lg transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center gap-3 border border-arma-gold/30">
+        <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xs">
             <i class="fa-solid fa-cloud-arrow-up"></i>
         </div>
         <span id="toast-msg" class="font-medium text-xs">Dati Sincronizzati</span>
@@ -568,9 +568,9 @@
             const icon = document.getElementById('theme-icon');
             if (!icon) return;
             if (theme === 'dark') {
-                icon.className = 'fa-solid fa-sun text-xs text-amber-400';
+                icon.className = 'fa-solid fa-sun text-xs text-arma-gold';
             } else {
-                icon.className = 'fa-solid fa-moon text-xs text-indigo-400';
+                icon.className = 'fa-solid fa-moon text-xs text-arma-navy';
             }
         }
 
@@ -635,7 +635,7 @@
             document.getElementById('btn-login-code').classList.add('hidden');
             document.getElementById('user-code-input').disabled = true;
             document.getElementById('status-user-text').innerText = "Profilo: " + code;
-            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-sm shadow-emerald-400/50 animate-pulse';
+            document.getElementById('cloud-dot').className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-sm animate-pulse';
             checkMandatoryFields();
         }
 
@@ -826,10 +826,10 @@
             if (patrono && patrono.citta) {
                 const labelStr = `${patrono.citta} (${patrono.giorno}/${patrono.mese})`;
                 if (btnText) btnText.innerText = labelStr;
-                if (pillText) pillText.innerHTML = `<i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>Sede: ${patrono.citta} (${patrono.giorno}/${patrono.mese})`;
+                if (pillText) pillText.innerHTML = `<i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>Sede: ${patrono.citta} (${patrono.giorno}/${patrono.mese})`;
             } else {
                 if (btnText) btnText.innerText = 'Imposta Sede';
-                if (pillText) pillText.innerHTML = `<i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>Sede: Non Impostata`;
+                if (pillText) pillText.innerHTML = `<i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>Sede: Non Impostata`;
             }
         }
 
@@ -1233,13 +1233,13 @@
             ];
 
             tbody.innerHTML = items.map(item => {
-                let resClass = 'text-emerald-400 font-bold';
+                let resClass = 'text-emerald-500 font-bold';
                 if (item.id === 'lo_prev2' && isExpiredLoPrev2 && item.res > 0) {
-                    resClass = 'text-rose-500 line-through font-bold';
+                    resClass = 'text-red-500 line-through font-bold';
                 } else if (item.res < 0) {
-                    resClass = 'text-rose-500 font-black';
+                    resClass = 'text-red-500 font-black';
                 } else if (item.res === 0) {
-                    resClass = 'text-gray-400 font-semibold';
+                    resClass = 'opacity-40 font-semibold';
                 }
 
                 let inputHtml = '';
@@ -1255,13 +1255,13 @@
                 }
 
                 return `
-                    <tr class="hover:bg-white/5 transition-colors">
-                        <td class="py-1.5 font-medium text-gray-200">
+                    <tr class="hover:bg-gray-500/5 transition-colors">
+                        <td class="py-1.5 font-medium">
                             <div>${item.label}</div>
-                            <div class="text-[8px] ${item.id === 'lo_prev2' && isExpiredLoPrev2 ? 'text-rose-400 font-semibold' : 'text-gray-400'} font-mono">${item.note}</div>
+                            <div class="text-[8px] ${item.id === 'lo_prev2' && isExpiredLoPrev2 ? 'text-red-500 font-semibold' : 'opacity-40'} font-mono">${item.note}</div>
                         </td>
                         <td class="text-center py-1">${inputHtml}</td>
-                        <td class="text-center py-1 font-semibold text-gray-300">${item.usate}</td>
+                        <td class="text-center py-1 font-semibold opacity-70">${item.usate}</td>
                         <td class="text-right py-1 text-xs pr-1 ${resClass}">${item.res}</td>
                     </tr>
                 `;
@@ -1279,20 +1279,20 @@
                 if (currentMonth >= 4 && currentMonth <= 5) {
                     const isUrgent = currentMonth === 5;
                     alerts.push(`
-                        <div class="${isUrgent ? 'bg-rose-500/15 border-rose-500/40 text-rose-200' : 'bg-amber-500/15 border-amber-500/40 text-amber-200'} border rounded-2xl p-2.5 shadow-sm flex items-start gap-2.5 backdrop-blur-md">
-                            <i class="fa-solid fa-triangle-exclamation ${isUrgent ? 'text-rose-400' : 'text-amber-400'} text-base mt-0.5"></i>
+                        <div class="${isUrgent ? 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400' : 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400'} border rounded-2xl p-2.5 shadow-sm flex items-start gap-2.5">
+                            <i class="fa-solid fa-triangle-exclamation text-base mt-0.5"></i>
                             <div class="text-[11px] leading-tight flex-1">
-                                <strong class="font-bold block uppercase tracking-wide text-[10px] ${isUrgent ? 'text-rose-300' : 'text-amber-300'}">Attenzione Scadenza Licenza ${prevYear2}</strong>
+                                <strong class="font-bold block uppercase tracking-wide text-[10px]">Attenzione Scadenza Licenza ${prevYear2}</strong>
                                 Hai ancora <span class="font-bold underline">${loPrev2Res} ${loPrev2Res === 1 ? 'giorno' : 'giorni'}</span> di <strong>LO ${prevYear2}</strong>. Scadono il <strong>30 Giugno ${currentYear}</strong>!
                             </div>
                         </div>
                     `);
                 } else if (currentMonth >= 6) {
                     alerts.push(`
-                        <div class="bg-rose-500/20 border-rose-500/50 text-rose-200 border rounded-2xl p-2.5 shadow-sm flex items-start gap-2.5 backdrop-blur-md">
-                            <i class="fa-solid fa-circle-xmark text-rose-400 text-lg mt-0.5"></i>
+                        <div class="bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400 border rounded-2xl p-2.5 shadow-sm flex items-start gap-2.5">
+                            <i class="fa-solid fa-circle-xmark text-lg mt-0.5"></i>
                             <div class="text-[11px] leading-tight flex-1">
-                                <strong class="font-bold block uppercase tracking-wide text-[10px] text-rose-300">Licenza ${prevYear2} Scaduta</strong>
+                                <strong class="font-bold block uppercase tracking-wide text-[10px]">Licenza ${prevYear2} Scaduta</strong>
                                 Il termine del <strong>30 Giugno ${currentYear}</strong> è decorso.
                             </div>
                         </div>
@@ -1302,10 +1302,10 @@
 
             if (currentMonth >= 10 && rfsRes > 0) {
                 alerts.push(`
-                    <div class="bg-amber-500/15 border-amber-500/40 text-amber-200 border rounded-2xl p-2.5 shadow-sm flex items-start gap-2.5 backdrop-blur-md">
-                        <i class="fa-solid fa-clock-rotate-left text-amber-400 text-base mt-0.5"></i>
+                    <div class="bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400 border rounded-2xl p-2.5 shadow-sm flex items-start gap-2.5">
+                        <i class="fa-solid fa-clock-rotate-left text-base mt-0.5"></i>
                         <div class="text-[11px] leading-tight flex-1">
-                            <strong class="font-bold block uppercase tracking-wide text-[10px] text-amber-300">Attenzione Scadenza RFS</strong>
+                            <strong class="font-bold block uppercase tracking-wide text-[10px]">Attenzione Scadenza RFS</strong>
                             Hai ancora <span class="font-bold underline">${rfsRes} ${rfsRes === 1 ? 'giorno' : 'giorni'}</span> di <strong>RFS</strong> da fruire entro il <strong>31 Dicembre ${currentYear}</strong>.
                         </div>
                     </div>
@@ -1342,7 +1342,7 @@
             MONTHS.forEach((mName, index) => {
                 const btn = document.createElement('button');
                 const isSelected = index === currentMonth;
-                btn.className = `p-2 text-xs font-bold rounded-xl transition-all border ${isSelected ? 'bg-gradient-to-br from-arma-gold to-amber-500 text-slate-950 border-arma-gold shadow-md scale-[1.02]' : 'bg-white/5 hover:bg-white/10 text-gray-300 border-white/5'}`;
+                btn.className = `p-2 text-xs font-bold rounded-xl transition border ${isSelected ? 'bg-arma-gold text-slate-950 border-arma-gold shadow-sm font-black' : 'inner-box hover:border-arma-gold/50'}`;
                 btn.innerText = mName;
                 btn.onclick = () => { currentMonth = index; renderApp(); };
                 grid.appendChild(btn);
@@ -1358,10 +1358,10 @@
             const isAfterJune = currentMonth > 5;
             let html = '';
             if (!isAfterJune) {
-                html += `<option value="${prev2}" ${selectedVal === prev2 ? 'selected' : ''} class="bg-slate-900 text-white">LO ${prev2}</option>`;
+                html += `<option value="${prev2}" ${selectedVal === prev2 ? 'selected' : ''}>LO ${prev2}</option>`;
             }
-            html += `<option value="${prev1}" ${selectedVal === prev1 ? 'selected' : ''} class="bg-slate-900 text-white">LO ${prev1}</option>`;
-            html += `<option value="${curr}" ${(!selectedVal || selectedVal === curr || selectedVal === 'curr') ? 'selected' : ''} class="bg-slate-900 text-white">LO ${curr}</option>`;
+            html += `<option value="${prev1}" ${selectedVal === prev1 ? 'selected' : ''}>LO ${prev1}</option>`;
+            html += `<option value="${curr}" ${(!selectedVal || selectedVal === curr || selectedVal === 'curr') ? 'selected' : ''}>LO ${curr}</option>`;
             return html;
         }
 
@@ -1394,26 +1394,26 @@
                     <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-2.5 w-full">
                         <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
                             <!-- Badge Giorno del Mese -->
-                            <div class="flex items-center gap-1.5 w-16 sm:w-20 flex-shrink-0 bg-black/25 py-1 px-2 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-1.5 w-16 sm:w-20 flex-shrink-0 inner-box py-1 px-2 rounded-xl">
                                 <span class="text-lg sm:text-xl font-black leading-none text-arma-gold">${day}</span>
-                                <span class="text-[10px] uppercase font-bold tracking-wider opacity-80">${dayOfWeek}</span>
+                                <span class="text-[10px] uppercase font-bold tracking-wider opacity-60">${dayOfWeek}</span>
                             </div>
                             
-                            <!-- Dropdown Turno (Pillola Moderna) -->
+                            <!-- Dropdown Turno -->
                             <div class="flex items-center flex-shrink-0">
-                                <select class="input-box font-extrabold w-[85px] sm:w-[95px] text-center shadow-sm cursor-pointer !rounded-xl !bg-arma-gold/15 !border-arma-gold/40 text-arma-gold" data-field="shift" data-day="${day}">
-                                    ${SHIFT_TYPES.map(s => `<option value="${s}" ${dayData.shift === s ? 'selected' : ''} class="bg-slate-900 text-white">${s === '' ? '- Turno -' : s}</option>`).join('')}
+                                <select class="input-box font-extrabold w-[85px] sm:w-[95px] text-center shadow-sm cursor-pointer !rounded-xl text-arma-gold border-arma-gold/30" data-field="shift" data-day="${day}">
+                                    ${SHIFT_TYPES.map(s => `<option value="${s}" ${dayData.shift === s ? 'selected' : ''}>${s === '' ? '- Turno -' : s}</option>`).join('')}
                                 </select>
                                 
                                 <span id="linked-select-wrap-${day}">
                                 ${['RRS', 'RRF'].includes(dayData.shift) ? `
-                                    <select class="input-box !bg-purple-500/20 text-purple-300 border-purple-400/40 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_rest" data-day="${day}">
-                                        <option value="" class="bg-slate-900 text-white">- Associa -</option>
+                                    <select class="input-box text-purple-600 dark:text-purple-300 border-purple-500/30 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_rest" data-day="${day}">
+                                        <option value="">- Associa -</option>
                                         ${generateRestOptions(currentYear, currentMonth, day, dayData.linked_rest, dayData.shift === 'RRS' ? 'RS' : 'RF')}
                                     </select>
                                 ` : ''}
                                 ${dayData.shift === 'LO' ? `
-                                    <select class="input-box !bg-purple-500/20 text-purple-300 border-purple-400/40 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_lo" data-day="${day}">
+                                    <select class="input-box text-purple-600 dark:text-purple-300 border-purple-500/30 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_lo" data-day="${day}">
                                         ${getLoDropdownOptionsHtml(dayData.linked_lo)}
                                     </select>
                                 ` : ''}
@@ -1421,7 +1421,7 @@
                             </div>
 
                             <!-- Orario Ordinario -->
-                            <div class="flex items-center gap-1 bg-black/25 rounded-xl px-2 py-1 border border-white/5 flex-shrink-0 shadow-sm">
+                            <div class="flex items-center gap-1 inner-box rounded-xl px-2 py-1 flex-shrink-0 shadow-sm">
                                 <span class="text-[10px] font-bold opacity-60">Ord:</span>
                                 <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[58px] sm:w-[64px] !py-0.5 !px-1 !rounded-lg" data-field="start" data-day="${day}" data-next="end" value="${dayData.start}">
                                 <span class="opacity-40 text-xs">-</span>
@@ -1429,27 +1429,27 @@
                             </div>
                             
                             <!-- Toggle MOS Switch -->
-                            <div class="flex items-center gap-1.5 px-2 py-1 bg-black/25 rounded-xl flex-shrink-0 border border-white/5">
+                            <div class="flex items-center gap-1.5 px-2 py-1 inner-box rounded-xl flex-shrink-0">
                                 <span class="text-[10px] font-bold opacity-60">MOS:</span>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" class="sr-only peer" data-field="mos" data-day="${day}" ${dayData.mos ? 'checked' : ''}>
-                                    <div class="w-7 h-4 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-arma-gold"></div>
+                                    <div class="w-7 h-4 bg-gray-400 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-arma-gold"></div>
                                 </label>
                             </div>
 
                             <!-- Note Giorno -->
                             <div class="flex-1 min-w-[130px] max-w-full">
-                                <input type="text" class="note-box w-full italic placeholder-amber-400/30 font-medium shadow-sm" placeholder="Note servizio o promemoria..." data-field="note" data-day="${day}" value="${dayData.note || ''}">
+                                <input type="text" class="note-box w-full italic placeholder-amber-500/40 font-medium shadow-sm" placeholder="Note servizio o promemoria..." data-field="note" data-day="${day}" value="${dayData.note || ''}">
                             </div>
                         </div>
 
                         <!-- Badge Totali di Giornata -->
-                        <div class="flex items-center gap-3.5 xl:justify-end bg-black/30 px-3 py-1.5 rounded-xl border border-white/5 flex-shrink-0 shadow-inner justify-between sm:justify-start">
+                        <div class="flex items-center gap-3.5 xl:justify-end inner-box px-3 py-1.5 rounded-xl flex-shrink-0 justify-between sm:justify-start">
                             <div class="text-right">
                                 <span class="text-[8.5px] uppercase font-bold opacity-60 block">Ordinarie</span>
                                 <span id="ord-display-${day}" class="text-xs font-bold font-mono">${res.ordMins ? formatTime(res.ordMins) : '<span class="opacity-30">00:00</span>'}</span>
                             </div>
-                            <div class="border-l border-white/10 h-6"></div>
+                            <div class="border-l border-gray-500/20 h-6"></div>
                             <div class="text-right min-w-[3.5rem]">
                                 <span class="text-[8.5px] uppercase font-bold text-arma-gold block">Straord</span>
                                 <span id="ot-display-${day}" class="text-xs font-mono ${res.otMins ? 'text-arma-gold font-black text-sm' : 'opacity-30'}">${res.otMins ? formatTime(res.otMins) : '00:00'}</span>
@@ -1460,8 +1460,8 @@
                     <!-- Griglia 4 Fasce Straordinario -->
                     <div class="w-full xl:pl-[74px] mt-0.5 pr-0.5">
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 w-full">
-                            <div class="flex items-center justify-between gap-1 bg-amber-500/10 rounded-lg px-1.5 py-0.5 border border-amber-500/20 shadow-xs">
-                                <span class="text-[9px] font-bold text-amber-400">Str.1</span>
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-amber-500">Str.1</span>
                                 <div class="flex items-center gap-0.5">
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str1_start" data-day="${day}" data-next="str1_end" value="${dayData.str1_start}">
                                     <span class="opacity-40 text-[9px]">-</span>
@@ -1469,8 +1469,8 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between gap-1 bg-emerald-500/10 rounded-lg px-1.5 py-0.5 border border-emerald-500/20 shadow-xs">
-                                <span class="text-[9px] font-bold text-emerald-400">Str.2</span>
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-emerald-500">Str.2</span>
                                 <div class="flex items-center gap-0.5">
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str2_start" data-day="${day}" data-next="str2_end" value="${dayData.str2_start}">
                                     <span class="opacity-40 text-[9px]">-</span>
@@ -1478,8 +1478,8 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between gap-1 bg-purple-500/10 rounded-lg px-1.5 py-0.5 border border-purple-500/20 shadow-xs">
-                                <span class="text-[9px] font-bold text-purple-300">Str.3</span>
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-purple-500">Str.3</span>
                                 <div class="flex items-center gap-0.5">
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str3_start" data-day="${day}" data-next="str3_end" value="${dayData.str3_start}">
                                     <span class="opacity-40 text-[9px]">-</span>
@@ -1487,8 +1487,8 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between gap-1 bg-pink-500/10 rounded-lg px-1.5 py-0.5 border border-pink-500/20 shadow-xs">
-                                <span class="text-[9px] font-bold text-pink-300">Str.4</span>
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-pink-500">Str.4</span>
                                 <div class="flex items-center gap-0.5">
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str4_start" data-day="${day}" data-next="str4_end" value="${dayData.str4_start}">
                                     <span class="opacity-40 text-[9px]">-</span>
@@ -1525,8 +1525,8 @@
             if (selectWrap) {
                 if (['RRS', 'RRF'].includes(dayData.shift)) {
                     selectWrap.innerHTML = `
-                        <select class="input-box !bg-purple-500/20 text-purple-300 border-purple-400/40 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_rest" data-day="${day}">
-                            <option value="" class="bg-slate-900 text-white">- Associa -</option>
+                        <select class="input-box text-purple-600 dark:text-purple-300 border-purple-500/30 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_rest" data-day="${day}">
+                            <option value="">- Associa -</option>
                             ${generateRestOptions(currentYear, currentMonth, day, dayData.linked_rest, dayData.shift === 'RRS' ? 'RS' : 'RF')}
                         </select>
                     `;
@@ -1541,7 +1541,7 @@
                     }
                 } else if (dayData.shift === 'LO') {
                     selectWrap.innerHTML = `
-                        <select class="input-box !bg-purple-500/20 text-purple-300 border-purple-400/40 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_lo" data-day="${day}">
+                        <select class="input-box text-purple-600 dark:text-purple-300 border-purple-500/30 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_lo" data-day="${day}">
                             ${getLoDropdownOptionsHtml(dayData.linked_lo)}
                         </select>
                     `;
@@ -1755,12 +1755,12 @@
 
             if (restContainer) {
                 if (available.length === 0) {
-                    restContainer.innerHTML = '<p class="text-gray-400 text-xs italic mt-2 text-center">Nessun riposo da recuperare.</p>';
+                    restContainer.innerHTML = '<p class="opacity-40 text-xs italic mt-2 text-center">Nessun riposo da recuperare.</p>';
                 } else {
                     restContainer.innerHTML = available.map(r => `
-                        <div class="bg-black/25 px-3 py-1.5 rounded-xl border border-white/5 flex justify-between items-center shadow-sm">
-                            <span class="text-xs font-semibold text-gray-200"><i class="fa-regular fa-calendar text-rose-400 mr-1.5"></i>${r.label}</span>
-                            <span class="text-[9px] font-bold ${r.type==='RS'?'bg-amber-500/20 text-amber-300 border border-amber-500/30':'bg-purple-500/20 text-purple-300 border border-purple-500/30'} px-2 py-0.5 rounded-full">${r.type}</span>
+                        <div class="inner-box px-3 py-1.5 rounded-xl flex justify-between items-center shadow-xs">
+                            <span class="text-xs font-semibold"><i class="fa-regular fa-calendar text-red-500 mr-1.5"></i>${r.label}</span>
+                            <span class="text-[9px] font-bold ${r.type==='RS'?'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30':'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30'} px-2 py-0.5 rounded-full">${r.type}</span>
                         </div>
                     `).join('');
                 }
@@ -1777,7 +1777,7 @@
 
             if (chartInstance) {
                 chartInstance.data.datasets[0].data = dataArr;
-                chartInstance.data.datasets[0].backgroundColor = dataArr.map((_, i) => i === currentMonth ? '#E5B842' : (isDark ? '#2A3F6D' : '#94A3B8'));
+                chartInstance.data.datasets[0].backgroundColor = dataArr.map((_, i) => i === currentMonth ? '#D4AF37' : (isDark ? '#1C2B54' : '#94A3B8'));
                 chartInstance.options.scales.x.ticks.color = textColor;
                 chartInstance.options.scales.y.ticks.color = textColor;
                 chartInstance.options.scales.y.grid.color = gridColor;
@@ -1792,7 +1792,7 @@
                     datasets: [{
                         label: 'Ore Str.',
                         data: dataArr,
-                        backgroundColor: dataArr.map((_, i) => i === currentMonth ? '#E5B842' : (isDark ? '#2A3F6D' : '#94A3B8')),
+                        backgroundColor: dataArr.map((_, i) => i === currentMonth ? '#D4AF37' : (isDark ? '#1C2B54' : '#94A3B8')),
                         borderRadius: 6,
                     }]
                 },
