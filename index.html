@@ -210,14 +210,8 @@
 
         /* Lampeggio sincrono e netto per pallino e banner Cloud */
         @keyframes pulse-sync {
-            0%, 100% { 
-                opacity: 1; 
-                transform: scale(1);
-            }
-            50% { 
-                opacity: 0.15; 
-                transform: scale(0.9);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.15; transform: scale(0.9); }
         }
         .blink-sync {
             animation: pulse-sync 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
@@ -242,6 +236,7 @@
         /* Sidebar autonoma e scroll indipendente su Desktop */
         @media (min-width: 1024px) {
             .sticky-sidebar {
+                display: flex !important;
                 position: sticky;
                 top: 0px;
                 height: calc(100vh - 130px);
@@ -256,7 +251,7 @@
 
     <div class="watermark-bg"></div>
 
-    <!-- Blocco Intestazione Fissa Opaca (copre interamente lo scorrimento dei giorni sottostanti) -->
+    <!-- Blocco Intestazione Fissa Opaca -->
     <div class="fixed top-0 left-0 right-0 z-40 fixed-header-bg pt-[calc(env(safe-area-inset-top,0px)+14px)] border-b border-arma-gold/30 shadow-md">
         <!-- 1. Banner Autenticazione PIN -->
         <div id="auth-banner" class="bg-arma-navy px-3 py-1.5 text-white">
@@ -291,7 +286,7 @@
             <span id="lock-warning-text">ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto.</span>
         </div>
 
-        <!-- 2. Header Principale Memoriale -->
+        <!-- 2. Header Principale Memoriale (Campi Grado, Cognome, Sede protetti dal login) -->
         <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
             <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shadow-sm">
                 
@@ -304,19 +299,19 @@
                         <span class="text-[8px] sm:text-[9px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX_190 // TURNI</span>
                         <div class="flex items-center gap-1.5 mt-0.5 min-w-0 flex-wrap sm:flex-nowrap">
                             <h1 class="text-sm sm:text-lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
-                            <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)">
+                            <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)" disabled>
                                 <option value="2027">2027</option>
                                 <option value="2028">2028</option>
                                 <option value="2029">2029</option>
                                 <option value="2030">2030</option>
                             </select>
                             
-                            <!-- Box Grado e Cognome -->
+                            <!-- Box Grado e Cognome (Disabilitati fino al PIN) -->
                             <div class="flex items-center gap-1 inner-box px-2 py-0.5 rounded-lg min-w-0 flex-1">
                                 <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
-                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-16 sm:w-20 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-16 sm:w-20 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
                                 <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
-                                <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs min-w-[90px] flex-1 placeholder-gray-400 focus:outline-none leading-normal" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()">
+                                <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs min-w-[90px] flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
                             </div>
                         </div>
                     </div>
@@ -324,13 +319,13 @@
 
                 <!-- Tasto Sede, Tasto Scarica PDF Rapido, Switch Tema e Status Cloud Sincrono -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-500/10">
-                    <!-- Tasto PDF sempre visibile nell'header -->
                     <button type="button" onclick="generateMonthlyPdf()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0" title="Scarica PDF Mese">
                         <i class="fa-solid fa-file-pdf text-xs sm:text-sm"></i>
                         <span class="text-[11px] font-semibold hidden md:inline">PDF Mese</span>
                     </button>
 
-                    <button type="button" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0" title="Imposta Sede">
+                    <!-- Tasto Sede (Disabilitato fino al PIN) -->
+                    <button type="button" id="patrono-main-btn" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed" title="Imposta Sede" disabled>
                         <i class="fa-solid fa-landmark text-xs sm:text-sm"></i>
                         <span class="text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
                     </button>
@@ -340,7 +335,7 @@
                         <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
                     </button>
 
-                    <!-- Cloud Sync con lampeggio simultaneo -->
+                    <!-- Cloud Sync -->
                     <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl flex-shrink-0">
                         <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                         <span class="hidden md:inline text-xs font-bold opacity-90" id="status-user-text">Nessun Codice Inserito</span>
@@ -354,8 +349,8 @@
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 w-full max-w-[1600px] mx-auto px-1 sm:px-3 mt-1 lg:mt-0">
         <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start relative">
             
-            <!-- Sidebar Riepiloghi Sticky e Autonoma -->
-            <aside id="main-sidebar" class="w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex flex-col gap-3 custom-scrollbar sticky-sidebar">
+            <!-- Sidebar Riepiloghi (Su Mobile si mostra SOLO se cliccato il tab Riepilogo) -->
+            <aside id="main-sidebar" class="hidden lg:flex w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex-col gap-3 custom-scrollbar sticky-sidebar">
                 
                 <!-- 1. Selettore Mese -->
                 <div class="glass-panel rounded-2xl p-3 border-t-2 border-arma-gold flex-shrink-0">
@@ -418,7 +413,7 @@
                     </div>
                 </div>
 
-                <!-- 3. Pulsante Stampa PDF Visibile Subito in Alto nella Sidebar -->
+                <!-- 3. Pulsante Stampa PDF Visibile Subito in Alto nella Sidebar Desktop -->
                 <div class="glass-panel rounded-2xl p-2.5 border-t-2 border-red-500 flex flex-col flex-shrink-0 shadow-sm">
                     <button type="button" onclick="generateMonthlyPdf()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer shadow transition active:scale-95">
                         <i class="fa-solid fa-file-pdf text-sm"></i> Stampa PDF Calendario Mese
@@ -470,12 +465,12 @@
                 </div>
             </aside>
 
-            <!-- Sezione Tabella Giorni (Scorre scomparendo sotto l'header opaco) -->
+            <!-- Sezione Tabella Giorni (Su Mobile si mostra di default se attivo il tab Calendario) -->
             <section id="days-section" class="flex-1 min-w-0 glass-panel rounded-2xl flex flex-col border-t-2 border-arma-gold relative w-full mb-2">
                 <div class="px-3.5 py-2.5 border-b border-gray-500/20 flex justify-between items-center z-10 flex-shrink-0">
                     <div class="flex items-center gap-2">
                         <h2 class="text-base font-extrabold uppercase tracking-wide" id="table-month-title">Gennaio 2027</h2>
-                        <span id="patrono-active-pill" class="text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full cursor-pointer hover:bg-amber-500/20 transition shadow-sm" onclick="openPatronoModal()">
+                        <span id="patrono-active-pill" class="text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full cursor-pointer hover:bg-amber-500/20 transition shadow-sm" onclick="if(currentCode) openPatronoModal()">
                             <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>Sede: Non Impostata
                         </span>
                         <span id="table-user-pill" class="hidden sm:inline text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-sky-400 border border-blue-500/20 px-2 py-0.5 rounded-full">
@@ -493,7 +488,7 @@
         </main>
     </div>
 
-    <!-- Mobile Navigation Tab Bar -->
+    <!-- Mobile Navigation Tab Bar (In basso su Smartphone per alternare Calendario e Riepiloghi) -->
     <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-arma-navy border-t border-gray-700 text-white flex justify-around items-center py-2 z-50 shadow-2xl">
         <button type="button" onclick="switchMobileTab('days')" id="tab-btn-days" class="flex flex-col items-center gap-1 text-arma-gold font-bold text-[10px]">
             <i class="fa-solid fa-calendar-days text-base"></i>
@@ -501,7 +496,7 @@
         </button>
         <button type="button" onclick="switchMobileTab('sidebar')" id="tab-btn-sidebar" class="flex flex-col items-center gap-1 text-gray-400 font-semibold text-[10px]">
             <i class="fa-solid fa-chart-pie text-base"></i>
-            <span>Riepiloghi</span>
+            <span>Riepilogo</span>
         </button>
         <button type="button" onclick="generateMonthlyPdf()" class="flex flex-col items-center gap-1 text-red-400 font-semibold text-[10px]">
             <i class="fa-solid fa-file-pdf text-base"></i>
@@ -580,6 +575,8 @@
             lockAppUI();
             initYearData(currentYear);
             renderApp();
+            // Su mobile mostra sempre prima il calendario
+            switchMobileTab('days');
         };
 
         function initTheme() {
@@ -607,6 +604,7 @@
             }
         }
 
+        // Differenziazione Mobile esclusiva tra Scheda Giorni e Scheda Riepiloghi
         function switchMobileTab(tab) {
             const sidebar = document.getElementById('main-sidebar');
             const daysSec = document.getElementById('days-section');
@@ -617,15 +615,18 @@
 
             if (tab === 'sidebar') {
                 sidebar.classList.remove('hidden');
-                sidebar.classList.add('w-full');
+                sidebar.classList.add('flex', 'w-full');
                 daysSec.classList.add('hidden');
                 btnSidebar.className = "flex flex-col items-center gap-1 text-arma-gold font-bold text-[10px]";
                 btnDays.className = "flex flex-col items-center gap-1 text-gray-400 font-semibold text-[10px]";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 sidebar.classList.add('hidden');
+                sidebar.classList.remove('flex');
                 daysSec.classList.remove('hidden');
                 btnDays.className = "flex flex-col items-center gap-1 text-arma-gold font-bold text-[10px]";
                 btnSidebar.className = "flex flex-col items-center gap-1 text-gray-400 font-semibold text-[10px]";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
@@ -661,6 +662,12 @@
             document.getElementById('status-user-text').innerText = "Nessun Codice Inserito";
             const dot = document.getElementById('cloud-dot');
             dot.className = 'w-2.5 h-2.5 bg-red-500 rounded-full shadow-sm';
+
+            // Disabilita rigorosamente i campi grado, cognome/nome e il pulsante sede
+            document.getElementById('user-grado-input').disabled = true;
+            document.getElementById('user-nome-input').disabled = true;
+            document.getElementById('year-select').disabled = true;
+            document.getElementById('patrono-main-btn').disabled = true;
         }
 
         function unlockAppUI(code) {
@@ -671,6 +678,13 @@
             document.getElementById('status-user-text').innerText = "Profilo: " + code;
             const dot = document.getElementById('cloud-dot');
             dot.className = 'w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-sm blink-sync';
+
+            // Abilita la modifica dei campi solo ora che il PIN è stato inserito
+            document.getElementById('user-grado-input').disabled = false;
+            document.getElementById('user-nome-input').disabled = false;
+            document.getElementById('year-select').disabled = false;
+            document.getElementById('patrono-main-btn').disabled = false;
+
             checkMandatoryFields();
         }
 
