@@ -308,7 +308,7 @@
         <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
             <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shadow-sm">
                 
-                <!-- Titolo + Anno + Grado + Cognome/Nome -->
+                <!-- Titolo + Anno + Grado + Cognome/Nome (accorciato di circa 1/3 su Desktop) -->
                 <div class="flex items-center gap-2 min-w-0 flex-1">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
                         <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
@@ -337,6 +337,7 @@
 
                 <!-- Tasto PDF Unico Header, Tasto Sede, Switch Tema e Status Cloud -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-500/10">
+                    <!-- Tasto Stampa PDF Unificato nell'Header -->
                     <button type="button" onclick="generateMonthlyPdf()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0 active:scale-95" title="Stampa PDF Calendario Mese">
                         <i class="fa-solid fa-file-pdf text-xs sm:text-sm"></i>
                         <span class="text-[11px] font-semibold">Stampa PDF Calendario Mese</span>
@@ -430,7 +431,7 @@
                     </div>
                 </div>
 
-                <!-- 3. Riquadro Riposi Non Fruiti -->
+                <!-- 3. Riquadro Riposi Non Fruiti (spostato qui al posto del banner di stampa PDF) -->
                 <div class="glass-panel rounded-2xl p-3 border-t-2 border-red-600 flex flex-col min-h-[120px] flex-shrink-0">
                     <h2 class="text-xs font-bold mb-2 flex items-center gap-1.5 opacity-80">
                         <i class="fa-solid fa-bed text-red-500"></i> Riposi Non Fruiti
@@ -495,10 +496,14 @@
 
                 <!-- VISTA MOBILE: Layout Stile Supershift (Griglia Mensile Compatta + Scheda Dettaglio Giorno) -->
                 <div class="lg:hidden flex flex-col p-2 gap-2">
+                    <!-- Intestazione giorni della settimana -->
                     <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold opacity-60 pb-1 border-b border-gray-500/10">
                         <span>LUN</span><span>MAR</span><span>MER</span><span>GIO</span><span>VEN</span><span>SAB</span><span class="text-red-500">DOM</span>
                     </div>
+                    <!-- Griglia a Quadratini dei Giorni -->
                     <div id="mobile-month-calendar" class="grid grid-cols-7 gap-1"></div>
+
+                    <!-- Scheda Dettaglio del Giorno Selezionato -->
                     <div id="mobile-selected-day-card" class="mt-2"></div>
                 </div>
 
@@ -1609,6 +1614,141 @@
             checkMandatoryFields();
         }
 
+        function renderDaysTable() {
+            const container = document.getElementById('days-container');
+            if(!container) return;
+            container.innerHTML = '';
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(currentYear, currentMonth, day);
+                const dayOfWeek = daysOfWeek[dateObj.getDay()];
+                const isHol = isHoliday(currentYear, currentMonth, day);
+                const dayData = (shiftData && shiftData[currentMonth] && shiftData[currentMonth][day]) ? shiftData[currentMonth][day] : getEmptyDay();
+                const isAbsence = ABSENCE_SHIFTS.includes(dayData.shift);
+                
+                let rowStyle = 'row-normale';
+                if (dayData.shift === 'SSE') rowStyle = 'row-sse';
+                else if (dayData.shift === 'RRS') rowStyle = 'row-rrs';
+                else if (isHol) rowStyle = 'row-festivo'; 
+                else if (isAbsence) rowStyle = 'row-assenza';
+
+                const res = calcDayLogic(dayData);
+                const row = document.createElement('div');
+                row.id = `row-day-${day}`;
+                row.className = `glass-card flex flex-col gap-2 p-2.5 sm:p-3 rounded-2xl ${rowStyle}`;
+                
+                let html = `
+                    <div class="flex flex-col xl:flex-row justify-between xl:items-center gap-2.5 w-full">
+                        <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                            <div class="flex items-center gap-1.5 w-16 sm:w-20 flex-shrink-0 inner-box py-1 px-2 rounded-xl">
+                                <span class="text-lg sm:text-xl font-black leading-none ${isHol ? 'text-red-500 dark:text-red-400' : 'text-arma-gold'}">${day}</span>
+                                <span class="text-[10px] uppercase font-bold tracking-wider ${isHol ? 'text-red-500/80 dark:text-red-400/80' : 'opacity-60'}">${dayOfWeek}</span>
+                            </div>
+                            
+                            <div class="flex items-center flex-shrink-0">
+                                <select class="input-box font-extrabold w-[85px] sm:w-[95px] text-center shadow-sm cursor-pointer !rounded-xl text-arma-gold border-arma-gold/40" data-field="shift" data-day="${day}">
+                                    ${SHIFT_TYPES.map(s => `<option value="${s}" ${dayData.shift === s ? 'selected' : ''}>${s === '' ? '- Turno -' : s}</option>`).join('')}
+                                </select>
+                                
+                                <span id="linked-select-wrap-${day}">
+                                ${['RRS', 'RRF'].includes(dayData.shift) ? `
+                                    <select class="input-box text-purple-600 dark:text-purple-300 border-purple-500/30 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_rest" data-day="${day}">
+                                        <option value="">- Associa -</option>
+                                        ${generateRestOptions(currentYear, currentMonth, day, dayData.linked_rest, dayData.shift === 'RRS' ? 'RS' : 'RF')}
+                                    </select>
+                                ` : ''}
+                                ${dayData.shift === 'LO' ? `
+                                    <select class="input-box text-purple-600 dark:text-purple-300 border-purple-500/30 w-24 sm:w-28 text-[10px] font-bold ml-1.5 h-[28px] shadow-sm cursor-pointer !rounded-xl" data-field="linked_lo" data-day="${day}">
+                                        ${getLoDropdownOptionsHtml(dayData.linked_lo)}
+                                    </select>
+                                ` : ''}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-1 inner-box rounded-xl px-2 py-1 flex-shrink-0 shadow-sm">
+                                <span class="text-[10px] font-bold opacity-60">Ord:</span>
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[58px] sm:w-[64px] !py-0.5 !px-1 !rounded-lg" data-field="start" data-day="${day}" data-next="end" value="${dayData.start}">
+                                <span class="opacity-40 text-xs">-</span>
+                                <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[58px] sm:w-[64px] !py-0.5 !px-1 !rounded-lg" data-field="end" data-day="${day}" value="${dayData.end}">
+                            </div>
+                            
+                            <div class="flex items-center gap-1.5 px-2 py-1 inner-box rounded-xl flex-shrink-0">
+                                <span class="text-[10px] font-bold opacity-60">MOS:</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" data-field="mos" data-day="${day}" ${dayData.mos ? 'checked' : ''}>
+                                    <div class="w-7 h-4 bg-gray-400 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-arma-gold"></div>
+                                </label>
+                            </div>
+
+                            <div class="flex-1 min-w-[130px] max-w-full">
+                                <input type="text" class="note-box w-full italic placeholder-amber-600/40 font-medium shadow-sm" placeholder="Note servizio o promemoria..." data-field="note" data-day="${day}" value="${dayData.note || ''}">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3.5 xl:justify-end inner-box px-3 py-1.5 rounded-xl flex-shrink-0 justify-between sm:justify-start">
+                            <div class="text-right">
+                                <span class="text-[8.5px] uppercase font-bold opacity-60 block">Ordinarie</span>
+                                <span id="ord-display-${day}" class="text-xs font-bold font-mono">${res.ordMins ? formatTime(res.ordMins) : '<span class="opacity-30">00:00</span>'}</span>
+                            </div>
+                            <div class="border-l border-gray-500/20 h-6"></div>
+                            <div class="text-right min-w-[3.5rem]">
+                                <span class="text-[8.5px] uppercase font-bold text-arma-gold block">Straord</span>
+                                <span id="ot-display-${day}" class="text-xs font-mono ${res.otMins ? 'text-arma-gold font-black text-sm' : 'opacity-30'}">${res.otMins ? formatTime(res.otMins) : '00:00'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full xl:pl-[74px] mt-0.5 pr-0.5">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 w-full">
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-amber-500">Str.1</span>
+                                <div class="flex items-center gap-0.5">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str1_start" data-day="${day}" data-next="str1_end" value="${dayData.str1_start}">
+                                    <span class="opacity-40 text-[9px]">-</span>
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str1_end" data-day="${day}" value="${dayData.str1_end}">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-emerald-500">Str.2</span>
+                                <div class="flex items-center gap-0.5">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str2_start" data-day="${day}" data-next="str2_end" value="${dayData.str2_start}">
+                                    <span class="opacity-40 text-[9px]">-</span>
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str2_end" data-day="${day}" value="${dayData.str2_end}">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-purple-500">Str.3</span>
+                                <div class="flex items-center gap-0.5">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str3_start" data-day="${day}" data-next="str3_end" value="${dayData.str3_start}">
+                                    <span class="opacity-40 text-[9px]">-</span>
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str3_end" data-day="${day}" value="${dayData.str3_end}">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-1 inner-box rounded-lg px-1.5 py-0.5 shadow-xs">
+                                <span class="text-[9px] font-bold text-pink-500">Str.4</span>
+                                <div class="flex items-center gap-0.5">
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str4_start" data-day="${day}" data-next="str4_end" value="${dayData.str4_start}">
+                                    <span class="opacity-40 text-[9px]">-</span>
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="00:00" maxlength="5" class="input-box time-box w-[48px] sm:w-[54px] !p-0 !text-[10px]" data-field="str4_end" data-day="${day}" value="${dayData.str4_end}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                row.innerHTML = html;
+                container.appendChild(row);
+            }
+
+            attachInputListeners();
+            checkMandatoryFields();
+        }
+
         function updateSingleDayRow(day) {
             const dayData = shiftData[currentMonth][day];
             const isHol = isHoliday(currentYear, currentMonth, day);
@@ -1743,22 +1883,6 @@
                             e.target.blur();
                         }
                     });
-                }
-
-                const isNoteInput = (field === 'note');
-
-                if (isNoteInput) {
-                    input.addEventListener('input', (e) => {
-                        if (!currentCode) return;
-                        shiftData[currentMonth][day].note = e.target.value;
-                    });
-
-                    input.addEventListener('blur', () => {
-                        if (!currentCode) return;
-                        updateSingleDayRow(day);
-                        triggerSave();
-                    });
-                    return;
                 }
 
                 const handleUpdate = (e) => {
