@@ -208,7 +208,7 @@
         .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1.5px) grayscale(65%); }
         .days-blocked { pointer-events: none; opacity: 0.45; }
 
-        /* Lampeggio sincrono e netto per pallino e banner Cloud */
+        /* Lampeggio sincrono per status Cloud */
         @keyframes pulse-sync {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.15; transform: scale(0.9); }
@@ -308,7 +308,7 @@
         <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
             <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shadow-sm">
                 
-                <!-- Titolo + Anno + Grado + Cognome/Nome -->
+                <!-- Titolo + Anno (2026-2035) + Grado + Cognome/Nome -->
                 <div class="flex items-center gap-2 min-w-0 flex-1">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
                         <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
@@ -318,10 +318,16 @@
                         <div class="flex items-center gap-1.5 mt-0.5 min-w-0 flex-wrap sm:flex-nowrap">
                             <h1 class="text-sm sm:text-lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
                             <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)" disabled>
+                                <option value="2026">2026</option>
                                 <option value="2027">2027</option>
                                 <option value="2028">2028</option>
                                 <option value="2029">2029</option>
                                 <option value="2030">2030</option>
+                                <option value="2031">2031</option>
+                                <option value="2032">2032</option>
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>
+                                <option value="2035">2035</option>
                             </select>
                             
                             <!-- Box Grado e Cognome compatto (max 340px su desktop) -->
@@ -335,7 +341,7 @@
                     </div>
                 </div>
 
-                <!-- Tasto PDF Unico Header, Tasto Sede, Switch Tema e Status Cloud -->
+                <!-- Tasto PDF Header, Tasto Sede, Switch Tema e Status Cloud -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-500/10">
                     <button type="button" onclick="generateMonthlyPdf()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0 active:scale-95" title="Stampa PDF Calendario Mese">
                         <i class="fa-solid fa-file-pdf text-xs sm:text-sm"></i>
@@ -347,12 +353,10 @@
                         <span class="text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
                     </button>
 
-                    <!-- Toggle Tema Dark/Light -->
                     <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-xl inner-box flex items-center justify-center transition hover:border-arma-gold flex-shrink-0" title="Cambia Tema">
                         <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
                     </button>
 
-                    <!-- Cloud Sync -->
                     <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl flex-shrink-0">
                         <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                         <span class="hidden md:inline text-xs font-bold opacity-90" id="status-user-text">Nessun Codice Inserito</span>
@@ -366,7 +370,7 @@
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 w-full max-w-[1600px] mx-auto px-1 sm:px-3 mt-1 lg:mt-0">
         <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start relative">
             
-            <!-- Sidebar Riepiloghi (Su Mobile si mostra SOLO se cliccato il tab Riepilogo) -->
+            <!-- Sidebar Riepiloghi (Su Mobile si mostra con tab Riepilogo) -->
             <aside id="main-sidebar" class="hidden lg:flex w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex-col gap-3 custom-scrollbar sticky-sidebar">
                 
                 <!-- 1. Selettore Mese -->
@@ -388,7 +392,6 @@
                         <span class="text-[10px] font-mono opacity-60" id="summary-month-badge">Ore Mese</span>
                     </div>
 
-                    <!-- Totali Generali Card -->
                     <div class="grid grid-cols-2 gap-2 mb-2.5">
                         <div class="inner-box p-2 rounded-xl">
                             <span class="text-[9px] uppercase font-bold opacity-60 block tracking-wider">Tot. Ordinarie</span>
@@ -400,7 +403,6 @@
                         </div>
                     </div>
 
-                    <!-- Suddivisione 4 Categorie Dettagliate -->
                     <div class="inner-box rounded-xl px-2.5 py-2 flex flex-col gap-1.5">
                         <div class="grid grid-cols-3 text-[9px] uppercase font-bold opacity-60 pb-1 border-b border-gray-500/20">
                             <span>Fascia</span>
@@ -446,7 +448,7 @@
                         <h2 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-purple-600 dark:text-purple-400">
                             <i class="fa-solid fa-umbrella-beach"></i> Riepilogo Licenze
                         </h2>
-                        <span class="text-[9px] opacity-60 font-mono" id="lic-year-badge">Anno 2027</span>
+                        <span class="text-[9px] opacity-60 font-mono" id="lic-year-badge">Anno 2026</span>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -479,7 +481,7 @@
             <section id="days-section" class="flex-1 min-w-0 glass-panel rounded-2xl flex flex-col border-t-2 border-arma-gold relative w-full mb-2">
                 <div class="px-3.5 py-2.5 border-b border-gray-500/20 flex justify-between items-center z-10 flex-shrink-0">
                     <div class="flex items-center gap-2">
-                        <h2 class="text-base font-extrabold uppercase tracking-wide" id="table-month-title">Gennaio 2027</h2>
+                        <h2 class="text-base font-extrabold uppercase tracking-wide" id="table-month-title">Novembre 2026</h2>
                         <span id="patrono-active-pill" class="text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full cursor-pointer hover:bg-amber-500/20 transition shadow-sm" onclick="if(currentCode) openPatronoModal()">
                             <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>Sede: Non Impostata
                         </span>
@@ -487,13 +489,12 @@
                             <i class="fa-solid fa-id-badge mr-1"></i><span id="table-user-name">Militare</span>
                         </span>
                     </div>
-                    <!-- Badge Cloud con animazione sincronizzata al pallino -->
                     <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full border border-emerald-500/40 shadow-sm flex items-center gap-1.5 badge-sync">
                         <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full blink-sync"></span> Cloud Attivo
                     </span>
                 </div>
 
-                <!-- VISTA MOBILE: Layout Stile Supershift (Griglia Mensile Compatta + Scheda Dettaglio Giorno) -->
+                <!-- VISTA MOBILE: Layout Stile Supershift -->
                 <div class="lg:hidden flex flex-col p-2 gap-2">
                     <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold opacity-60 pb-1 border-b border-gray-500/10">
                         <span>LUN</span><span>MAR</span><span>MER</span><span>GIO</span><span>VEN</span><span>SAB</span><span class="text-red-500">DOM</span>
@@ -502,7 +503,7 @@
                     <div id="mobile-selected-day-card" class="mt-2"></div>
                 </div>
 
-                <!-- VISTA DESKTOP: Elenco giorni esteso classico -->
+                <!-- VISTA DESKTOP: Elenco giorni esteso -->
                 <div class="hidden lg:flex flex-col p-2 sm:p-3 gap-2" id="days-container"></div>
             </section>
         </main>
@@ -574,7 +575,7 @@
         };
 
         let currentCode = '';
-        let currentYear = 2027;
+        let currentYear = 2026; // Anno di partenza impostato al 2026
         let allData = {}; 
         let isDataLoadedFromCloud = false; 
         let dynamicHolidays = [];
@@ -583,8 +584,8 @@
         const SHIFT_TYPES = ['', 'M', 'P', 'S', 'N', 'RS', 'RF', 'RRS', 'RRF', 'RM', 'LO', 'RFS', 'LT', 'RR', '96h', 'R.O.', 'SSE'];
         const ABSENCE_SHIFTS = ['RRS', 'RRF', 'RM', 'LO', 'RFS', 'LT', 'RR', '96h', 'R.O.']; 
         
-        let currentMonth = 0; 
-        let selectedMobileDay = 1;
+        let currentMonth = new Date().getMonth(); // Si apre automaticamente sul mese corrente (novembre)
+        let selectedMobileDay = new Date().getDate();
         let shiftData = {}; 
         let chartInstance = null;
         let saveTimeout = null;
@@ -595,6 +596,7 @@
             initTheme();
             lockAppUI();
             initYearData(currentYear);
+            document.getElementById('year-select').value = currentYear.toString();
             renderApp();
             switchMobileTab('days');
         };
@@ -847,6 +849,9 @@
 
         const getDefaultLicenzeConfig = (year) => {
             const yr = parseInt(year) || currentYear;
+            if (yr === 2026) {
+                return { lo_2024: 0, lo_2025: 0, lo_curr: 45, rfs: 4, ls: 45, lt: 0, rr: 0, ore96: 0 };
+            }
             if (yr === 2027) {
                 return { lo_2025: 0, lo_2026: 0, lo_curr: 45, rfs: 4, ls: 45, lt: 0, rr: 0, ore96: 0 };
             }
@@ -1152,7 +1157,7 @@
             let used = {}; 
             for (let yStr in allData) {
                 let yearNum = parseInt(yStr);
-                if (isNaN(yearNum) || yearNum < 2027) continue;
+                if (isNaN(yearNum) || yearNum < 2026) continue;
 
                 for (let m = 0; m < 12; m++) {
                     const daysInMonth = new Date(yearNum, m + 1, 0).getDate();
@@ -1230,7 +1235,10 @@
             let loPrev2Spet = 0;
             let loPrev1Spet = 0;
 
-            if (yNum === 2027) {
+            if (yNum === 2026) {
+                loPrev2Spet = parseInt(cfg.lo_2024) || 0;
+                loPrev1Spet = parseInt(cfg.lo_2025) || 0;
+            } else if (yNum === 2027) {
                 loPrev2Spet = parseInt(cfg.lo_2025) || 0;
                 loPrev1Spet = parseInt(cfg.lo_2026) || 0;
             } else {
@@ -1289,8 +1297,8 @@
             const isExpiredLoPrev2 = currentMonth >= 6;
 
             const items = [
-                { id: 'lo_prev2', label: `LO Anno ${prevYear2}`, note: isExpiredLoPrev2 ? `decaduta il 30/06/${currentYear}` : `scade 30/06/${currentYear}`, spet: loStats.loPrev2Spet, usate: loStats.loPrev2Usate, res: loStats.loPrev2Res, locked: currentYear !== 2027 },
-                { id: 'lo_prev1', label: `LO Anno ${prevYear1}`, note: `residua ${prevYear1}`, spet: loStats.loPrev1Spet, usate: loStats.loPrev1Usate, res: loStats.loPrev1Res, locked: currentYear !== 2027 },
+                { id: 'lo_prev2', label: `LO Anno ${prevYear2}`, note: isExpiredLoPrev2 ? `decaduta il 30/06/${currentYear}` : `scade 30/06/${currentYear}`, spet: loStats.loPrev2Spet, usate: loStats.loPrev2Usate, res: loStats.loPrev2Res, locked: (currentYear !== 2026 && currentYear !== 2027) },
+                { id: 'lo_prev1', label: `LO Anno ${prevYear1}`, note: `residua ${prevYear1}`, spet: loStats.loPrev1Spet, usate: loStats.loPrev1Usate, res: loStats.loPrev1Res, locked: (currentYear !== 2026 && currentYear !== 2027) },
                 { id: 'lo_curr', label: `LO Anno Corr. (${currentYear})`, note: 'anno in corso (45 gg)', spet: loStats.loCurrSpet, usate: loStats.loCurrUsate, res: loStats.loCurrRes, locked: false },
                 { id: 'rfs', label: 'RFS Anno Corr.', note: 'vincolo 4 gg (fine anno)', spet: rfsSpet, usate: rfsUsate, res: rfsRes, locked: true },
                 { id: 'ls', label: 'LS (Straordinaria)', note: 'vincolo 45 gg (scala RM)', spet: lsSpet, usate: rmUsate, res: lsRes, locked: true },
@@ -1314,7 +1322,10 @@
                     inputHtml = `<input type="number" class="lic-locked-input" value="${item.spet}" readonly>`;
                 } else {
                     let fieldKey = item.id;
-                    if (currentYear === 2027) {
+                    if (currentYear === 2026) {
+                        if (item.id === 'lo_prev2') fieldKey = 'lo_2024';
+                        if (item.id === 'lo_prev1') fieldKey = 'lo_2025';
+                    } else if (currentYear === 2027) {
                         if (item.id === 'lo_prev2') fieldKey = 'lo_2025';
                         if (item.id === 'lo_prev1') fieldKey = 'lo_2026';
                     }
@@ -1880,7 +1891,7 @@
                     });
                 }
 
-                // Gestione Note: zero distruzione del DOM, salvataggio esclusivo su blur
+                // GESTIONE NOTE PULITA: niente ridisegno del DOM e salvataggio unico su blur
                 if (field === 'note') {
                     input.addEventListener('input', (e) => {
                         if (!currentCode) return;
