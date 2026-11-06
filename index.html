@@ -255,20 +255,20 @@
                 display: flex !important;
                 position: sticky;
                 top: 0px;
-                height: calc(100vh - 130px);
-                max-height: calc(100vh - 130px);
+                height: calc(100vh - 165px);
+                max-height: calc(100vh - 165px);
                 overflow-y: auto;
                 padding-right: 4px;
             }
         }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+235px)] sm:pt-[calc(env(safe-area-inset-top,0px)+150px)] lg:pt-[125px] pb-16 lg:pb-4 font-sans">
+<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+240px)] sm:pt-[calc(env(safe-area-inset-top,0px)+175px)] lg:pt-[155px] pb-16 lg:pb-4 font-sans">
 
     <div class="watermark-bg"></div>
 
     <!-- Blocco Intestazione Fissa Opaca -->
-    <div class="fixed top-0 left-0 right-0 z-40 fixed-header-bg pt-[calc(env(safe-area-inset-top,0px)+12px)] border-b border-arma-gold/30 shadow-md">
+    <div class="fixed top-0 left-0 right-0 z-40 fixed-header-bg pt-[calc(env(safe-area-inset-top,0px)+10px)] border-b border-arma-gold/30 shadow-md">
         <!-- 1. Banner Autenticazione PIN -->
         <div id="auth-banner" class="bg-arma-navy px-3 py-1.5 text-white">
             <div class="w-full flex items-center justify-between gap-2 max-w-[1600px] mx-auto">
@@ -307,69 +307,69 @@
 
         <!-- 2. Header Principale Memoriale -->
         <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
-            <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-2 flex flex-col justify-between items-stretch gap-2 shadow-sm">
+            <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col justify-between items-stretch gap-1.5 shadow-sm">
                 
-                <!-- Riga Superiore: Titolo + Anno + Box Grado / Nome / Email -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 min-w-0 w-full">
+                <!-- Riga Superiore: Titolo + Anno + Profilo (Orizzontale su PC, 2 righe su Mobile) -->
+                <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2 min-w-0 w-full">
                     
-                    <div class="flex items-center justify-between sm:justify-start gap-2 min-w-0">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <div class="w-8 h-8 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
-                                <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                        <div class="w-8 h-8 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
+                            <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
+                        </div>
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-[8px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX_190 // TURNI</span>
+                            <div class="flex items-center gap-1.5 mt-0.5 min-w-0">
+                                <h1 class="text-sm sm:text-base font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
+                                <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)" disabled>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                </select>
                             </div>
-                            <div class="flex flex-col min-w-0">
-                                <span class="text-[8px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX_190 // TURNI</span>
-                                <h1 class="text-sm sm:text-base font-black tracking-wider leading-none mt-0.5">MEMORIALE</h1>
+                        </div>
+
+                        <!-- Box Profilo Utente: Compatto e orizzontale su PC (Grado | Nome | Email), 2 righe su mobile -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 inner-box px-2.5 py-1 rounded-xl min-w-0 flex-1 lg:max-w-[560px]">
+                            <div class="flex items-center gap-1 min-w-0 flex-1">
+                                <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
+                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-xs w-20 sm:w-24 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
+                                <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
+                                <input type="text" id="user-nome-input" class="bg-transparent font-bold text-xs min-w-0 flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
+                            </div>
+                            <div class="flex items-center gap-1 border-t sm:border-t-0 sm:border-l border-gray-500/20 pt-1 sm:pt-0 sm:pl-2 flex-shrink-0">
+                                <i class="fa-solid fa-at text-sky-400 text-[10px] flex-shrink-0" title="Email recupero"></i>
+                                <input type="email" id="user-email-input" class="bg-transparent font-medium text-[11px] text-sky-400 w-full sm:w-[155px] placeholder-sky-400/40 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Email recupero PIN..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled title="Email per il recupero PIN">
                             </div>
                         </div>
-                        <select id="year-select" class="input-box !py-1 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)" disabled>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                            <option value="2028">2028</option>
-                            <option value="2029">2029</option>
-                            <option value="2030">2030</option>
-                            <option value="2031">2031</option>
-                            <option value="2032">2032</option>
-                            <option value="2033">2033</option>
-                            <option value="2034">2034</option>
-                            <option value="2035">2035</option>
-                        </select>
                     </div>
-                    
-                    <!-- Box Grado, Nome ed Email fluido (2 righe su mobile, non tronca il nome) -->
-                    <div class="flex flex-col gap-1 inner-box px-2.5 py-1.5 rounded-xl min-w-0 flex-1">
-                        <div class="flex items-center gap-1.5 min-w-0">
-                            <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
-                            <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-xs w-24 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
-                            <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
-                            <input type="text" id="user-nome-input" class="bg-transparent font-bold text-xs min-w-0 flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
+
+                    <!-- Riga Pulsanti: PDF, Sede, Tema e Cloud Status -->
+                    <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 border-t lg:border-t-0 border-gray-500/10 pt-1 lg:pt-0">
+                        <button type="button" onclick="generateMonthlyPdf()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm active:scale-95 flex-shrink-0" title="Stampa PDF Calendario Mese">
+                            <i class="fa-solid fa-file-pdf text-xs"></i>
+                            <span class="text-[11px] font-semibold">PDF Mese</span>
+                        </button>
+
+                        <button type="button" id="patrono-main-btn" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0" title="Imposta Sede" disabled>
+                            <i class="fa-solid fa-landmark text-xs"></i>
+                            <span class="text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
+                        </button>
+
+                        <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-xl inner-box flex items-center justify-center transition hover:border-arma-gold flex-shrink-0" title="Cambia Tema">
+                            <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
+                        </button>
+
+                        <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl flex-shrink-0">
+                            <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                            <span class="hidden md:inline text-xs font-bold opacity-90" id="status-user-text">Nessun Codice Inserito</span>
                         </div>
-                        <div class="flex items-center gap-1.5 border-t border-gray-500/20 pt-1">
-                            <i class="fa-solid fa-at text-sky-400 text-[10px] flex-shrink-0" title="Email recupero"></i>
-                            <input type="email" id="user-email-input" class="bg-transparent font-medium text-[11px] text-sky-400 w-full placeholder-sky-400/40 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Email recupero PIN..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled title="Email per il recupero PIN">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Riga Inferiore: Tasti PDF, Sede, Tema e Cloud Status -->
-                <div class="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 flex-wrap border-t border-gray-500/10 pt-1">
-                    <button type="button" onclick="generateMonthlyPdf()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm active:scale-95" title="Stampa PDF Calendario Mese">
-                        <i class="fa-solid fa-file-pdf text-xs"></i>
-                        <span class="text-[11px] font-semibold">PDF Mese</span>
-                    </button>
-
-                    <button type="button" id="patrono-main-btn" onclick="openPatronoModal()" class="text-xs bg-arma-gold/10 hover:bg-arma-gold/20 text-arma-gold border border-arma-gold/30 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" title="Imposta Sede" disabled>
-                        <i class="fa-solid fa-landmark text-xs"></i>
-                        <span class="text-[11px] font-semibold" id="patrono-btn-text">Imposta Sede</span>
-                    </button>
-
-                    <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-xl inner-box flex items-center justify-center transition hover:border-arma-gold" title="Cambia Tema">
-                        <i id="theme-icon" class="fa-solid fa-sun text-xs text-arma-gold"></i>
-                    </button>
-
-                    <div id="auth-status" class="text-xs font-semibold flex items-center gap-2 inner-box px-2.5 py-1 rounded-xl">
-                        <span id="cloud-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-                        <span class="hidden md:inline text-xs font-bold opacity-90" id="status-user-text">Nessun Codice Inserito</span>
                     </div>
                 </div>
             </div>
@@ -506,7 +506,7 @@
 
                 <!-- VISTA MOBILE: Layout Stile Supershift -->
                 <div class="lg:hidden flex flex-col p-2 gap-2">
-                    <!-- Intestazione LUN-DOM in evidenza con stacco netto -->
+                    <!-- Intestazione LUN-DOM con stacco netto -->
                     <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-black tracking-wider py-1.5 bg-gray-500/10 rounded-xl mb-1 border border-gray-500/15">
                         <span class="opacity-80">LUN</span>
                         <span class="opacity-80">MAR</span>
@@ -1426,7 +1426,7 @@
             const items = [
                 { id: 'lo_prev2', label: `LO Anno ${prevYear2}`, note: isExpiredLoPrev2 ? `decaduta il 30/06/${currentYear}` : `scade 30/06/${currentYear}`, spet: loStats.loPrev2Spet, usate: loStats.loPrev2Usate, res: loStats.loPrev2Res, locked: (currentYear !== 2026 && currentYear !== 2027) },
                 { id: 'lo_prev1', label: `LO Anno ${prevYear1}`, note: `residua ${prevYear1}`, spet: loStats.loPrev1Spet, usate: loStats.loPrev1Usate, res: loStats.loPrev1Res, locked: (currentYear !== 2026 && currentYear !== 2027) },
-                { id: 'lo_curr', label: `LO Anno Corr. (${currentYear})`, note: 'anno in corso (45 gg)', spet: loStats.loCurrSpet, usate: loStats.loCurrUsate, res: loStats.loCurrRes, locked: false },
+                { id: 'lo_curr', label: `LO Anno Corr. (${currentYear})`, note: 'anno in corso (45 gg)', spet: loStats.loCurrSpet, usate: loStats.loCurrUsate, res: loCurrRes, locked: false },
                 { id: 'rfs', label: 'RFS Anno Corr.', note: 'vincolo 4 gg (fine anno)', spet: rfsSpet, usate: rfsUsate, res: rfsRes, locked: true },
                 { id: 'ls', label: 'LS (Straordinaria)', note: 'vincolo 45 gg (scala RM)', spet: lsSpet, usate: rmUsate, res: lsRes, locked: true },
                 { id: 'lt', label: 'LT (Trasferimento)', note: 'turni LT', spet: ltSpet, usate: ltUsate, res: ltRes, locked: false },
