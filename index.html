@@ -263,7 +263,7 @@
         }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+175px)] sm:pt-[calc(env(safe-area-inset-top,0px)+135px)] lg:pt-[122px] pb-16 lg:pb-4 font-sans">
+<body class="antialiased flex flex-col min-h-screen pt-[calc(env(safe-area-inset-top,0px)+195px)] sm:pt-[calc(env(safe-area-inset-top,0px)+145px)] lg:pt-[122px] pb-16 lg:pb-4 font-sans">
 
     <div class="watermark-bg"></div>
 
@@ -283,13 +283,13 @@
                 </div>
                 
                 <div class="flex items-center gap-2 flex-shrink-0">
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-1.5" id="login-controls-group">
                         <input type="password" id="user-code-input" placeholder="CODICE..." class="input-box !bg-white/10 !text-white !border-white/20 !py-1 !px-2.5 !text-xs font-mono font-bold w-24 sm:w-36 text-center uppercase tracking-widest placeholder-white/40" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
                         <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-arma-gold hover:bg-arma-goldHover text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition shadow flex items-center gap-1">
                             <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i> Accedi
                         </button>
-                        <button type="button" onclick="openForgotPinModal()" class="text-[10px] text-arma-gold hover:underline font-semibold ml-1 cursor-pointer" title="Recupera PIN dimenticato">
-                            <i class="fa-solid fa-envelope text-[10px]"></i> PIN dimenticato?
+                        <button type="button" id="btn-forgot-pin" onclick="openForgotPinModal()" class="text-[10px] text-arma-gold hover:underline font-semibold ml-1 cursor-pointer flex items-center gap-1" title="Recupera PIN dimenticato">
+                            <i class="fa-solid fa-envelope text-[10px]"></i> <span class="hidden sm:inline">PIN dimenticato?</span><span class="sm:hidden">PIN?</span>
                         </button>
                     </div>
                     <button type="button" id="btn-logout" onclick="doLogout(); return false;" class="hidden bg-arma-red hover:bg-red-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition shadow flex items-center gap-1">
@@ -309,7 +309,7 @@
         <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
             <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shadow-sm">
                 
-                <!-- Titolo + Anno + Grado + Cognome/Nome + Email -->
+                <!-- Titolo + Anno + Box Reattivo (Grado, Nome, Email) -->
                 <div class="flex items-center gap-2 min-w-0 flex-1">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
                         <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
@@ -317,7 +317,7 @@
                     <div class="flex flex-col min-w-0 flex-1">
                         <span class="text-[8px] sm:text-[9px] tracking-widest text-arma-gold font-mono font-bold uppercase leading-none">LEX_190 // TURNI</span>
                         <div class="flex items-center gap-1.5 mt-0.5 min-w-0 flex-wrap sm:flex-nowrap">
-                            <h1 class="text-sm sm:lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
+                            <h1 class="text-sm sm:text-lg font-black tracking-wider leading-none flex-shrink-0">MEMORIALE</h1>
                             <select id="year-select" class="input-box !py-0.5 !px-2 text-xs font-bold text-arma-gold cursor-pointer flex-shrink-0" onchange="changeYear(this.value)" disabled>
                                 <option value="2026">2026</option>
                                 <option value="2027">2027</option>
@@ -331,14 +331,18 @@
                                 <option value="2035">2035</option>
                             </select>
                             
-                            <!-- Box Grado, Cognome/Nome ed Email -->
-                            <div class="flex items-center gap-1 inner-box px-2 py-0.5 rounded-lg min-w-0 flex-1 lg:flex-initial lg:max-w-[460px]">
-                                <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
-                                <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-16 sm:w-20 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
-                                <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
-                                <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs min-w-[90px] flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
-                                <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
-                                <input type="email" id="user-email-input" class="bg-transparent font-medium text-[10px] sm:text-[11px] text-sky-400 min-w-[95px] flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Email recupero..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled title="Email per il recupero PIN">
+                            <!-- Box Grado, Nome ed Email (Reattivo: due righe su mobile, unica riga su desktop) -->
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1 inner-box px-2 py-1 rounded-lg min-w-0 flex-1 lg:max-w-[500px]">
+                                <div class="flex items-center gap-1 min-w-0 flex-1">
+                                    <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
+                                    <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-20 sm:w-24 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
+                                    <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
+                                    <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs min-w-[100px] flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
+                                </div>
+                                <div class="flex items-center gap-1 border-t sm:border-t-0 sm:border-l border-gray-500/20 pt-0.5 sm:pt-0 sm:pl-1.5">
+                                    <i class="fa-solid fa-at text-sky-400 text-[9px] flex-shrink-0" title="Email recupero"></i>
+                                    <input type="email" id="user-email-input" class="bg-transparent font-medium text-[10px] sm:text-[11px] text-sky-400 w-full sm:w-[130px] placeholder-sky-400/40 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Email recupero..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled title="Email per il recupero PIN">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -497,10 +501,16 @@
                     </span>
                 </div>
 
-                <!-- VISTA MOBILE: Layout Stile Supershift -->
+                <!-- VISTA MOBILE: Layout Stile Supershift con Intestazione LUN-DOM in evidenza -->
                 <div class="lg:hidden flex flex-col p-2 gap-2">
-                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold opacity-60 pb-1 border-b border-gray-500/10">
-                        <span>LUN</span><span>MAR</span><span>MER</span><span>GIO</span><span>VEN</span><span>SAB</span><span class="text-red-500">DOM</span>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-extrabold uppercase py-1 border-b border-gray-500/20">
+                        <span class="opacity-75">LUN</span>
+                        <span class="opacity-75">MAR</span>
+                        <span class="opacity-75">MER</span>
+                        <span class="opacity-75">GIO</span>
+                        <span class="opacity-75">VEN</span>
+                        <span class="opacity-75">SAB</span>
+                        <span class="text-red-500 font-black">DOM</span>
                     </div>
                     <div id="mobile-month-calendar" class="grid grid-cols-7 gap-1"></div>
                     <div id="mobile-selected-day-card" class="mt-2"></div>
@@ -595,7 +605,7 @@
             projectId: "memoriale-locale"
         };
 
-        // Credenziali EmailJS configurate con il nuovo Service ID
+        // Credenziali EmailJS configurate con Service ID attivo
         const EMAILJS_PUBLIC_KEY = "dW2ftnd2P3qS59KEe";
         const EMAILJS_SERVICE_ID = "service_wub69gk";
         const EMAILJS_TEMPLATE_ID = "template_hp9jr22";
@@ -711,6 +721,7 @@
             document.getElementById('lock-warning-text').innerText = "ACCESSO BLOCCATO: Inserisci il tuo Codice Personale in alto.";
             document.getElementById('btn-logout').classList.add('hidden');
             document.getElementById('btn-login-code').classList.remove('hidden');
+            document.getElementById('btn-forgot-pin').classList.remove('hidden');
             document.getElementById('user-code-input').disabled = false;
             document.getElementById('status-user-text').innerText = "Nessun Codice Inserito";
             const dot = document.getElementById('cloud-dot');
@@ -727,6 +738,7 @@
             document.getElementById('app-screen').classList.remove('app-locked');
             document.getElementById('btn-logout').classList.remove('hidden');
             document.getElementById('btn-login-code').classList.add('hidden');
+            document.getElementById('btn-forgot-pin').classList.add('hidden');
             document.getElementById('user-code-input').disabled = true;
             document.getElementById('status-user-text').innerText = "Profilo: " + code;
             const dot = document.getElementById('cloud-dot');
