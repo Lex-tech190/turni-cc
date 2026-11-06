@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- EmailJS SDK v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -167,7 +169,6 @@
             box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
         }
 
-        /* Righe turni desktop */
         .row-normale {
             border-left: 4.5px solid #475569 !important;
         }
@@ -208,7 +209,6 @@
         .app-locked { pointer-events: none; opacity: 0.35; user-select: none; filter: blur(1.5px) grayscale(65%); }
         .days-blocked { pointer-events: none; opacity: 0.45; }
 
-        /* Lampeggio sincrono per status Cloud */
         @keyframes pulse-sync {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.15; transform: scale(0.9); }
@@ -233,7 +233,6 @@
             animation: badge-sync 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
         }
 
-        /* Stili Griglia Mensile Mobile Supershift */
         .mobile-cal-cell {
             aspect-ratio: 1;
             display: flex;
@@ -251,7 +250,6 @@
             background: rgba(212, 175, 55, 0.18) !important;
         }
 
-        /* Sidebar autonoma su Desktop */
         @media (min-width: 1024px) {
             .sticky-sidebar {
                 display: flex !important;
@@ -286,9 +284,12 @@
                 
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <div class="flex items-center gap-1.5">
-                        <input type="password" id="user-code-input" placeholder="CODICE..." class="input-box !bg-white/10 !text-white !border-white/20 !py-1 !px-2.5 !text-xs font-mono font-bold w-28 sm:w-44 text-center uppercase tracking-widest placeholder-white/40" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
+                        <input type="password" id="user-code-input" placeholder="CODICE..." class="input-box !bg-white/10 !text-white !border-white/20 !py-1 !px-2.5 !text-xs font-mono font-bold w-24 sm:w-36 text-center uppercase tracking-widest placeholder-white/40" onkeydown="if(event.key==='Enter'){ doLogin(); return false; }">
                         <button type="button" id="btn-login-code" onclick="doLogin(); return false;" class="bg-arma-gold hover:bg-arma-goldHover text-slate-950 font-bold px-3 py-1 rounded-lg text-xs transition shadow flex items-center gap-1">
                             <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i> Accedi
+                        </button>
+                        <button type="button" onclick="openForgotPinModal()" class="text-[10px] text-arma-gold hover:underline font-semibold ml-1 cursor-pointer" title="Recupera PIN dimenticato">
+                            <i class="fa-solid fa-envelope text-[10px]"></i> PIN dimenticato?
                         </button>
                     </div>
                     <button type="button" id="btn-logout" onclick="doLogout(); return false;" class="hidden bg-arma-red hover:bg-red-700 text-white font-bold px-3 py-1 rounded-lg text-xs transition shadow flex items-center gap-1">
@@ -308,7 +309,7 @@
         <header class="text-inherit px-2 sm:px-3.5 py-1.5 max-w-[1600px] mx-auto w-full">
             <div class="glass-panel rounded-2xl px-2.5 sm:px-3.5 py-1.5 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 shadow-sm">
                 
-                <!-- Titolo + Anno (2026-2035) + Grado + Cognome/Nome -->
+                <!-- Titolo + Anno + Grado + Cognome/Nome + Email -->
                 <div class="flex items-center gap-2 min-w-0 flex-1">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-arma-gold/15 border border-arma-gold/30 flex items-center justify-center text-arma-gold flex-shrink-0">
                         <i class="fa-solid fa-calendar-check text-sm sm:text-base"></i>
@@ -330,18 +331,20 @@
                                 <option value="2035">2035</option>
                             </select>
                             
-                            <!-- Box Grado e Cognome compatto (max 340px su desktop) -->
-                            <div class="flex items-center gap-1 inner-box px-2 py-0.5 rounded-lg min-w-0 flex-1 lg:flex-initial lg:max-w-[340px]">
+                            <!-- Box Grado, Cognome/Nome ed Email -->
+                            <div class="flex items-center gap-1 inner-box px-2 py-0.5 rounded-lg min-w-0 flex-1 lg:flex-initial lg:max-w-[460px]">
                                 <i class="fa-solid fa-user-shield text-arma-gold text-[10px] flex-shrink-0" title="Grado e Nominativo"></i>
                                 <input type="text" id="user-grado-input" class="bg-transparent text-arma-gold font-bold text-[11px] sm:text-xs w-16 sm:w-20 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed" placeholder="Grado..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
                                 <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
                                 <input type="text" id="user-nome-input" class="bg-transparent font-semibold text-[11px] sm:text-xs min-w-[90px] flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Cognome e Nome..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled>
+                                <span class="opacity-30 text-xs font-light flex-shrink-0">|</span>
+                                <input type="email" id="user-email-input" class="bg-transparent font-medium text-[10px] sm:text-[11px] text-sky-400 min-w-[95px] flex-1 placeholder-gray-400 focus:outline-none leading-normal disabled:opacity-50 disabled:cursor-not-allowed truncate" placeholder="Email recupero..." onchange="saveUserInfo()" oninput="saveUserInfo()" disabled title="Email per il recupero PIN">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tasto PDF Header, Tasto Sede, Switch Tema e Status Cloud -->
+                <!-- Tasto PDF, Tasto Sede, Switch Tema e Status Cloud -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-gray-500/10">
                     <button type="button" onclick="generateMonthlyPdf()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm flex-shrink-0 active:scale-95" title="Stampa PDF Calendario Mese">
                         <i class="fa-solid fa-file-pdf text-xs sm:text-sm"></i>
@@ -370,7 +373,7 @@
     <div id="app-screen" class="flex-1 flex flex-col app-locked transition-all duration-300 w-full max-w-[1600px] mx-auto px-1 sm:px-3 mt-1 lg:mt-0">
         <main class="flex-1 w-full flex flex-col lg:flex-row gap-3 items-start relative">
             
-            <!-- Sidebar Riepiloghi (Su Mobile si mostra con tab Riepilogo) -->
+            <!-- Sidebar Riepiloghi -->
             <aside id="main-sidebar" class="hidden lg:flex w-full lg:w-[285px] lg:min-w-[270px] lg:max-w-[300px] flex-shrink-0 flex-col gap-3 custom-scrollbar sticky-sidebar">
                 
                 <!-- 1. Selettore Mese -->
@@ -525,6 +528,24 @@
         </button>
     </div>
 
+    <!-- Modal Recupero PIN Dimenticato -->
+    <div id="forgot-pin-modal" class="hidden fixed inset-0 z-[9999] bg-black/80 flex justify-center items-center p-4">
+        <div class="glass-panel text-inherit rounded-3xl shadow-2xl max-w-sm w-full border border-arma-gold/40 p-5">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-sm text-arma-gold flex items-center gap-2">
+                    <i class="fa-solid fa-key"></i> Recupero PIN di Accesso
+                </h3>
+                <button type="button" onclick="closeForgotPinModal()" class="text-gray-400 hover:text-white text-lg">&times;</button>
+            </div>
+            <p class="text-xs opacity-80 mb-3 leading-relaxed">Inserisci l'indirizzo email associato al tuo profilo: riceverai immediatamente il tuo Codice Personale di accesso.</p>
+            <input type="email" id="recovery-email-input" class="w-full input-box !py-2 !text-xs mb-3 font-semibold" placeholder="esempio@email.com">
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeForgotPinModal()" class="px-3.5 py-1.5 rounded-xl border border-gray-500/30 text-xs font-semibold">Annulla</button>
+                <button type="button" id="btn-send-recovery" onclick="sendPinRecoveryEmail()" class="px-4 py-1.5 rounded-xl bg-arma-gold text-slate-950 font-bold text-xs hover:bg-arma-goldHover shadow">Invia PIN</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Santo Patrono -->
     <div id="patrono-modal" class="hidden fixed inset-x-0 top-12 z-[9999] bg-black/70 flex justify-center items-start p-4 overflow-y-auto">
         <div class="glass-panel text-inherit rounded-3xl shadow-2xl max-w-md w-full border border-arma-gold/40 overflow-hidden my-2 mx-2">
@@ -574,8 +595,19 @@
             projectId: "memoriale-locale"
         };
 
+        // Credenziali EmailJS configurate
+        const EMAILJS_PUBLIC_KEY = "dW2ftnd2P3qS59KEe";
+        const EMAILJS_SERVICE_ID = "service_hg5evr8";
+        const EMAILJS_TEMPLATE_ID = "template_hp9jr22";
+
+        (function() {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+            }
+        })();
+
         let currentCode = '';
-        let currentYear = 2026; // Anno di partenza impostato al 2026
+        let currentYear = 2026;
         let allData = {}; 
         let isDataLoadedFromCloud = false; 
         let dynamicHolidays = [];
@@ -584,7 +616,7 @@
         const SHIFT_TYPES = ['', 'M', 'P', 'S', 'N', 'RS', 'RF', 'RRS', 'RRF', 'RM', 'LO', 'RFS', 'LT', 'RR', '96h', 'R.O.', 'SSE'];
         const ABSENCE_SHIFTS = ['RRS', 'RRF', 'RM', 'LO', 'RFS', 'LT', 'RR', '96h', 'R.O.']; 
         
-        let currentMonth = new Date().getMonth(); // Si apre automaticamente sul mese corrente (novembre)
+        let currentMonth = new Date().getMonth();
         let selectedMobileDay = new Date().getDate();
         let shiftData = {}; 
         let chartInstance = null;
@@ -686,6 +718,7 @@
 
             document.getElementById('user-grado-input').disabled = true;
             document.getElementById('user-nome-input').disabled = true;
+            document.getElementById('user-email-input').disabled = true;
             document.getElementById('year-select').disabled = true;
             document.getElementById('patrono-main-btn').disabled = true;
         }
@@ -701,6 +734,7 @@
 
             document.getElementById('user-grado-input').disabled = false;
             document.getElementById('user-nome-input').disabled = false;
+            document.getElementById('user-email-input').disabled = false;
             document.getElementById('year-select').disabled = false;
             document.getElementById('patrono-main-btn').disabled = false;
 
@@ -807,7 +841,7 @@
         }
 
         function getUserInfo() {
-            if (!allData.userInfo) allData.userInfo = { grado: '', nome: '' };
+            if (!allData.userInfo) allData.userInfo = { grado: '', nome: '', email: '' };
             return allData.userInfo;
         }
 
@@ -815,9 +849,11 @@
             if (!currentCode) return;
             const gradoInput = document.getElementById('user-grado-input');
             const nomeInput = document.getElementById('user-nome-input');
+            const emailInput = document.getElementById('user-email-input');
             const grado = (gradoInput ? gradoInput.value : '').trim();
             const nome = (nomeInput ? nomeInput.value : '').trim();
-            allData.userInfo = { grado, nome };
+            const email = (emailInput ? emailInput.value : '').trim();
+            allData.userInfo = { grado, nome, email };
             updateUserDisplay();
             checkMandatoryFields();
             triggerSave();
@@ -827,17 +863,92 @@
             const user = getUserInfo();
             const gradoInput = document.getElementById('user-grado-input');
             const nomeInput = document.getElementById('user-nome-input');
+            const emailInput = document.getElementById('user-email-input');
             const tableDisplay = document.getElementById('table-user-name');
             const tablePill = document.getElementById('table-user-pill');
 
             if (gradoInput && document.activeElement !== gradoInput) gradoInput.value = user.grado || '';
             if (nomeInput && document.activeElement !== nomeInput) nomeInput.value = user.nome || '';
+            if (emailInput && document.activeElement !== emailInput) emailInput.value = user.email || '';
 
             const fullName = `${user.grado ? user.grado + ' ' : ''}${user.nome || ''}`.trim() || 'Militare';
             if (tableDisplay) tableDisplay.innerText = fullName;
             if (tablePill) {
                 if (user.grado || user.nome) tablePill.classList.remove('hidden');
                 else tablePill.classList.add('hidden');
+            }
+        }
+
+        function openForgotPinModal() {
+            document.getElementById('forgot-pin-modal').classList.remove('hidden');
+        }
+
+        function closeForgotPinModal() {
+            document.getElementById('forgot-pin-modal').classList.add('hidden');
+        }
+
+        async function sendPinRecoveryEmail() {
+            const emailInput = document.getElementById('recovery-email-input');
+            const emailVal = emailInput.value.trim().toLowerCase();
+            const btn = document.getElementById('btn-send-recovery');
+
+            if (!emailVal || !emailVal.includes('@')) {
+                alert("Inserisci un indirizzo email valido.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Invio in corso...";
+
+            try {
+                const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/users?key=${firebaseConfig.apiKey}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Errore durante l'interrogazione del database.");
+
+                const data = await res.json();
+                let foundPin = null;
+                let userName = "Militare";
+
+                if (data && data.documents) {
+                    for (const doc of data.documents) {
+                        if (doc.fields && doc.fields.memorialeJson && doc.fields.memorialeJson.stringValue) {
+                            try {
+                                const parsed = JSON.parse(doc.fields.memorialeJson.stringValue);
+                                if (parsed.userInfo && parsed.userInfo.email && parsed.userInfo.email.trim().toLowerCase() === emailVal) {
+                                    const pathParts = doc.name.split('/');
+                                    foundPin = pathParts[pathParts.length - 1];
+                                    userName = `${parsed.userInfo.grado || ''} ${parsed.userInfo.nome || ''}`.trim() || 'Militare';
+                                    break;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+
+                if (!foundPin) {
+                    alert("Nessun profilo trovato associato a questo indirizzo email. Assicurati di aver precedentemente inserito e salvato l'email nel tuo profilo.");
+                    btn.disabled = false;
+                    btn.innerText = "Invia PIN";
+                    return;
+                }
+
+                const templateParams = {
+                    to_email: emailVal,
+                    user_name: userName,
+                    recovered_pin: foundPin
+                };
+
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                alert(`Il Codice Personale è stato inviato all'indirizzo ${emailVal}! Controlla la tua casella di posta.`);
+                closeForgotPinModal();
+                emailInput.value = '';
+
+            } catch (err) {
+                console.error(err);
+                alert("Errore durante l'invio dell'email: " + (err.text || err.message || "Riprova più tardi."));
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Invia PIN";
             }
         }
 
@@ -1891,7 +2002,6 @@
                     });
                 }
 
-                // GESTIONE NOTE PULITA: niente ridisegno del DOM e salvataggio unico su blur
                 if (field === 'note') {
                     input.addEventListener('input', (e) => {
                         if (!currentCode) return;
