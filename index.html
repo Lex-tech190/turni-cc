@@ -506,7 +506,6 @@
 
                 <!-- VISTA MOBILE: Layout Stile Supershift -->
                 <div class="lg:hidden flex flex-col p-2 gap-2">
-                    <!-- Intestazione LUN-DOM con stacco netto -->
                     <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-black tracking-wider py-1.5 bg-gray-500/10 rounded-xl mb-1 border border-gray-500/15">
                         <span class="opacity-80">LUN</span>
                         <span class="opacity-80">MAR</span>
@@ -609,7 +608,6 @@
             projectId: "memoriale-locale"
         };
 
-        // Credenziali EmailJS configurate con Service ID attivo
         const EMAILJS_PUBLIC_KEY = "dW2ftnd2P3qS59KEe";
         const EMAILJS_SERVICE_ID = "service_wub69gk";
         const EMAILJS_TEMPLATE_ID = "template_hp9jr22";
@@ -977,7 +975,7 @@
         const getDefaultLicenzeConfig = (year) => {
             const yr = parseInt(year) || currentYear;
             if (yr === 2026) {
-                return { lo_2024: 0, lo_2025: 0, lo_curr: 45, rfs: 4, ls: 45, lt: 0, rr: 0, ore96: 0 };
+                return { lo_2024: 0, lo_2025: 5, lo_curr: 45, rfs: 4, ls: 45, lt: 0, rr: 0, ore96: 0 };
             }
             if (yr === 2027) {
                 return { lo_2025: 0, lo_2026: 0, lo_curr: 45, rfs: 4, ls: 45, lt: 0, rr: 0, ore96: 0 };
@@ -1356,18 +1354,18 @@
         }
 
         function getYearLoStats(year) {
-            const yNum = parseInt(year);
-            const counts = countYearShifts(year);
-            const cfg = allData.licenze?.[yNum] || getDefaultLicenzeConfig(yNum);
+            const yNum = parseInt(year) || currentYear;
+            const counts = countYearShifts(yNum);
+            const cfg = (allData.licenze && allData.licenze[yNum]) ? allData.licenze[yNum] : getDefaultLicenzeConfig(yNum);
             let loPrev2Spet = 0;
             let loPrev1Spet = 0;
 
             if (yNum === 2026) {
-                loPrev2Spet = parseInt(cfg.lo_2024) || 0;
-                loPrev1Spet = parseInt(cfg.lo_2025) || 0;
+                loPrev2Spet = parseInt(cfg.lo_2024 !== undefined ? cfg.lo_2024 : 0) || 0;
+                loPrev1Spet = parseInt(cfg.lo_2025 !== undefined ? cfg.lo_2025 : 5) || 0;
             } else if (yNum === 2027) {
-                loPrev2Spet = parseInt(cfg.lo_2025) || 0;
-                loPrev1Spet = parseInt(cfg.lo_2026) || 0;
+                loPrev2Spet = parseInt(cfg.lo_2025 !== undefined ? cfg.lo_2025 : 0) || 0;
+                loPrev1Spet = parseInt(cfg.lo_2026 !== undefined ? cfg.lo_2026 : 0) || 0;
             } else {
                 const prevStats = getYearLoStats(yNum - 1);
                 loPrev1Spet = Math.max(0, prevStats.loCurrRes);
@@ -1375,11 +1373,11 @@
             }
 
             const loCurrSpet = parseInt(cfg.lo_curr !== undefined ? cfg.lo_curr : 45);
-            const loPrev2Usate = counts.LO_prev2;
+            const loPrev2Usate = counts.LO_prev2 || 0;
             const loPrev2Res = loPrev2Spet - loPrev2Usate;
-            const loPrev1Usate = counts.LO_prev1;
+            const loPrev1Usate = counts.LO_prev1 || 0;
             const loPrev1Res = loPrev1Spet - loPrev1Usate;
-            const loCurrUsate = counts.LO_curr;
+            const loCurrUsate = counts.LO_curr || 0;
             const loCurrRes = loCurrSpet - loCurrUsate;
 
             return {
@@ -1396,7 +1394,7 @@
             if (!tbody) return;
 
             const counts = countYearShifts(currentYear);
-            const cfg = allData.licenze?.[currentYear] || getDefaultLicenzeConfig(currentYear);
+            const cfg = (allData.licenze && allData.licenze[currentYear]) ? allData.licenze[currentYear] : getDefaultLicenzeConfig(currentYear);
             const loStats = getYearLoStats(currentYear);
             const prevYear1 = currentYear - 1;
             const prevYear2 = currentYear - 2;
@@ -1409,15 +1407,15 @@
             const rmUsate = counts.RM || 0;
             const lsRes = lsSpet - rmUsate;
 
-            const ltSpet = parseInt(cfg.lt) || 0;
+            const ltSpet = parseInt(cfg.lt !== undefined ? cfg.lt : 0) || 0;
             const ltUsate = counts.LT || 0;
             const ltRes = ltSpet - ltUsate;
 
-            const rrSpet = parseInt(cfg.rr) || 0;
+            const rrSpet = parseInt(cfg.rr !== undefined ? cfg.rr : 0) || 0;
             const rrUsate = counts.RR || 0;
             const rrRes = rrSpet - rrUsate;
 
-            const ore96Spet = parseInt(cfg.ore96) || 0;
+            const ore96Spet = parseInt(cfg.ore96 !== undefined ? cfg.ore96 : 0) || 0;
             const ore96Usate = counts['96h'] || 0;
             const ore96Res = ore96Spet - ore96Usate;
 
@@ -1426,7 +1424,7 @@
             const items = [
                 { id: 'lo_prev2', label: `LO Anno ${prevYear2}`, note: isExpiredLoPrev2 ? `decaduta il 30/06/${currentYear}` : `scade 30/06/${currentYear}`, spet: loStats.loPrev2Spet, usate: loStats.loPrev2Usate, res: loStats.loPrev2Res, locked: (currentYear !== 2026 && currentYear !== 2027) },
                 { id: 'lo_prev1', label: `LO Anno ${prevYear1}`, note: `residua ${prevYear1}`, spet: loStats.loPrev1Spet, usate: loStats.loPrev1Usate, res: loStats.loPrev1Res, locked: (currentYear !== 2026 && currentYear !== 2027) },
-                { id: 'lo_curr', label: `LO Anno Corr. (${currentYear})`, note: 'anno in corso (45 gg)', spet: loStats.loCurrSpet, usate: loStats.loCurrUsate, res: loCurrRes, locked: false },
+                { id: 'lo_curr', label: `LO Anno Corr. (${currentYear})`, note: 'anno in corso (45 gg)', spet: loStats.loCurrSpet, usate: loStats.loCurrUsate, res: loStats.loCurrRes, locked: false },
                 { id: 'rfs', label: 'RFS Anno Corr.', note: 'vincolo 4 gg (fine anno)', spet: rfsSpet, usate: rfsUsate, res: rfsRes, locked: true },
                 { id: 'ls', label: 'LS (Straordinaria)', note: 'vincolo 45 gg (scala RM)', spet: lsSpet, usate: rmUsate, res: lsRes, locked: true },
                 { id: 'lt', label: 'LT (Trasferimento)', note: 'turni LT', spet: ltSpet, usate: ltUsate, res: ltRes, locked: false },
@@ -2269,13 +2267,13 @@
 
             const loStats = getYearLoStats(currentYear);
             const counts = countYearShifts(currentYear);
-            const cfg = allData.licenze?.[currentYear] || getDefaultLicenzeConfig(currentYear);
+            const cfg = (allData.licenze && allData.licenze[currentYear]) ? allData.licenze[currentYear] : getDefaultLicenzeConfig(currentYear);
 
             const resRFS = Math.max(0, 4 - (counts.RFS || 0));
             const resLS = Math.max(0, 45 - (counts.RM || 0));
-            const resLT = Math.max(0, (parseInt(cfg.lt) || 0) - (counts.LT || 0));
-            const resRR = Math.max(0, (parseInt(cfg.rr) || 0) - (counts.RR || 0));
-            const res96 = Math.max(0, (parseInt(cfg.ore96) || 0) - (counts['96h'] || 0));
+            const resLT = Math.max(0, (parseInt(cfg.lt !== undefined ? cfg.lt : 0) || 0) - (counts.LT || 0));
+            const resRR = Math.max(0, (parseInt(cfg.rr !== undefined ? cfg.rr : 0) || 0) - (counts.RR || 0));
+            const res96 = Math.max(0, (parseInt(cfg.ore96 !== undefined ? cfg.ore96 : 0) || 0) - (counts['96h'] || 0));
 
             let gridCellsHtml = '';
             for (let i = 0; i < firstDayIndex; i++) {
